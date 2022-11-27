@@ -15,7 +15,7 @@
       "@util/*": ["utils/*"],
       "@img/*": ["src/assets/img/*"],
       "@svg/*": ["src/assets/svg/*"],
-      "@icon/*": ["src/icons/*"]
+      "@icon/*": ["src/assets/svg/icon/*"]
     }
   }
 }
