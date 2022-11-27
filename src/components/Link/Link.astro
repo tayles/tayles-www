@@ -4,10 +4,17 @@ import { Icon } from '@component/Icon';
 export interface Props {
   href: string;
   src: string;
+  title?: string;
   alt?: string;
 }
 
-const { href, src, alt } = Astro.props as Props;
+const { href, src, title, alt } = Astro.props as Props;
 ---
 
-<a href={href} rel="me"><Icon src={src} alt={alt} /></a>
+<a href={href} title={alt ?? title} rel="me"><Icon src={src} alt={alt} /></a>
+
+<style>
+  a:hover {
+    filter: drop-shadow(0 0 0.75rem var(--accent));
+  }
+</style>
