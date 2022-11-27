@@ -1,7 +1,7 @@
 ---
 // Component imports
 import { Layout } from '@globals';
-import SomeIcon from '@icon/layers.svg';
+import { Icon } from 'astro-icon';
 ---
 
 <Layout title="Tayles">
@@ -11,8 +11,14 @@ import SomeIcon from '@icon/layers.svg';
       class="max-w-xl mx-auto flex flex-col justify-center flex-1 space-y-10"
     >
       <div class="space-y-2 text-center">
-        <SomeIcon />
+        <Icon name="layers" />
         <h1 class="text-4xl font-semibold">Tayles</h1>
+      </div>
+      <div>
+        <Icon name="github" />
+        <Icon name="twitter" />
+        <Icon name="linkedin" />
+        <Icon name="at-solid" />
       </div>
     </div>
   </section>
