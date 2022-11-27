@@ -2,7 +2,6 @@ import { defineConfig } from 'astro/config';
 
 // Astro integration imports
 import tailwind from '@astrojs/tailwind';
-import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel/serverless';
 import { VitePWA } from 'vite-plugin-pwa';
 
@@ -20,7 +19,6 @@ export default defineConfig({
         // path: './tailwind.config.cjs',
       },
     }),
-    sitemap(),
   ],
   vite: {
     plugins: [
