@@ -5,11 +5,12 @@
 :root {
   --theme: #293344;
   --accent: #00a35b;
-  --text: #ffffff;
+  --text: #fff;
 }
 
 body {
   background-color: var(--theme);
+  background: linear-gradient(0deg, #000 0%, var(--theme) 50%);
   color: var(--text);
 }
 
