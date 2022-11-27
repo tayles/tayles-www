@@ -1,30 +1,35 @@
 ---
-// Component imports
+import { Icon } from '@component/Icon';
+import { Link } from '@component/Link';
+
 import { Layout } from '@globals';
+
 import LayersIcon from '@icon/layers.svg';
-import EmailIcon from '@icon/at-solid.svg';
 import GithubIcon from '@icon/github.svg';
 import LinkedInIcon from '@icon/linkedin.svg';
 import TwitterIcon from '@icon/twitter.svg';
-import { Icon } from '@component/Icon';
-import { Link } from '@component/Link';
 ---
 
 <Layout title="Tayles">
   <section class="p-6 flex-1 flex flex-col justify-between">
-    <!-- Welcome -->
     <div
-      class="max-w-xl mx-auto flex flex-col justify-center flex-1 space-y-10"
+      class="max-w-xl mx-auto flex flex-col justify-center items-center flex-1 space-y-10"
     >
       <div class="flex gap-8 items-center">
-        <Icon src={LayersIcon} />
-        <h1 class="text-4xl font-semibold">Tayles</h1>
+        <h1 class="text-5xl font-semibold">tayles</h1>
       </div>
       <div class="flex gap-8">
-        <Link href="https://www.linkedin.com/in/tayles" src={LinkedInIcon} />
-        <Link href="https://github.com/tayles" src={GithubIcon} />
-        <Link href="https://twitter.com/tayles" src={TwitterIcon} />
-        <Link href="mailto:hello@this-domain" src={EmailIcon} />
+        <Link
+          href="https://www.linkedin.com/in/tayles"
+          src={LinkedInIcon}
+          alt="LinkedIn"
+        />
+        <Link href="https://github.com/tayles" src={GithubIcon} alt="Github" />
+        <Link
+          href="https://twitter.com/tayles"
+          src={TwitterIcon}
+          alt="Twitter"
+        />
       </div>
     </div>
   </section>

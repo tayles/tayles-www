@@ -10,4 +10,4 @@ export interface Props {
 const { href, src, alt } = Astro.props as Props;
 ---
 
-<a href={href}><Icon src={src} /></a>
+<a href={href} rel="me"><Icon src={src} alt={alt} /></a>
