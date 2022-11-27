@@ -1,16 +1,17 @@
 import type { ManifestOptions } from 'vite-plugin-pwa';
 
 /**
- * Defines the default SEO configuration for the website.
+ * Defines the default SEO configuration for the website
  */
 export const seoConfig = {
   baseURL: 'https://tayles.co.uk',
   siteName: 'Tayles',
-  description: 'This is the personal site of David Taylor',
+  description:
+    'This is the home of David Taylor, a passionate and creative engineering leader from the UK, currently living in Toronto, Canada',
   type: 'website',
   image: {
-    url: '/img/opengraph.png', // Change this to your website's thumbnail.
-    alt: 'Tayles', // Change this to your website's thumbnail description.
+    url: 'https://tayles.co.uk/img/tayles-opengraph.png',
+    alt: 'Tayles',
     width: 1200,
     height: 630,
   },
@@ -20,14 +21,14 @@ export const seoConfig = {
 };
 
 /**
- * Defines the configuration for PWA webmanifest.
+ * Defines the configuration for PWA webmanifest
  */
 export const manifest: Partial<ManifestOptions> = {
-  name: 'Tayles', // Change this to your website's name.
-  short_name: 'Tayles', // Change this to your website's short name.
-  description: 'Personal site of David Taylor', // Change this to your websites description.
-  theme_color: '#00a35b', // Change this to your primary color.
-  background_color: '#293344', // Change this to your background color.
+  name: seoConfig.siteName,
+  short_name: seoConfig.siteName,
+  description: seoConfig.description,
+  theme_color: '#00a35b',
+  background_color: '#293344',
   display: 'minimal-ui',
   icons: [
     {

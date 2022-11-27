@@ -3,7 +3,7 @@ import { SEO } from 'astro-seo';
 
 import '@style/tailwind.css';
 
-import { seoConfig } from '@util/seoConfig';
+import { seoConfig } from '@util/seo-config';
 
 export interface Props {
   /** Title of the page. */
@@ -36,7 +36,6 @@ const {
 
 <html lang="en">
   <head>
-    <!-- SEO -->
     <SEO
       title={title}
       description={description || seoConfig.description}
@@ -63,11 +62,9 @@ const {
       }}
     />
 
-    <!-- Global meta tags -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Favicons -->
     <link
       rel="apple-touch-icon"
       sizes="57x57"
