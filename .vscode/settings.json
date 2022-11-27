@@ -5,7 +5,13 @@
   },
   "prettier.documentSelectors": ["**/*.astro"],
   "editor.formatOnSave": true,
-  "eslint.validate": ["javascript", "astro", "typescript"],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "astro", // Enable .astro
+    "typescript", // Enable .ts
+    "typescriptreact" // Enable .tsx
+  ],
   "eslint.alwaysShowStatus": true,
   "eslint.packageManager": "npm"
 }
