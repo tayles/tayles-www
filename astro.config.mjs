@@ -1,17 +1,13 @@
-import { defineConfig } from 'astro/config';
-
-// Astro integration imports
-import tailwind from '@astrojs/tailwind';
-import vercel from '@astrojs/vercel/serverless';
-import { VitePWA } from 'vite-plugin-pwa';
-
 // Helper imports
 import { manifest, seoConfig } from './utils/seoConfig';
 
+import { VitePWA } from 'vite-plugin-pwa';
+import { defineConfig } from 'astro/config';
+// Astro integration imports
+import tailwind from '@astrojs/tailwind';
+
 export default defineConfig({
   site: seoConfig.baseURL,
-  output: 'server',
-  adapter: vercel(),
   integrations: [
     tailwind({
       config: {
