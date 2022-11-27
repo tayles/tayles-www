@@ -1,18 +1,44 @@
 import { defineConfig } from 'astro/config';
 
-// https://astro.build/config
-import vercel from '@astrojs/vercel/serverless';
-
-// https://astro.build/config
+// Astro integration imports
 import tailwind from '@astrojs/tailwind';
-
-// https://astro.build/config
 import sitemap from '@astrojs/sitemap';
+import vercel from '@astrojs/vercel/serverless';
+import compress from 'astro-compress';
+import { VitePWA } from 'vite-plugin-pwa';
 
-// https://astro.build/config
+// Helper imports
+import { manifest, seoConfig } from './utils/seoConfig';
+
 export default defineConfig({
-  site: 'https://tayles.co.uk',
+  site: seoConfig.baseURL,
   output: 'server',
   adapter: vercel(),
-  integrations: [tailwind(), sitemap()],
+  integrations: [
+    tailwind({
+      config: {
+        applyBaseStyles: false,
+        // path: './tailwind.config.cjs',
+      },
+    }),
+    sitemap(),
+    compress(),
+  ],
+  vite: {
+    plugins: [
+      VitePWA({
+        registerType: 'autoUpdate',
+        manifest,
+        workbox: {
+          globDirectory: 'dist',
+          globPatterns: [
+            '**/*.{js,css,svg,png,jpg,jpeg,gif,webp,woff,woff2,ttf,eot,ico}',
+          ],
+          // Don't fallback on document based (e.g. `/some-page`) requests
+          // This removes an errant console.log message from showing up.
+          navigateFallback: null,
+        },
+      }),
+    ],
+  },
 });

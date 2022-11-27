@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --theme: #293344;
+  --accent: #00a35b;
+}
+
+body {
+  background-color: var(--theme);
+  color: var(--accent);
+}
+
+.accent {
+  color: var(--accent);
+}
