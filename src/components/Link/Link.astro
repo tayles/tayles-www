@@ -1,0 +1,13 @@
+---
+import { Icon } from '@component/Icon';
+
+export interface Props {
+  href: string;
+  src: string;
+  alt?: string;
+}
+
+const { href, src, alt } = Astro.props as Props;
+---
+
+<a href={href}><Icon src={src} /></a>

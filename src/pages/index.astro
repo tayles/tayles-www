@@ -1,7 +1,13 @@
 ---
 // Component imports
 import { Layout } from '@globals';
-import { Icon } from 'astro-icon';
+import LayersIcon from '@icon/layers.svg';
+import EmailIcon from '@icon/at-solid.svg';
+import GithubIcon from '@icon/github.svg';
+import LinkedInIcon from '@icon/linkedin.svg';
+import TwitterIcon from '@icon/twitter.svg';
+import { Icon } from '@component/Icon';
+import { Link } from '@component/Link';
 ---
 
 <Layout title="Tayles">
@@ -10,15 +16,15 @@ import { Icon } from 'astro-icon';
     <div
       class="max-w-xl mx-auto flex flex-col justify-center flex-1 space-y-10"
     >
-      <div class="space-y-2 text-center">
-        <Icon name="layers" />
+      <div class="flex gap-8 items-center">
+        <Icon src={LayersIcon} />
         <h1 class="text-4xl font-semibold">Tayles</h1>
       </div>
-      <div>
-        <Icon name="github" />
-        <Icon name="twitter" />
-        <Icon name="linkedin" />
-        <Icon name="at-solid" />
+      <div class="flex gap-8">
+        <Link href="https://www.linkedin.com/in/tayles" src={LinkedInIcon} />
+        <Link href="https://github.com/tayles" src={GithubIcon} />
+        <Link href="https://twitter.com/tayles" src={TwitterIcon} />
+        <Link href="mailto:hello@this-domain" src={EmailIcon} />
       </div>
     </div>
   </section>
