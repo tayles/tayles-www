@@ -4,7 +4,6 @@ import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel/serverless';
-import compress from 'astro-compress';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // Helper imports
@@ -22,7 +21,6 @@ export default defineConfig({
       },
     }),
     sitemap(),
-    compress(),
   ],
   vite: {
     plugins: [
