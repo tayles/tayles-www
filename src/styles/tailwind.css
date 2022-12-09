@@ -4,13 +4,15 @@
 
 :root {
   --theme: #293344;
+  --theme-alt: #000;
   --accent: #00a35b;
+  --accent-contrast: #a30048;
   --text: #fff;
 }
 
 body {
-  background-color: var(--theme);
-  background: linear-gradient(0deg, #000 0%, var(--theme) 50%);
+  background: var(--theme);
+  background: radial-gradient(circle, var(--theme) 30%, var(--theme-alt) 100%);
   color: var(--text);
 }
 
