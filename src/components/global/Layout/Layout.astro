@@ -1,7 +1,7 @@
 ---
 import { SEO } from 'astro-seo';
 
-import '@style/tailwind.css';
+import '@style/globals.css';
 
 import { seoConfig } from '@util/seo-config';
 
@@ -152,6 +152,11 @@ const {
     <!-- Service worker registration -->
     <script is:inline src="/registerSW.js"></script>
     <link rel="manifest" href="/manifest.webmanifest" />
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Sriracha"
+    />
   </head>
   <body class="min-h-screen flex flex-col w-full overflow-x-hidden">
     <main class="flex flex-1 flex-col h-[100%] w-full">
