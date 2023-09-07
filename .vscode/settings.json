@@ -12,8 +12,6 @@
     "typescript", // Enable .ts
     "typescriptreact" // Enable .tsx
   ],
-  "eslint.alwaysShowStatus": true,
-  "eslint.packageManager": "npm",
   "files.associations": {
     "*.css": "tailwindcss"
   },
