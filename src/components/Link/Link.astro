@@ -3,9 +3,9 @@ import { Icon } from '@component/Icon';
 
 export interface Props {
   href: string;
-  src: string;
+  src: ImageMetadata;
   title?: string;
-  alt?: string;
+  alt: string;
 }
 
 const { href, src, title, alt } = Astro.props as Props;
