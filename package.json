@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "@astrojs/tailwind": "^5.0.0",
-    "@typescript-eslint/eslint-plugin": "^6.7.2",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.2",
     "astro": "^3.1.0",
     "astro-seo": "^0.8.0",
