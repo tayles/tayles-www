@@ -1,10 +1,9 @@
+import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from 'astro/config';
+import { VitePWA } from 'vite-plugin-pwa';
+
 // Helper imports
 import { manifest, seoConfig } from './utils/seo-config';
-
-import { VitePWA } from 'vite-plugin-pwa';
-import { defineConfig } from 'astro/config';
-
-import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: seoConfig.baseURL,

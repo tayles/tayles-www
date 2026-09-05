@@ -14,25 +14,23 @@
     "build": "astro build",
     "dev": "astro dev",
     "preview": "astro preview",
-    "start": "astro dev"
-  },
-  "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.57.0",
-    "@typescript-eslint/parser": "^8.57.0",
-    "astro": "^5.14.1",
-    "astro-seo": "^1.1.0",
-    "eslint": "^10.0.3",
-    "eslint-plugin-astro": "^1.6.0",
-    "prettier": "^3.8.1",
-    "prettier-plugin-astro": "^0.14.1",
-    "prettier-plugin-tailwindcss": "^0.7.2",
-    "sharp": "^0.34.5",
-    "tailwindcss": "^4.2.1",
-    "typescript": "^5.9.3",
-    "vite-plugin-pwa": "^1.2.0"
+    "start": "astro dev",
+    "lint": "oxlint",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.2.1"
+    "@tailwindcss/vite": "^4.3.3"
+  },
+  "devDependencies": {
+    "astro": "^7.3.1",
+    "astro-seo": "^1.2.0",
+    "oxfmt": "^0.66.0",
+    "oxlint": "^1.81.0",
+    "sharp": "^0.35.4",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite-plugin-pwa": "^1.3.0"
   },
   "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be"
 }

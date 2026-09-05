@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "trailingComma": "all",
+  "semi": true,
+  "singleQuote": true,
+  "printWidth": 80,
+  "sortImports": true,
+  "sortTailwindcss": {},
+  "sortPackageJson": true,
+  "ignorePatterns": ["dist", "node_modules", ".github", ".changeset", ".vercel"]
+}
