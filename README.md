@@ -52,20 +52,20 @@ shared link previews exactly what the visitor will land on.
 
 ## Commands
 
-| Command                          | What it does                          |
-| :------------------------------- | :------------------------------------ |
-| `bun install`                    | Install dependencies                  |
-| `bunx playwright install chromium` | One-off, before the first `test`    |
-| `bun run dev`                    | Dev server on `localhost:4321`        |
-| `bun run build`                  | Build to `./dist/`                    |
-| `bun run preview`                | Serve the built site                  |
-| `bun run check`                  | Sync types, format check, lint, types |
-| `bun run clean`                  | Fix formatting and auto-fixable lints |
-| `bun run test`                   | Playwright suite (builds first)       |
-| `bun run verify`                 | `check` + build + test — what CI runs |
-| `bun run screenshots`            | Capture every screenshot              |
-| `bun run screenshots --only <s>` | Capture just one                      |
-| `bun run designs:md`             | Regenerate `DESIGNS.md`               |
+| Command                            | What it does                          |
+| :--------------------------------- | :------------------------------------ |
+| `bun install`                      | Install dependencies                  |
+| `bunx playwright install chromium` | One-off, before the first `test`      |
+| `bun run dev`                      | Dev server on `localhost:4321`        |
+| `bun run build`                    | Build to `./dist/`                    |
+| `bun run preview`                  | Serve the built site                  |
+| `bun run check`                    | Sync types, format check, lint, types |
+| `bun run clean`                    | Fix formatting and auto-fixable lints |
+| `bun run test`                     | Playwright suite (builds first)       |
+| `bun run verify`                   | `check` + build + test — what CI runs |
+| `bun run screenshots`              | Capture every screenshot              |
+| `bun run screenshots --only <s>`   | Capture just one                      |
+| `bun run designs:md`               | Regenerate `DESIGNS.md`               |
 
 `fmt` / `fmt:fix` and `lint` / `lint:fix` are available individually; `check`
 and `clean` are the check-everything and fix-everything pair.
