@@ -12,8 +12,8 @@
   "scripts": {
     "astro": "astro",
     "build": "astro build",
-    "check": "bun run fmt && bun run lint && bun run typecheck",
-    "check:ci": "bun run fmt && bun run lint --format=github && bun run typecheck",
+    "check": "bun run sync && bun run fmt && bun run lint && bun run typecheck",
+    "check:ci": "bun run sync && bun run fmt && bun run lint --format=github && bun run typecheck",
     "clean": "bun run fmt:fix && bun run lint:fix",
     "designs:md": "bun run scripts/generate-designs-md.ts",
     "dev": "astro dev",
@@ -24,6 +24,7 @@
     "preview": "astro preview",
     "screenshots": "bun run scripts/capture-screenshots.ts",
     "start": "astro dev",
+    "sync": "astro sync",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
     "typecheck": "astro check",

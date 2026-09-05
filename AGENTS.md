@@ -69,7 +69,10 @@ Wikimedia, public-domain textures, open icon sets) is fair game.
 
 - **Bun** for everything. Never `npm`/`pnpm`/`yarn`.
 - **oxfmt** formats, **oxlint** lints (type-aware). `bun run check` checks
-  everything, `bun run clean` fixes what it can. Single quotes, 80 columns,
+  everything, `bun run clean` fixes what it can. `check` runs `astro sync`
+  first: the `astro:content` types live in the generated `.astro/` directory,
+  and without them `getCollection()` is untyped and type-aware lint fails on
+  a clean checkout. Single quotes, 80 columns,
   trailing commas, sorted imports.
 - **Strict TypeScript** (`astro/tsconfigs/strictest`). No `any`, no
   `@ts-ignore`. TypeScript is pinned to 6.x because `astro check` needs the
@@ -85,7 +88,7 @@ Wikimedia, public-domain textures, open icon sets) is fair game.
 ## Before you commit
 
 ```bash
-bun run verify                     # check (fmt + lint + typecheck), build, test
+bun run verify                     # check (sync + fmt + lint + typecheck), build, test
 bun run screenshots --only <slug>  # capture the new design
 bun run designs:md                 # regenerate DESIGNS.md
 ```

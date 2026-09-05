@@ -58,7 +58,7 @@ shared link previews exactly what the visitor will land on.
 | `bun run dev`                    | Dev server on `localhost:4321`        |
 | `bun run build`                  | Build to `./dist/`                    |
 | `bun run preview`                | Serve the built site                  |
-| `bun run check`                  | Format check, lint and typecheck      |
+| `bun run check`                  | Sync types, format check, lint, types |
 | `bun run clean`                  | Fix formatting and auto-fixable lints |
 | `bun run test`                   | Playwright suite (builds first)       |
 | `bun run verify`                 | `check` + build + test — what CI runs |
