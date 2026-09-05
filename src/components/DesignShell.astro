@@ -1,0 +1,26 @@
+---
+import DesignChrome from '@/components/DesignChrome';
+import { getDesignSummaries, getNeighbours } from '@/lib/designs';
+
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+
+const designs = await getDesignSummaries();
+const { previous, next, index } = await getNeighbours(slug);
+---
+
+<div data-design-root data-design={slug}>
+  <slot />
+</div>
+
+<DesignChrome
+  client:load
+  designs={designs}
+  currentSlug={slug}
+  currentIndex={index}
+  previousSlug={previous.id}
+  nextSlug={next.id}
+/>

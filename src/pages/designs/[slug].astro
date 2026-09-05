@@ -1,0 +1,34 @@
+---
+import type { GetStaticPaths } from 'astro';
+
+import DesignShell from '@/components/DesignShell.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import {
+  getDesignComponent,
+  getOrderedDesigns,
+  getSocialImage,
+} from '@/lib/designs';
+
+export const getStaticPaths = (async () => {
+  const designs = await getOrderedDesigns();
+  return designs.map((design) => ({
+    params: { slug: design.id },
+    props: { design },
+  }));
+}) satisfies GetStaticPaths;
+
+const { design } = Astro.props;
+const Design = getDesignComponent(design.id);
+const ogImage = await getSocialImage(design.id);
+---
+
+<BaseLayout
+  title={design.data.name}
+  description={design.data.description}
+  ogImage={ogImage}
+  ogImageAlt={`The ${design.data.name} design`}
+>
+  <DesignShell slug={design.id}>
+    <Design />
+  </DesignShell>
+</BaseLayout>

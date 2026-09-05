@@ -1,34 +1,28 @@
 ---
-import { Link } from '@component/Link';
+import DesignShell from '@/components/DesignShell.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import {
+  designHref,
+  getDesignComponent,
+  getLatestDesign,
+  getSocialImage,
+} from '@/lib/designs';
 
-import { Layout } from '@globals';
-
-import GithubIcon from '@icon/github.svg';
-import LinkedInIcon from '@icon/linkedin.svg';
-import TwitterIcon from '@icon/twitter.svg';
+// The homepage is always the newest design. It keeps its own permanent URL
+// too, which is where the canonical points.
+const latest = await getLatestDesign();
+const Design = getDesignComponent(latest.id);
+const ogImage = await getSocialImage(latest.id);
 ---
 
-<Layout title="Hello" ogTitle="Tayles">
-  <section class="flex-1 flex flex-col justify-between">
-    <div
-      class="max-w-xl mx-auto flex flex-col justify-center items-center flex-1 gap-10"
-    >
-      <div class="flex items-center">
-        <h1 class="text-8xl font-semibold tracking-wider">tayles</h1>
-      </div>
-      <div class="flex gap-10">
-        <Link
-          href="https://linkedin.com/in/tayles"
-          src={LinkedInIcon}
-          alt="LinkedIn"
-        />
-        <Link href="https://github.com/tayles" src={GithubIcon} alt="Github" />
-        <Link
-          href="https://twitter.com/tayles"
-          src={TwitterIcon}
-          alt="Twitter"
-        />
-      </div>
-    </div>
-  </section>
-</Layout>
+<BaseLayout
+  title="David Taylor"
+  description={latest.data.description}
+  canonical={designHref(latest.id)}
+  ogImage={ogImage}
+  ogImageAlt={`The ${latest.data.name} design`}
+>
+  <DesignShell slug={latest.id}>
+    <Design />
+  </DesignShell>
+</BaseLayout>

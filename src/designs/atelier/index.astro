@@ -1,0 +1,219 @@
+---
+// Atelier — quiet editorial. Warm paper, a high-contrast serif, hairline
+// rules and a great deal of nothing. The only motion is a slow settle on load.
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@400;500&display=swap"
+/>
+
+<div class="atelier">
+  <div class="rules" aria-hidden="true">
+    <span></span><span></span><span></span><span></span>
+  </div>
+
+  <header class="masthead">
+    <p class="caps stagger" style="--i: 0">David Taylor</p>
+    <p class="caps stagger" style="--i: 1">
+      <time datetime="2026-06-15">Vol. V — MMXXVI</time>
+    </p>
+  </header>
+
+  <main class="centre">
+    <p class="caps eyebrow stagger" style="--i: 2">Software Engineer</p>
+
+    <h1 class="wordmark stagger" style="--i: 3">
+      <span class="t">t</span><span>ayle</span><span class="s">s</span>
+    </h1>
+
+    <div class="hairline stagger" style="--i: 4" aria-hidden="true"></div>
+
+    <p class="lede stagger" style="--i: 5">
+      A homepage that quietly reinvents itself every week — this one prefers
+      restraint, wide margins and a very old serif.
+    </p>
+  </main>
+
+  <footer class="colophon">
+    <nav class="links" aria-label="Elsewhere">
+      <a class="stagger" style="--i: 6" href="https://github.com/tayles">
+        GitHub<span class="ornament" aria-hidden="true">↗</span>
+      </a>
+      <a class="stagger" style="--i: 7" href="https://linkedin.com/in/tayles">
+        LinkedIn<span class="ornament" aria-hidden="true">↗</span>
+      </a>
+    </nav>
+  </footer>
+</div>
+
+<style>
+  .atelier {
+    --paper: #f6f2ea;
+    --ink: #1c1a17;
+    --muted: #8b8377;
+    --hair: #d8d1c4;
+
+    position: relative;
+    display: grid;
+    min-height: 100dvh;
+    grid-template-rows: auto 1fr auto;
+    gap: 2rem;
+    padding: clamp(1.75rem, 5vw, 4rem) clamp(1.5rem, 8vw, 7rem)
+      calc(clamp(1.75rem, 5vw, 4rem) + 3rem);
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Cormorant Garamond', ui-serif, Georgia, serif;
+    font-weight: 300;
+  }
+
+  /* Four hairline columns, drawn behind everything. */
+  .rules {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding-inline: clamp(1.5rem, 8vw, 7rem);
+    pointer-events: none;
+  }
+
+  .rules span {
+    border-left: 1px solid var(--hair);
+    opacity: 0.7;
+  }
+
+  .rules span:first-child {
+    border-left: 0;
+  }
+
+  .masthead,
+  .colophon {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .caps {
+    margin: 0;
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(0.58rem, 1.2vw, 0.7rem);
+    font-weight: 500;
+    letter-spacing: 0.34em;
+    text-indent: 0.34em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .centre {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.1rem, 3vw, 2rem);
+    text-align: center;
+  }
+
+  .eyebrow {
+    color: var(--ink);
+    opacity: 0.55;
+  }
+
+  .wordmark {
+    margin: 0;
+    font-size: clamp(4.5rem, 24vw, 17rem);
+    font-weight: 300;
+    line-height: 0.82;
+    letter-spacing: -0.02em;
+  }
+
+  /* Two italic swash letters to give the word a hand. */
+  .wordmark .t,
+  .wordmark .s {
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  .hairline {
+    width: clamp(4rem, 12vw, 9rem);
+    height: 1px;
+    background: var(--ink);
+    opacity: 0.35;
+  }
+
+  .lede {
+    max-width: 32ch;
+    margin: 0;
+    font-size: clamp(1.05rem, 2.4vw, 1.45rem);
+    font-style: italic;
+    line-height: 1.55;
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  .links {
+    display: flex;
+    gap: clamp(1.5rem, 5vw, 3rem);
+  }
+
+  .links a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--hair);
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(0.58rem, 1.2vw, 0.7rem);
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-indent: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 320ms ease, border-color 320ms ease;
+  }
+
+  .links a:hover,
+  .links a:focus-visible {
+    color: var(--ink);
+    border-color: var(--ink);
+    outline: none;
+  }
+
+  .ornament {
+    font-size: 0.9em;
+    transition: translate 320ms ease;
+  }
+
+  .links a:hover .ornament,
+  .links a:focus-visible .ornament {
+    translate: 0.15rem -0.15rem;
+  }
+
+  /* Everything rises into place, a beat apart. */
+  .stagger {
+    animation: settle 1s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    animation-delay: calc(var(--i, 0) * 110ms + 120ms);
+  }
+
+  @keyframes settle {
+    from {
+      opacity: 0;
+      transform: translateY(1.25rem);
+      filter: blur(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stagger {
+      animation: none;
+    }
+  }
+</style>

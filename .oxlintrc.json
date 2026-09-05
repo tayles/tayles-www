@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "jsx-a11y", "unicorn", "oxc"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "env": { "browser": true, "es2024": true },
+  "ignorePatterns": [
+    "dist",
+    "node_modules",
+    ".astro",
+    "test-results",
+    "playwright-report"
+  ],
+  "rules": {
+    "no-console": "off",
+    // Astro compiles JSX with the automatic runtime; React need not be in scope.
+    "react/react-in-jsx-scope": "off",
+    // Screenshots and page assertions are deliberately sequential — one page,
+    // one browser, one design at a time.
+    "no-await-in-loop": "off"
+  }
+}

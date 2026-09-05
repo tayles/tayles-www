@@ -1,0 +1,252 @@
+---
+// Glitch City — sun-bleached crime-poster energy. Outlined display type with
+// RGB channel separation, a halftone dot screen and periodic slice glitches.
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@500;700&display=swap"
+/>
+
+<div class="city">
+  <div class="sky" aria-hidden="true"></div>
+  <div class="skyline" aria-hidden="true"></div>
+  <div class="halftone" aria-hidden="true"></div>
+
+  <div class="content">
+    <p class="tag">EST. UK &nbsp;//&nbsp; WANTED FOR SHIPPING</p>
+
+    <h1 class="logo" data-text="tayles">
+      <span class="layer r" aria-hidden="true">tayles</span>
+      <span class="layer c" aria-hidden="true">tayles</span>
+      <span class="layer main">tayles</span>
+    </h1>
+
+    <p class="strap">DAVID TAYLOR &nbsp;★&nbsp; ENGINEER &nbsp;★&nbsp; VOL. 04</p>
+
+    <nav class="links" aria-label="Elsewhere">
+      <a href="https://github.com/tayles" data-text="GITHUB">GITHUB</a>
+      <a href="https://linkedin.com/in/tayles" data-text="LINKEDIN"
+        >LINKEDIN</a
+      >
+    </nav>
+  </div>
+
+  <div class="grain" aria-hidden="true"></div>
+</div>
+
+<style>
+  .city {
+    --hot: #ff2e63;
+    --acid: #ffd300;
+    --cyan: #00fff0;
+    --deep: #120a1f;
+
+    position: relative;
+    display: grid;
+    min-height: 100dvh;
+    place-items: center;
+    overflow: hidden;
+    background: var(--deep);
+    font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+    color: #fff;
+    padding: 8vmin 5vmin 15vmin;
+  }
+
+  .sky {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        ellipse 70% 45% at 50% 78%,
+        #ffb03a 0%,
+        #ff2e63 32%,
+        transparent 72%
+      ),
+      linear-gradient(to bottom, #1a0b2e 0%, #45114f 46%, #8a1450 74%, #d94a2b 100%);
+  }
+
+  /* A blocky skyline cut straight out of a dark band. */
+  .skyline {
+    position: absolute;
+    inset-inline: -2%;
+    bottom: 0;
+    height: 34%;
+    background: linear-gradient(to bottom, #120a1f 40%, #05020a);
+    clip-path: polygon(
+      0% 100%, 0% 52%, 4% 52%, 4% 34%, 8% 34%, 8% 60%, 13% 60%, 13% 26%,
+      18% 26%, 18% 48%, 23% 48%, 23% 18%, 28% 18%, 28% 56%, 33% 56%, 33% 38%,
+      39% 38%, 39% 64%, 44% 64%, 44% 22%, 50% 22%, 50% 46%, 55% 46%, 55% 30%,
+      61% 30%, 61% 58%, 66% 58%, 66% 14%, 71% 14%, 71% 44%, 77% 44%, 77% 62%,
+      82% 62%, 82% 28%, 88% 28%, 88% 50%, 93% 50%, 93% 36%, 100% 36%,
+      100% 100%
+    );
+  }
+
+  /* Newsprint dot screen over everything. */
+  .halftone {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(
+      circle at center,
+      rgb(0 0 0 / 55%) 1.1px,
+      transparent 1.3px
+    );
+    background-size: 5px 5px;
+    mix-blend-mode: overlay;
+    opacity: 0.55;
+  }
+
+  .grain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 3%) 0 1px,
+      transparent 1px 3px
+    );
+    mix-blend-mode: soft-light;
+  }
+
+  .content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.9rem, 2.5vw, 1.6rem);
+    text-align: center;
+  }
+
+  .tag,
+  .strap {
+    margin: 0;
+    font-size: clamp(0.6rem, 1.6vw, 0.85rem);
+    font-weight: 700;
+    letter-spacing: 0.32em;
+    text-indent: 0.32em;
+    color: var(--acid);
+    text-shadow: 2px 2px 0 rgb(18 10 31 / 80%);
+  }
+
+  .strap {
+    color: var(--cyan);
+  }
+
+  /* Three stacked copies: red left, cyan right, solid on top. */
+  .logo {
+    position: relative;
+    margin: 0;
+    font-family: 'Anton', 'Space Grotesk', sans-serif;
+    font-size: clamp(4rem, 21vw, 15rem);
+    font-weight: 400;
+    /* Anton's descenders need room, or they crash into the strapline. */
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    text-transform: lowercase;
+    animation: jitter 6s steps(1) infinite;
+  }
+
+  .layer {
+    display: block;
+  }
+
+  .layer.r,
+  .layer.c {
+    position: absolute;
+    inset: 0;
+    mix-blend-mode: screen;
+  }
+
+  .layer.r {
+    color: var(--hot);
+    translate: -0.055em 0.012em;
+    animation: slice-a 6s steps(1) infinite;
+  }
+
+  .layer.c {
+    color: var(--cyan);
+    translate: 0.055em -0.012em;
+    animation: slice-b 6s steps(1) infinite;
+  }
+
+  .layer.main {
+    color: #fdf6e3;
+    -webkit-text-stroke: clamp(2px, 0.6vw, 5px) var(--deep);
+    paint-order: stroke fill;
+    text-shadow:
+      0 clamp(4px, 1vw, 10px) 0 var(--deep),
+      0 clamp(6px, 1.4vw, 14px) 0 var(--hot);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(0.6rem, 2.5vw, 1.2rem);
+    margin-top: 0.6rem;
+  }
+
+  .links a {
+    position: relative;
+    padding: 0.7rem 1.8rem;
+    border: 3px solid #fdf6e3;
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(0.85rem, 2.4vw, 1.25rem);
+    letter-spacing: 0.14em;
+    color: #fdf6e3;
+    text-decoration: none;
+    background: rgb(18 10 31 / 55%);
+    box-shadow: 5px 5px 0 var(--hot);
+    transition: all 120ms steps(2);
+  }
+
+  .links a:hover,
+  .links a:focus-visible {
+    outline: none;
+    color: var(--deep);
+    background: var(--acid);
+    border-color: var(--acid);
+    box-shadow: 5px 5px 0 var(--cyan);
+    translate: -2px -2px;
+  }
+
+  /* Torn-slice glitch: only a horizontal band shifts, and only briefly. */
+  @keyframes slice-a {
+    0%, 100% { clip-path: inset(0 0 0 0); translate: -0.055em 0.012em; }
+    41% { clip-path: inset(0 0 0 0); translate: -0.055em 0.012em; }
+    42% { clip-path: inset(18% 0 62% 0); translate: -0.14em 0; }
+    44% { clip-path: inset(58% 0 24% 0); translate: 0.11em 0; }
+    46% { clip-path: inset(0 0 0 0); translate: -0.055em 0.012em; }
+    77% { clip-path: inset(0 0 0 0); }
+    78% { clip-path: inset(70% 0 8% 0); translate: 0.16em 0; }
+    80% { clip-path: inset(0 0 0 0); translate: -0.055em 0.012em; }
+  }
+
+  @keyframes slice-b {
+    0%, 100% { clip-path: inset(0 0 0 0); translate: 0.055em -0.012em; }
+    41% { clip-path: inset(0 0 0 0); }
+    42% { clip-path: inset(24% 0 54% 0); translate: 0.15em 0; }
+    44% { clip-path: inset(62% 0 18% 0); translate: -0.12em 0; }
+    46% { clip-path: inset(0 0 0 0); translate: 0.055em -0.012em; }
+    77% { clip-path: inset(0 0 0 0); }
+    78% { clip-path: inset(8% 0 74% 0); translate: -0.17em 0; }
+    80% { clip-path: inset(0 0 0 0); translate: 0.055em -0.012em; }
+  }
+
+  @keyframes jitter {
+    0%, 41%, 47%, 77%, 81%, 100% { transform: translate(0, 0) skewX(0deg); }
+    42% { transform: translate(-3px, 1px) skewX(-1.2deg); }
+    44% { transform: translate(2px, -1px) skewX(0.8deg); }
+    78% { transform: translate(3px, 0) skewX(1.4deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .logo,
+    .layer.r,
+    .layer.c {
+      animation: none;
+    }
+  }
+</style>

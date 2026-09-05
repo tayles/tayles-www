@@ -1,0 +1,336 @@
+---
+// Neon Drive — 80s synthwave. Pure CSS: a scrolling perspective grid, a
+// scanline-cut sun, chrome-gradient type and a slow sweeping shine.
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Monoton&family=Orbitron:wght@500;700;900&display=swap"
+/>
+
+<div class="drive">
+  <div class="sky" aria-hidden="true">
+    <div class="stars"></div>
+    <div class="sun"></div>
+    <div class="mountains"></div>
+  </div>
+
+  <div class="floor" aria-hidden="true">
+    <div class="grid"></div>
+  </div>
+
+  <div class="content">
+    <p class="kicker">est. somewhere in the 1980s</p>
+    <h1 class="wordmark" data-text="tayles">tayles</h1>
+    <div class="rule" aria-hidden="true"></div>
+    <nav class="links" aria-label="Elsewhere">
+      <a href="https://github.com/tayles">GitHub</a>
+      <a href="https://linkedin.com/in/tayles">LinkedIn</a>
+    </nav>
+  </div>
+
+  <div class="haze" aria-hidden="true"></div>
+</div>
+
+<style>
+  .drive {
+    --horizon: 62%;
+    --pink: #ff3ca6;
+    --violet: #7b2ff7;
+    --cyan: #2de2e6;
+    --amber: #ff9d2f;
+
+    position: relative;
+    min-height: 100dvh;
+    overflow: hidden;
+    background: #0b0620;
+    font-family: 'Orbitron', ui-sans-serif, system-ui, sans-serif;
+    color: #fff;
+  }
+
+  .sky {
+    position: absolute;
+    inset: 0 0 calc(100% - var(--horizon)) 0;
+    background: linear-gradient(
+      to bottom,
+      #14022e 0%,
+      #35056b 38%,
+      #7a1063 70%,
+      #d61e6b 92%,
+      #ff7d3b 100%
+    );
+  }
+
+  /* Star layer: two sizes of dots, twinkling out of phase. */
+  .stars {
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(1.6px 1.6px at 12% 18%, #fff, transparent),
+      radial-gradient(1.2px 1.2px at 28% 8%, #ffe9f7, transparent),
+      radial-gradient(1.8px 1.8px at 46% 24%, #fff, transparent),
+      radial-gradient(1.1px 1.1px at 63% 11%, #d7f5ff, transparent),
+      radial-gradient(1.5px 1.5px at 78% 27%, #fff, transparent),
+      radial-gradient(1.2px 1.2px at 88% 14%, #ffe9f7, transparent),
+      radial-gradient(1.3px 1.3px at 7% 38%, #fff, transparent),
+      radial-gradient(1.1px 1.1px at 36% 41%, #d7f5ff, transparent),
+      radial-gradient(1.4px 1.4px at 70% 40%, #fff, transparent);
+    opacity: 0.85;
+    animation: twinkle 5.5s ease-in-out infinite alternate;
+  }
+
+  /* The sun: a gradient disc with hard horizontal gaps cut out of it. */
+  .sun {
+    position: absolute;
+    bottom: -12%;
+    left: 50%;
+    width: min(46vmin, 420px);
+    aspect-ratio: 1;
+    translate: -50% 0;
+    border-radius: 50%;
+    background: linear-gradient(
+      to bottom,
+      #fff36b 0%,
+      var(--amber) 34%,
+      var(--pink) 70%,
+      var(--violet) 100%
+    );
+    filter: drop-shadow(0 0 70px rgb(255 60 166 / 55%));
+    mask-image: repeating-linear-gradient(
+      to bottom,
+      #000 0 12px,
+      transparent 12px 15px
+    );
+    mask-position: 0 0;
+    mask-size: 100% 100%;
+  }
+
+  .mountains {
+    position: absolute;
+    inset-inline: -5%;
+    bottom: 0;
+    height: 22%;
+    background: linear-gradient(#1b0640, #0d0227);
+    clip-path: polygon(
+      0% 100%,
+      0% 62%,
+      9% 34%,
+      17% 58%,
+      26% 20%,
+      37% 66%,
+      46% 40%,
+      56% 72%,
+      66% 28%,
+      77% 60%,
+      86% 38%,
+      95% 66%,
+      100% 48%,
+      100% 100%
+    );
+    opacity: 0.9;
+  }
+
+  .floor {
+    position: absolute;
+    inset: var(--horizon) 0 0 0;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #1a0338, #07010f);
+    /* The perspective has to comfortably exceed the plane's depth
+     * (height x sin(76deg)) or the far end passes behind the eye. */
+    perspective: 400px;
+    perspective-origin: 50% 0%;
+  }
+
+  .grid {
+    position: absolute;
+    inset: 0 -60% -14% -60%;
+    transform: rotateX(76deg);
+    transform-origin: 50% 0%;
+    background-image:
+      repeating-linear-gradient(
+        to right,
+        rgb(45 226 230 / 85%) 0 2px,
+        transparent 2px 5vmin
+      ),
+      repeating-linear-gradient(
+        to bottom,
+        rgb(255 60 166 / 85%) 0 2px,
+        transparent 2px 5vmin
+      );
+    animation: scroll-grid 2.6s linear infinite;
+  }
+
+  /* Fade the far grid into the horizon so the perspective reads. */
+  .floor::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 45%;
+    background: linear-gradient(to bottom, #1a0338 8%, transparent);
+    pointer-events: none;
+  }
+
+  .content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    min-height: 100dvh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.1rem, 2.6vw, 1.8rem);
+    padding: 8vmin 5vmin 16vmin;
+    text-align: center;
+  }
+
+  .kicker {
+    margin: 0;
+    font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+    font-weight: 500;
+    letter-spacing: 0.42em;
+    text-indent: 0.42em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    text-shadow: 0 0 14px rgb(45 226 230 / 80%);
+    /* Monoton overshoots its em box; keep it clear of the wordmark. */
+    margin-bottom: 0.6rem;
+  }
+
+  .wordmark {
+    position: relative;
+    margin: 0;
+    font-family: 'Monoton', 'Orbitron', cursive;
+    font-size: clamp(3.6rem, 17vw, 12rem);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: 0.02em;
+    background: linear-gradient(
+      to bottom,
+      #ffffff 0%,
+      #c9f7ff 22%,
+      #6ad9ff 40%,
+      #2b7fd4 52%,
+      #ffb03a 60%,
+      #ff3ca6 82%,
+      #ffd6ef 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 26px rgb(255 60 166 / 55%))
+      drop-shadow(0 3px 0 rgb(123 47 247 / 90%));
+  }
+
+  /* A shine that sweeps across the chrome every few seconds. */
+  .wordmark::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 38%,
+      rgb(255 255 255 / 85%) 48%,
+      transparent 58%
+    );
+    background-size: 260% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine 5s ease-in-out infinite;
+  }
+
+  .rule {
+    width: min(30rem, 70%);
+    height: 2px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--cyan),
+      var(--pink),
+      transparent
+    );
+    box-shadow: 0 0 18px rgb(45 226 230 / 70%);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(0.75rem, 3vw, 1.5rem);
+  }
+
+  .links a {
+    padding: 0.6rem 1.6rem;
+    border: 2px solid var(--cyan);
+    border-radius: 999px;
+    font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-indent: 0.22em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    text-decoration: none;
+    background: rgb(45 226 230 / 6%);
+    box-shadow:
+      0 0 16px rgb(45 226 230 / 45%),
+      inset 0 0 16px rgb(45 226 230 / 18%);
+    transition: all 180ms ease;
+  }
+
+  .links a:hover,
+  .links a:focus-visible {
+    border-color: var(--pink);
+    color: #fff;
+    background: var(--pink);
+    outline: none;
+    box-shadow:
+      0 0 28px rgb(255 60 166 / 80%),
+      inset 0 0 22px rgb(255 255 255 / 25%);
+    translate: 0 -2px;
+  }
+
+  .haze {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 85% 60% at 50% 62%,
+      transparent 40%,
+      rgb(11 6 32 / 65%) 100%
+    );
+  }
+
+  @keyframes scroll-grid {
+    to {
+      background-position:
+        0 0,
+        0 5vmin;
+    }
+  }
+
+  @keyframes shine {
+    0%,
+    62% {
+      background-position: 190% 0;
+    }
+    88%,
+    100% {
+      background-position: -90% 0;
+    }
+  }
+
+  @keyframes twinkle {
+    to {
+      opacity: 0.5;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .grid,
+    .stars,
+    .wordmark::after {
+      animation: none;
+    }
+  }
+</style>
