@@ -1,0 +1,350 @@
+---
+// Kiln — the word as a fired clay sculpture. Thirty copies of the type are
+// stacked along the Z axis inside one preserve-3d scene, so the extrusion is
+// genuinely three-dimensional: it turns, it catches the light, it throws a
+// shadow onto the floor. The pointer nudges the whole block a few degrees.
+
+const DEPTH = 30;
+
+/** Front face, lit by the window; back of the block, in its own shade. */
+const FACE = { r: 255, g: 122, b: 66 };
+const BACK = { r: 58, g: 24, b: 26 };
+
+/** Colour for the layer `index` slabs behind the face. */
+function slabColour(index: number): string {
+  // Eased, so the block turns to shadow within a few slabs of the face
+  // instead of fading evenly all the way to the back.
+  const t = (index / DEPTH) ** 0.5;
+  const mix = (a: number, b: number) => Math.round(a + (b - a) * t);
+  return `rgb(${mix(FACE.r, BACK.r)} ${mix(FACE.g, BACK.g)} ${
+    mix(FACE.b, BACK.b)
+  })`;
+}
+
+// Back to front, so the stack still reads correctly if 3D is flattened.
+const slabs = Array.from({ length: DEPTH }, (_, i) => DEPTH - i);
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&display=swap"
+/>
+
+<div class="kiln">
+  <div class="sun" aria-hidden="true"></div>
+
+  <header class="plate">
+    <p class="stamp">Kiln</p>
+    <p class="stamp dim">No. 07 — fired in CSS</p>
+  </header>
+
+  <div class="scene">
+    <div class="floor" aria-hidden="true"></div>
+    <div class="cast" aria-hidden="true"></div>
+
+    <div class="sculpture" data-tilt>
+      <div class="turn">
+        <div class="stack" aria-hidden="true">
+          {
+            slabs.map((i) => (
+              <span style={`--i: ${i}; color: ${slabColour(i)}`}>tayles</span>
+            ))
+          }
+        </div>
+        <h1 class="facet">tayles</h1>
+      </div>
+    </div>
+  </div>
+
+  <footer class="base">
+    <p class="caption">
+      Thirty slabs of type, stacked back through the page and turned slowly on
+      the wheel.
+    </p>
+
+    <nav class="links" aria-label="Elsewhere">
+      <a href="https://github.com/tayles">GitHub</a>
+      <a href="https://linkedin.com/in/tayles">LinkedIn</a>
+    </nav>
+  </footer>
+</div>
+
+<style>
+  .kiln {
+    --plaster: #eae4d8;
+    --plaster-deep: #cdc3b1;
+    --ink: #33291f;
+    --clay: #ff7a42;
+    --clay-deep: #8f3520;
+    --slab: clamp(1.6px, 0.38vw, 5px);
+    --word: clamp(3.4rem, 16vw, 16rem);
+
+    position: relative;
+    display: grid;
+    overflow: hidden;
+    min-height: 100dvh;
+    grid-template-rows: auto 1fr auto;
+    gap: 1.5rem;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1.25rem, 6vw, 5rem)
+      calc(clamp(1.5rem, 4vw, 3rem) + 3.5rem);
+    background: var(--plaster);
+    color: var(--ink);
+    font-family: 'DM Mono', ui-monospace, SFMono-Regular, monospace;
+  }
+
+  /* A window somewhere off the top-left corner. */
+  .sun {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        58% 52% at 16% 6%,
+        #fdfaf3 0%,
+        rgb(253 250 243 / 0) 72%
+      ),
+      radial-gradient(
+        90% 70% at 82% 104%,
+        var(--plaster-deep) 0%,
+        rgb(205 195 177 / 0) 62%
+      );
+    pointer-events: none;
+  }
+
+  /* The floor the sculpture stands on — pinned to the block, not the
+     viewport, so the horizon stays under it on any screen. */
+  .floor {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 80vh;
+    background:
+      linear-gradient(
+        to bottom,
+        rgb(150 134 108 / 0.34) 0 1px,
+        rgb(150 134 108 / 0) 1px 100%
+      ),
+      linear-gradient(
+        to bottom,
+        rgb(188 173 148 / 0) 0%,
+        rgb(180 163 134 / 0.34) 26%,
+        rgb(158 139 109 / 0.52) 70%
+      );
+    transform: translate(-50%, calc(var(--word) * 0.74));
+    pointer-events: none;
+  }
+
+  .plate,
+  .base {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+  }
+
+  .stamp {
+    margin: 0;
+    font-size: clamp(0.6rem, 1.1vw, 0.72rem);
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-indent: 0.3em;
+    text-transform: uppercase;
+  }
+
+  .dim {
+    color: rgb(58 38 32 / 0.5);
+  }
+
+  .scene {
+    position: relative;
+    display: grid;
+    place-items: center;
+    perspective: 1100px;
+    perspective-origin: 50% 42%;
+  }
+
+  .scene > * {
+    grid-area: 1 / 1;
+  }
+
+  .sculpture {
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transform-style: preserve-3d;
+    transition: transform 700ms cubic-bezier(0.22, 0.8, 0.24, 1);
+  }
+
+  .turn {
+    display: grid;
+    font-family: 'Syne', ui-sans-serif, system-ui, sans-serif;
+    font-size: var(--word);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    transform-style: preserve-3d;
+    animation: wheel 19s ease-in-out infinite;
+  }
+
+  .stack,
+  .facet {
+    display: grid;
+    margin: 0;
+    grid-area: 1 / 1;
+    font: inherit;
+    letter-spacing: inherit;
+    transform-style: preserve-3d;
+  }
+
+  .stack span {
+    grid-area: 1 / 1;
+    transform: translateZ(calc(var(--i) * var(--slab) * -1));
+  }
+
+  /* The lit front face, with a hairline of window-light along the top. */
+  .facet {
+    color: #ffa87a;
+    text-shadow:
+      0 calc(var(--slab) * -0.5) 0 #ffd6b8,
+      0 calc(var(--slab) * 0.5) 0 var(--clay-deep);
+  }
+
+  /* Pooled on the floor, just under the block. */
+  .cast {
+    width: min(92%, 76rem);
+    height: var(--word);
+    justify-self: center;
+    align-self: center;
+    border-radius: 50%;
+    background: radial-gradient(
+      50% 50% at 50% 50%,
+      rgb(66 39 26 / 0.62) 0%,
+      rgb(66 39 26 / 0.3) 42%,
+      rgb(70 42 28 / 0) 72%
+    );
+    filter: blur(16px);
+    transform: translateY(calc(var(--word) * 0.62)) scaleY(0.3);
+  }
+
+  .caption {
+    max-width: 30ch;
+    margin: 0;
+    font-size: clamp(0.72rem, 1.5vw, 0.85rem);
+    line-height: 1.6;
+    color: rgb(58 38 32 / 0.62);
+    text-wrap: pretty;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  /* Small pressed tablets — clay edge underneath, pushed in on hover. */
+  .links a {
+    padding: 0.6rem 1.15rem;
+    border: 1px solid var(--clay-deep);
+    border-radius: 0.2rem;
+    background: #fff7ef;
+    box-shadow: 0.32rem 0.32rem 0 var(--clay);
+    color: var(--clay-deep);
+    font-size: clamp(0.6rem, 1.1vw, 0.72rem);
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-indent: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition:
+      translate 160ms ease,
+      box-shadow 160ms ease,
+      background-color 160ms ease;
+  }
+
+  .links a:hover,
+  .links a:focus-visible {
+    background: var(--clay);
+    box-shadow: 0.1rem 0.1rem 0 var(--clay-deep);
+    color: #40170f;
+    outline: none;
+    translate: 0.22rem 0.22rem;
+  }
+
+  .links a:focus-visible {
+    border-color: var(--ink);
+  }
+
+  @keyframes wheel {
+    0%,
+    100% {
+      transform: rotateX(6deg) rotateY(-13deg);
+    }
+    50% {
+      transform: rotateX(-3deg) rotateY(13deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sculpture {
+      transition: none;
+    }
+
+    .turn {
+      animation: none;
+      transform: rotateX(4deg) rotateY(-13deg);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .kiln {
+      --word: 18vw;
+    }
+
+    .base {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
+
+<script>
+  const sculpture = document.querySelector<HTMLElement>('[data-tilt]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (sculpture && !reduced) {
+    // A few degrees of parallax on top of the slow turn, damped so the block
+    // feels heavy rather than twitchy.
+    const MAX = 7;
+    let targetX = 0;
+    let targetY = 0;
+    let x = 0;
+    let y = 0;
+    let frame = 0;
+
+    function tick() {
+      x += (targetX - x) * 0.08;
+      y += (targetY - y) * 0.08;
+      sculpture!.style.setProperty('--rx', `${x.toFixed(2)}deg`);
+      sculpture!.style.setProperty('--ry', `${y.toFixed(2)}deg`);
+
+      if (Math.abs(targetX - x) > 0.01 || Math.abs(targetY - y) > 0.01) {
+        frame = requestAnimationFrame(tick);
+      } else {
+        frame = 0;
+      }
+    }
+
+    function aim(event: PointerEvent) {
+      targetY = (event.clientX / window.innerWidth - 0.5) * 2 * MAX;
+      targetX = (0.5 - event.clientY / window.innerHeight) * 2 * MAX;
+      if (!frame) frame = requestAnimationFrame(tick);
+    }
+
+    window.addEventListener('pointermove', aim, { passive: true });
+    window.addEventListener('pointerleave', () => {
+      targetX = 0;
+      targetY = 0;
+      if (!frame) frame = requestAnimationFrame(tick);
+    });
+  }
+</script>

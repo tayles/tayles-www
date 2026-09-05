@@ -7,8 +7,20 @@
 generated, screenshotted and merged automatically. Every design it has ever
 worn stays online at its own URL. Newest first.
 
-**6 designs** ·
+**7 designs** ·
 [Browse them live](https://tayles.co.uk/designs)
+
+---
+
+## Kiln
+
+5 September 2026 · `kiln`
+
+The word built as a slab of fired clay — thirty copies of the type stacked through the page, turning slowly on a plaster floor and casting its own shadow.
+
+[![Kiln](src/designs/kiln/screenshot.webp)](src/designs/kiln/)
+
+[Live](https://tayles.co.uk/designs/kiln) · [Source](src/designs/kiln/index.astro) · `3d` `sculpture` `terracotta` `light` `warm` `css` `animated`
 
 ---
 
