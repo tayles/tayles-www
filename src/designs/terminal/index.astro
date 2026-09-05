@@ -1,0 +1,299 @@
+---
+// Terminal — a phosphor-green CRT session. Everything is CSS except the
+// typing, which is a tiny inline script with a static fallback in the markup.
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+/>
+
+<div class="crt">
+  <div class="glass">
+    <div class="session">
+      <p class="line">
+        <span class="prompt">visitor@tayles.co.uk</span><span class="sep">:</span
+        ><span class="path">~</span><span class="sep">$</span>
+        <span class="cmd" data-type="whoami">whoami</span>
+      </p>
+
+      <h1 class="name">tayles</h1>
+
+      <p class="sub">
+        David Taylor — engineer. This page redesigns itself every week.
+      </p>
+
+      <p class="line">
+        <span class="prompt">visitor@tayles.co.uk</span><span class="sep">:</span
+        ><span class="path">~</span><span class="sep">$</span>
+        <span class="cmd" data-type="ls ./links">ls ./links</span>
+      </p>
+
+      <ul class="links">
+        <li>
+          <a href="https://github.com/tayles">
+            <span class="idx">[1]</span> github<span class="ext">.com/tayles</span
+            >
+          </a>
+        </li>
+        <li>
+          <a href="https://linkedin.com/in/tayles">
+            <span class="idx">[2]</span> linkedin<span class="ext">.in/tayles</span
+            >
+          </a>
+        </li>
+      </ul>
+
+      <p class="line">
+        <span class="prompt">visitor@tayles.co.uk</span><span class="sep">:</span
+        ><span class="path">~</span><span class="sep">$</span>
+        <span class="caret" aria-hidden="true"></span>
+      </p>
+    </div>
+  </div>
+
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+</div>
+
+<style>
+  .crt {
+    --green: #4ade80;
+    --green-dim: #22c55e;
+    --green-glow: rgb(74 222 128 / 45%);
+
+    position: relative;
+    display: grid;
+    min-height: 100dvh;
+    place-items: center;
+    overflow: hidden;
+    background:
+      radial-gradient(
+        ellipse 90% 70% at 50% 55%,
+        #06180f 0%,
+        #030a07 55%,
+        #010403 100%
+      );
+    font-family: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+    color: var(--green);
+    padding: 6vmin 5vmin 14vmin;
+  }
+
+  .glass {
+    width: min(72ch, 100%);
+    animation: flicker 6s infinite steps(1);
+  }
+
+  .session {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .line {
+    margin: 0;
+    font-size: clamp(0.75rem, 1.6vw, 0.95rem);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .prompt {
+    color: var(--green-dim);
+    font-weight: 600;
+  }
+  .sep {
+    color: rgb(74 222 128 / 45%);
+  }
+  .path {
+    color: #a3e635;
+  }
+  .cmd {
+    color: #ecfccb;
+    text-shadow: 0 0 12px var(--green-glow);
+  }
+
+  .name {
+    margin: 0.6rem 0 0;
+    font-size: clamp(4.5rem, 22vw, 13rem);
+    font-weight: 600;
+    line-height: 0.86;
+    letter-spacing: -0.045em;
+    color: #d9f99d;
+    text-shadow:
+      0 0 6px var(--green-glow),
+      0 0 34px rgb(74 222 128 / 35%),
+      0 0 90px rgb(34 197 94 / 25%);
+  }
+
+  .sub {
+    margin: 0 0 1.4rem;
+    max-width: 46ch;
+    font-size: clamp(0.8rem, 1.7vw, 1rem);
+    color: rgb(163 230 53 / 70%);
+    text-wrap: balance;
+  }
+
+  .links {
+    margin: 0.1rem 0 1.2rem;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .links a {
+    display: inline-block;
+    padding: 0.15rem 0.4rem;
+    margin-left: -0.4rem;
+    font-size: clamp(0.9rem, 2.4vw, 1.35rem);
+    color: var(--green);
+    text-decoration: none;
+    transition: background-color 120ms, color 120ms;
+  }
+
+  .links a:hover,
+  .links a:focus-visible {
+    background: var(--green);
+    color: #03150c;
+    outline: none;
+    text-shadow: none;
+  }
+
+  .idx {
+    color: rgb(74 222 128 / 50%);
+  }
+  .ext {
+    color: rgb(74 222 128 / 45%);
+  }
+  .links a:hover .idx,
+  .links a:hover .ext,
+  .links a:focus-visible .idx,
+  .links a:focus-visible .ext {
+    color: rgb(3 21 12 / 60%);
+  }
+
+  .caret {
+    display: inline-block;
+    width: 0.62em;
+    height: 1.1em;
+    translate: 0 0.2em;
+    background: var(--green);
+    box-shadow: 0 0 14px var(--green-glow);
+    animation: blink 1.05s steps(1) infinite;
+  }
+
+  /* Interlaced CRT lines, plus a slow rolling refresh bar. */
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        rgb(0 0 0 / 0%) 0 2px,
+        rgb(0 0 0 / 38%) 2px 4px
+      );
+    mix-blend-mode: multiply;
+  }
+
+  .scanlines::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    height: 22%;
+    background: linear-gradient(
+      to bottom,
+      rgb(74 222 128 / 0%),
+      rgb(74 222 128 / 7%),
+      rgb(74 222 128 / 0%)
+    );
+    animation: roll 7.5s linear infinite;
+  }
+
+  .vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 78% 68% at 50% 50%,
+      transparent 55%,
+      rgb(0 0 0 / 78%) 100%
+    );
+  }
+
+  @keyframes blink {
+    0%,
+    50% {
+      opacity: 1;
+    }
+    50.01%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes roll {
+    from {
+      transform: translateY(-25%);
+    }
+    to {
+      transform: translateY(480%);
+    }
+  }
+
+  @keyframes flicker {
+    0%,
+    96%,
+    100% {
+      opacity: 1;
+    }
+    96.5% {
+      opacity: 0.86;
+    }
+    97% {
+      opacity: 1;
+    }
+    97.6% {
+      opacity: 0.92;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glass,
+    .caret,
+    .scanlines::after {
+      animation: none;
+    }
+    .caret {
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  // Retype each command on load. The text is already in the DOM, so this is
+  // purely decorative — no JS, no problem.
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const commands = document.querySelectorAll<HTMLElement>('[data-type]');
+
+  if (!reduced) {
+    let delay = 250;
+
+    for (const el of commands) {
+      const text = el.dataset.type ?? el.textContent ?? '';
+      el.textContent = '';
+      const start = delay;
+
+      for (let i = 0; i <= text.length; i++) {
+        setTimeout(() => {
+          el.textContent = text.slice(0, i);
+        }, start + i * 55);
+      }
+
+      delay = start + text.length * 55 + 450;
+    }
+  }
+</script>

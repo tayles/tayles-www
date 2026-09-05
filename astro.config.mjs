@@ -1,28 +1,15 @@
+import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
-import { VitePWA } from 'vite-plugin-pwa';
-
-// Helper imports
-import { manifest, seoConfig } from './utils/seo-config';
 
 export default defineConfig({
-  site: seoConfig.baseURL,
+  site: 'https://tayles.co.uk',
+  integrations: [react(), sitemap()],
+  // The toolbar sits bottom-centre, exactly where the design nav chrome does,
+  // and swallows its clicks.
+  devToolbar: { enabled: false },
   vite: {
-    plugins: [
-      VitePWA({
-        registerType: 'autoUpdate',
-        manifest,
-        workbox: {
-          globDirectory: 'dist',
-          globPatterns: [
-            '**/*.{js,css,svg,png,jpg,jpeg,gif,webp,woff,woff2,ttf,eot,ico}',
-          ],
-          // Don't fallback on document based (e.g. `/some-page`) requests
-          // This removes an errant console.log message from showing up.
-          navigateFallback: null,
-        },
-      }),
-      tailwindcss(),
-    ],
+    plugins: [tailwindcss()],
   },
 });

@@ -1,21 +1,14 @@
 {
-  "extends": "astro/tsconfigs/strict",
+  "extends": "astro/tsconfigs/strictest",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "types": ["astro/client"],
-    "baseUrl": ".",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "paths": {
-      "@globals": ["src/components/global"],
-      "@component/*": ["src/components/*"],
-      "@style/*": ["src/styles/*"],
-      "@util/*": ["utils/*"],
-      "@img/*": ["src/assets/img/*"],
-      "@svg/*": ["src/assets/svg/*"],
-      "@icon/*": ["src/assets/svg/icon/*"]
-    }
-  }
+      "@/*": ["./src/*"]
+    },
+    "types": ["astro/client", "bun"],
+    "verbatimModuleSyntax": true
+  },
+  "include": [".astro/types.d.ts", "**/*.ts", "**/*.tsx", "**/*.astro"],
+  "exclude": ["dist", "node_modules", "test-results", "playwright-report"]
 }

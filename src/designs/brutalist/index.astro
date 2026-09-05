@@ -1,0 +1,259 @@
+---
+// Brutalist — off-white paper, black ink, no decoration that isn't structural.
+// Type is set to the viewport edge and the grid lines are the ornament.
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600&display=swap"
+/>
+
+<div class="slab">
+  <header class="meta">
+    <span>DAVID&nbsp;TAYLOR</span>
+    <span>ENGINEER</span>
+    <span>UNITED&nbsp;KINGDOM</span>
+    <span class="idx">EST.&nbsp;1987</span>
+  </header>
+
+  <main class="stage">
+    <h1 class="word" aria-label="tayles">
+      <span aria-hidden="true">t</span><span aria-hidden="true">a</span><span
+        aria-hidden="true">y</span
+      ><span aria-hidden="true">l</span><span aria-hidden="true">e</span><span
+        aria-hidden="true">s</span
+      >
+    </h1>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="track">
+        <span
+          >NO GRADIENTS ★ NO SHADOWS ★ NO ROUNDED CORNERS ★ NO APOLOGIES ★
+        </span>
+        <span
+          >NO GRADIENTS ★ NO SHADOWS ★ NO ROUNDED CORNERS ★ NO APOLOGIES ★
+        </span>
+      </div>
+    </div>
+
+    <nav class="links" aria-label="Elsewhere">
+      <a href="https://github.com/tayles">
+        <span class="num">01</span>
+        <span class="label">GITHUB</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+      <a href="https://linkedin.com/in/tayles">
+        <span class="num">02</span>
+        <span class="label">LINKEDIN</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </nav>
+  </main>
+
+  <footer class="foot">
+    <p>THIS PAGE IS REDESIGNED EVERY WEEK BY A MACHINE.</p>
+    <p class="foot-right">VOL.&nbsp;03</p>
+  </footer>
+</div>
+
+<style>
+  .slab {
+    --ink: #0a0a0a;
+    --paper: #efece4;
+    --accent: #ff3b00;
+    --line: 4px;
+
+    display: grid;
+    min-height: 100dvh;
+    /* minmax(0,…) so the marquee's max-content width can't stretch the page. */
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr auto;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 clamp(1rem, 5vw, 4rem);
+    align-items: baseline;
+    padding: 1rem clamp(1rem, 4vw, 2.5rem);
+    border-bottom: var(--line) solid var(--ink);
+    font-size: clamp(0.6rem, 1.4vw, 0.75rem);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+  }
+
+  .meta .idx {
+    margin-left: auto;
+    color: var(--accent);
+  }
+
+  .stage {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Each letter is its own cell, so the word becomes the grid. */
+  .word {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    margin: 0;
+    border-bottom: var(--line) solid var(--ink);
+    font-family: 'Archivo Black', 'Archivo', sans-serif;
+    font-weight: 400;
+    text-transform: lowercase;
+  }
+
+  .word span {
+    display: grid;
+    place-items: center;
+    padding-block: clamp(0.6rem, 3vw, 2rem);
+    font-size: clamp(3rem, 15vw, 12rem);
+    line-height: 0.78;
+    letter-spacing: -0.06em;
+    transition: background-color 90ms linear, color 90ms linear;
+  }
+
+  .word span + span {
+    border-left: var(--line) solid var(--ink);
+  }
+
+  .word span:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .word span:nth-child(3):hover {
+    background: var(--accent);
+    color: var(--paper);
+  }
+
+  .marquee {
+    min-width: 0;
+    overflow: hidden;
+    border-bottom: var(--line) solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    padding-block: 0.55rem;
+  }
+
+  .track {
+    display: flex;
+    width: max-content;
+    animation: slide 26s linear infinite;
+  }
+
+  .track span {
+    padding-right: 2rem;
+    font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    white-space: nowrap;
+  }
+
+  .links {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 40rem) {
+    .links {
+      grid-template-columns: 1fr 1fr;
+    }
+    .links a + a {
+      border-left: var(--line) solid var(--ink);
+    }
+  }
+
+  .links a {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: clamp(1.1rem, 3vw, 2rem) clamp(1rem, 4vw, 2.5rem);
+    color: inherit;
+    text-decoration: none;
+    transition: background-color 90ms linear, color 90ms linear;
+  }
+
+  .links a + a {
+    border-top: var(--line) solid var(--ink);
+  }
+
+  @media (min-width: 40rem) {
+    .links a + a {
+      border-top: 0;
+    }
+  }
+
+  .num {
+    font-size: clamp(0.6rem, 1.4vw, 0.75rem);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+  }
+
+  .label {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: clamp(1.4rem, 4.5vw, 2.6rem);
+    letter-spacing: -0.02em;
+  }
+
+  .arrow {
+    margin-left: auto;
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    transition: translate 140ms ease;
+  }
+
+  .links a:hover,
+  .links a:focus-visible {
+    background: var(--ink);
+    color: var(--paper);
+    outline: none;
+  }
+
+  .links a:hover .num,
+  .links a:focus-visible .num {
+    color: var(--paper);
+  }
+
+  .links a:hover .arrow,
+  .links a:focus-visible .arrow {
+    translate: 0.4rem 0;
+  }
+
+  .foot {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem clamp(1rem, 4vw, 2.5rem) calc(1rem + 3.5rem);
+    border-top: var(--line) solid var(--ink);
+    font-size: clamp(0.55rem, 1.3vw, 0.7rem);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+  }
+
+  .foot p {
+    margin: 0;
+  }
+
+  .foot-right {
+    color: var(--accent);
+  }
+
+  @keyframes slide {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .track {
+      animation: none;
+    }
+  }
+</style>

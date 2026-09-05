@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: oven-sh/setup-bun@v2.2.0
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      - name: Format, lint and typecheck
+        run: bun run check:ci
+
+      - name: Build
+        run: bun run build
+
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium
+
+      - name: Test
+        run: bun run test
+
+      # The generator is deterministic, so a diff means someone edited a
+      # design's index.md without re-running `bun run designs:md`.
+      - name: DESIGNS.md is up to date
+        run: |
+          bun run designs:md
+          git diff --exit-code -- DESIGNS.md

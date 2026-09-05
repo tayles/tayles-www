@@ -1,0 +1,463 @@
+---
+// Pixel Quest — a playable arcade cabinet. The game is an enhancement, never
+// a gate: the heading and both links are in the DOM and reachable by keyboard
+// before a single frame is drawn.
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+/>
+
+<div class="arcade">
+  <div class="cabinet">
+    <header class="hud">
+      <h1 class="title">tayles</h1>
+      <p class="score">
+        <span class="score-label">LETTERS</span>
+        <output class="score-value" data-score>0/6</output>
+      </p>
+    </header>
+
+    <div class="screen">
+      <canvas
+        data-game
+        data-captures-keys
+        tabindex="0"
+        width="640"
+        height="360"
+        role="img"
+        aria-label="A small arcade game: guide the sprite to collect the six letters of tayles."
+      ></canvas>
+
+      <p class="hint" data-hint>
+        <span class="blink">▸</span> MOVE TO COLLECT THE LETTERS
+      </p>
+
+      <p class="won" data-won hidden>QUEST COMPLETE ★ NICE ONE</p>
+    </div>
+
+    <nav class="links" aria-label="Elsewhere">
+      <a href="https://github.com/tayles">
+        <span class="coin" aria-hidden="true">◆</span> GITHUB
+      </a>
+      <a href="https://linkedin.com/in/tayles">
+        <span class="coin" aria-hidden="true">◆</span> LINKEDIN
+      </a>
+    </nav>
+
+    <footer class="legend">
+      <span>1 PLAYER</span>
+      <span data-controls-note>◀ ▶ CYCLE DESIGNS</span>
+      <span>© TAYLES</span>
+    </footer>
+  </div>
+</div>
+
+<style>
+  .arcade {
+    --bg: #14122b;
+    --panel: #221f45;
+    --edge: #4a3fa8;
+    --lime: #a3ff5e;
+    --pink: #ff5edb;
+    --cyan: #5ee7ff;
+    --gold: #ffd45e;
+
+    display: grid;
+    min-height: 100dvh;
+    place-items: center;
+    padding: 5vmin 4vmin 14vmin;
+    background:
+      radial-gradient(circle at 50% 0%, #2b2560 0%, transparent 60%),
+      repeating-linear-gradient(
+        45deg,
+        #100e22 0 14px,
+        #14122b 14px 28px
+      );
+    font-family: 'Press Start 2P', ui-monospace, monospace;
+    color: #fff;
+    -webkit-font-smoothing: none;
+  }
+
+  .cabinet {
+    width: min(46rem, 100%);
+    padding: clamp(0.9rem, 2.6vw, 1.6rem);
+    background: var(--panel);
+    border: 4px solid var(--edge);
+    border-radius: 6px;
+    box-shadow:
+      0 0 0 4px #100e22,
+      0 0 0 8px var(--edge),
+      0 18px 0 rgb(0 0 0 / 35%),
+      0 0 60px rgb(94 231 255 / 18%);
+  }
+
+  .hud {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: clamp(0.7rem, 2vw, 1.1rem);
+  }
+
+  .title {
+    margin: 0;
+    font-size: clamp(1.5rem, 7vw, 3.25rem);
+    line-height: 1;
+    color: var(--lime);
+    text-shadow:
+      3px 3px 0 #1c7a2e,
+      6px 6px 0 rgb(0 0 0 / 45%);
+  }
+
+  .score {
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-size: clamp(0.5rem, 1.6vw, 0.7rem);
+  }
+
+  .score-label {
+    color: var(--cyan);
+  }
+
+  .score-value {
+    color: var(--gold);
+  }
+
+  .screen {
+    position: relative;
+    border: 4px solid #100e22;
+    background: #0a0818;
+    box-shadow: inset 0 0 40px rgb(94 231 255 / 12%);
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    image-rendering: pixelated;
+    touch-action: none;
+    cursor: crosshair;
+  }
+
+  canvas:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: -3px;
+  }
+
+  .hint,
+  .won {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0.6rem;
+    margin: 0;
+    padding-inline: 1rem;
+    text-align: center;
+    text-wrap: balance;
+    font-size: clamp(0.38rem, 1.25vw, 0.55rem);
+    line-height: 1.6;
+    letter-spacing: 0.06em;
+    color: rgb(255 255 255 / 55%);
+    pointer-events: none;
+  }
+
+  .won {
+    bottom: 45%;
+    font-size: clamp(0.55rem, 2vw, 0.95rem);
+    color: var(--gold);
+    text-shadow: 2px 2px 0 var(--pink);
+    animation: pop 420ms steps(4) 1;
+  }
+
+  .blink {
+    color: var(--lime);
+    animation: blink 900ms steps(1) infinite;
+  }
+
+  .links {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+    margin-top: clamp(0.8rem, 2.4vw, 1.2rem);
+  }
+
+  @media (min-width: 34rem) {
+    .links {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .links a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.9rem 0.5rem;
+    border: 3px solid var(--cyan);
+    font-size: clamp(0.5rem, 1.7vw, 0.72rem);
+    color: var(--cyan);
+    text-decoration: none;
+    background: rgb(94 231 255 / 8%);
+    box-shadow: 4px 4px 0 #100e22;
+    transition: none;
+  }
+
+  .links a:hover,
+  .links a:focus-visible {
+    outline: none;
+    color: #0a0818;
+    background: var(--cyan);
+    translate: 2px 2px;
+    box-shadow: 2px 2px 0 #100e22;
+  }
+
+  .coin {
+    color: var(--gold);
+  }
+
+  .links a:hover .coin,
+  .links a:focus-visible .coin {
+    color: var(--pink);
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: clamp(0.8rem, 2.4vw, 1.1rem);
+    font-size: clamp(0.38rem, 1.2vw, 0.5rem);
+    color: rgb(255 255 255 / 40%);
+  }
+
+  @keyframes blink {
+    0%,
+    50% {
+      opacity: 1;
+    }
+    50.01%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes pop {
+    from {
+      scale: 0.4;
+      opacity: 0;
+    }
+    to {
+      scale: 1;
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blink,
+    .won {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  interface Letter {
+    char: string;
+    x: number;
+    y: number;
+    bobPhase: number;
+    taken: boolean;
+  }
+
+  const W = 640;
+  const H = 360;
+  const WORD = 'tayles';
+
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-game]');
+  const scoreEl = document.querySelector<HTMLElement>('[data-score]');
+  const wonEl = document.querySelector<HTMLElement>('[data-won]');
+  const hintEl = document.querySelector<HTMLElement>('[data-hint]');
+  const ctx = canvas?.getContext('2d');
+
+  if (canvas && ctx) {
+    const reduced = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+
+    const letters: Letter[] = WORD.split('').map((char, i) => ({
+      char,
+      x: 90 + i * 82,
+      y: 110 + (i % 3) * 62,
+      bobPhase: i * 1.1,
+      taken: false,
+    }));
+
+    const player = { x: W / 2, y: H - 70, tx: W / 2, ty: H - 70, face: 1 };
+    const keys = new Set<string>();
+    let collected = 0;
+    let time = 0;
+    let sparkles: { x: number; y: number; vx: number; vy: number; life: number }[] =
+      [];
+
+    // Pointer steering — works with no keyboard at all.
+    function pointTo(event: PointerEvent) {
+      const rect = canvas!.getBoundingClientRect();
+      player.tx = ((event.clientX - rect.left) / rect.width) * W;
+      player.ty = ((event.clientY - rect.top) / rect.height) * H;
+    }
+
+    canvas.addEventListener('pointermove', pointTo);
+    canvas.addEventListener('pointerdown', (event) => {
+      canvas.focus();
+      pointTo(event);
+    });
+
+    // Keyboard steering, only while the canvas holds focus — so the arrow
+    // keys still cycle designs everywhere else on the page.
+    canvas.addEventListener('keydown', (event) => {
+      const key = event.key.toLowerCase();
+      if (
+        ['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 'a', 's', 'd']
+          .includes(key)
+      ) {
+        event.preventDefault();
+        keys.add(key);
+      }
+    });
+    canvas.addEventListener('keyup', (event) => keys.delete(event.key.toLowerCase()));
+    canvas.addEventListener('blur', () => keys.clear());
+
+    function held(...names: string[]) {
+      return names.some((name) => keys.has(name));
+    }
+
+    function drawSprite(x: number, y: number, face: number) {
+      const c = ctx!;
+      c.save();
+      c.translate(Math.round(x), Math.round(y));
+
+      c.fillStyle = 'rgb(0 0 0 / 35%)';
+      c.beginPath();
+      c.ellipse(0, 17, 15, 5, 0, 0, Math.PI * 2);
+      c.fill();
+
+      c.fillStyle = '#a3ff5e';
+      c.fillRect(-14, -16, 28, 30);
+      c.fillStyle = '#6fd42c';
+      c.fillRect(-14, 6, 28, 8);
+
+      c.fillStyle = '#0a0818';
+      c.fillRect(-9 + face * 2, -8, 5, 7);
+      c.fillRect(4 + face * 2, -8, 5, 7);
+      c.fillStyle = '#ff5edb';
+      c.fillRect(-6 + face * 2, 2, 12, 3);
+      c.restore();
+    }
+
+    function drawLetter(letter: Letter, bob: number) {
+      const c = ctx!;
+      c.save();
+      c.translate(Math.round(letter.x), Math.round(letter.y + bob));
+      c.font = 'bold 34px "Press Start 2P", monospace';
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      c.fillStyle = '#3a2d7a';
+      c.fillText(letter.char, 3, 4);
+      c.fillStyle = '#ffd45e';
+      c.fillText(letter.char, 0, 0);
+      c.restore();
+    }
+
+    function burst(x: number, y: number) {
+      for (let i = 0; i < 14; i++) {
+        const angle = (Math.PI * 2 * i) / 14;
+        sparkles.push({
+          x,
+          y,
+          vx: Math.cos(angle) * 2.4,
+          vy: Math.sin(angle) * 2.4,
+          life: 1,
+        });
+      }
+    }
+
+    function frame() {
+      time += 1 / 60;
+
+      // Keyboard nudges the target the pointer would otherwise set.
+      const speed = 4.2;
+      if (held('arrowleft', 'a')) player.tx -= speed * 2;
+      if (held('arrowright', 'd')) player.tx += speed * 2;
+      if (held('arrowup', 'w')) player.ty -= speed * 2;
+      if (held('arrowdown', 's')) player.ty += speed * 2;
+
+      player.tx = Math.max(20, Math.min(W - 20, player.tx));
+      player.ty = Math.max(24, Math.min(H - 24, player.ty));
+
+      const dx = player.tx - player.x;
+      if (Math.abs(dx) > 0.6) player.face = dx > 0 ? 1 : -1;
+      player.x += dx * 0.14;
+      player.y += (player.ty - player.y) * 0.14;
+
+      ctx!.fillStyle = '#0a0818';
+      ctx!.fillRect(0, 0, W, H);
+
+      // Starfield backdrop, drawn deterministically so it never flickers.
+      ctx!.fillStyle = 'rgb(255 255 255 / 22%)';
+      for (let i = 0; i < 40; i++) {
+        const sx = (i * 97) % W;
+        const sy = (i * 53) % H;
+        ctx!.fillRect(sx, sy, 2, 2);
+      }
+
+      ctx!.strokeStyle = 'rgb(94 231 255 / 18%)';
+      ctx!.lineWidth = 1;
+      for (let gx = 0; gx <= W; gx += 40) {
+        ctx!.beginPath();
+        ctx!.moveTo(gx + 0.5, 0);
+        ctx!.lineTo(gx + 0.5, H);
+        ctx!.stroke();
+      }
+
+      for (const letter of letters) {
+        if (letter.taken) continue;
+        const bob = reduced ? 0 : Math.sin(time * 2.4 + letter.bobPhase) * 7;
+        drawLetter(letter, bob);
+
+        if (
+          Math.abs(player.x - letter.x) < 26 &&
+          Math.abs(player.y - (letter.y + bob)) < 28
+        ) {
+          letter.taken = true;
+          collected += 1;
+          burst(letter.x, letter.y + bob);
+          if (scoreEl) scoreEl.textContent = `${collected}/6`;
+          if (collected === WORD.length) {
+            wonEl?.removeAttribute('hidden');
+            if (hintEl) hintEl.hidden = true;
+          }
+        }
+      }
+
+      sparkles = sparkles.filter((s) => s.life > 0);
+      for (const s of sparkles) {
+        s.x += s.vx;
+        s.y += s.vy;
+        s.life -= 0.03;
+        ctx!.fillStyle = `rgb(255 94 219 / ${s.life})`;
+        ctx!.fillRect(Math.round(s.x), Math.round(s.y), 4, 4);
+      }
+
+      drawSprite(player.x, player.y, player.face);
+
+      requestAnimationFrame(frame);
+    }
+
+    frame();
+  }
+</script>

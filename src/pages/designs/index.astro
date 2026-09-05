@@ -1,0 +1,100 @@
+---
+import { Image } from 'astro:assets';
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import {
+  designHref,
+  getDesignScreenshot,
+  getLatestSocialImage,
+  getOrderedDesigns,
+} from '@/lib/designs';
+
+// Newest first — the gallery reads as a changelog.
+const designs = (await getOrderedDesigns()).toReversed();
+const ogImage = await getLatestSocialImage();
+
+const dateFormatter = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'UTC',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+---
+
+<BaseLayout
+  title="Every design"
+  description="Every homepage design tayles.co.uk has worn, newest first."
+  canonical="/designs"
+  ogImage={ogImage}
+>
+  <main class="mx-auto max-w-6xl px-6 py-16 sm:py-24">
+    <header class="mb-14">
+      <a
+        href="/"
+        class="text-6xl font-semibold tracking-tight sm:text-7xl hover:opacity-70 transition-opacity"
+        >tayles</a
+      >
+      <p class="text-muted-foreground mt-5 max-w-prose text-lg text-balance">
+        This homepage redesigns itself every week. Every design it has ever worn
+        is below and stays online forever.
+      </p>
+      <div class="text-muted-foreground mt-4 flex gap-5 text-sm">
+        <a class="hover:text-foreground underline underline-offset-4" href="https://github.com/tayles">GitHub</a>
+        <a class="hover:text-foreground underline underline-offset-4" href="https://linkedin.com/in/tayles">LinkedIn</a>
+      </div>
+    </header>
+
+    <ul
+      class="grid list-none grid-cols-1 gap-x-8 gap-y-12 p-0 sm:grid-cols-2 lg:grid-cols-3"
+    >
+      {
+        designs.map((design, i) => {
+          const screenshot = getDesignScreenshot(design.id);
+          return (
+            <li>
+              <a
+                href={designHref(design.id)}
+                class="group block focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none rounded-xl"
+                data-design-card={design.id}
+              >
+                <div class="bg-muted ring-border relative aspect-[16/10] overflow-hidden rounded-xl ring-1">
+                  {
+                    screenshot ? (
+                      <Image
+                        src={screenshot}
+                        alt={`Screenshot of the ${design.data.name} design`}
+                        widths={[400, 800, 1200]}
+                        sizes="(min-width: 1024px) 22rem, (min-width: 640px) 45vw, 90vw"
+                        loading={i < 3 ? 'eager' : 'lazy'}
+                        class="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                    ) : (
+                      <div class="text-muted-foreground grid size-full place-items-center text-sm">
+                        No screenshot yet
+                      </div>
+                    )
+                  }
+                </div>
+
+                <h2 class="mt-4 text-lg font-semibold tracking-tight">
+                  {design.data.name}
+                </h2>
+                <p class="text-muted-foreground mt-1 text-sm text-pretty">
+                  {design.data.description}
+                </p>
+                <p class="text-muted-foreground/70 mt-2 text-xs">
+                  <time datetime={design.data.date.toISOString()}>
+                    {dateFormatter.format(design.data.date)}
+                  </time>
+                  {design.data.tags.length > 0 && (
+                    <> · {design.data.tags.join(' · ')}</>
+                  )}
+                </p>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </main>
+</BaseLayout>

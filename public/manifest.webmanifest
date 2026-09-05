@@ -1,0 +1,27 @@
+{
+  "name": "Tayles",
+  "short_name": "Tayles",
+  "description": "This is the home of David Taylor, a passionate and creative engineering leader from the UK, currently living in Toronto, Canada",
+  "start_url": "/",
+  "display": "minimal-ui",
+  "theme_color": "#00a35b",
+  "background_color": "#293344",
+  "icons": [
+    {
+      "src": "/favicons/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicons/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicons/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,24 +1,34 @@
 # build output
 dist/
+.astro/
 .output/
 .vercel/
-.astro/
 
 # dependencies
 node_modules/
 
+# playwright
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+
 # logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-bun-debug.log*
+pnpm-debug.log*
 
-# IDEs
-.idea
-
-# environment variables
+# environment
 .env
 .env.production
 
-# macOS-specific files
+# macOS
 .DS_Store
+
+# editors
+.idea/
+
+# claude
+.claude/settings.local.json

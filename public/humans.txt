@@ -1,5 +1,15 @@
+/* TEAM */
+Engineer: David Taylor
 GitHub: https://github.com/tayles
-Twitter: https://twitter.com/tayles
-Personal: https://tayles.co.uk
+LinkedIn: https://linkedin.com/in/tayles
+Site: https://tayles.co.uk
 
-Checkout the https://humanstxt.org/ protocol to see how you should format your humans.txt file!
+/* SITE */
+Standards: HTML5, CSS3
+Components: Astro, Tailwind CSS, React, shadcn/ui
+Software: Bun, oxfmt, oxlint, Playwright
+Note: This homepage redesigns itself every week. Each design is generated,
+      screenshotted and merged automatically — see /designs for all of them.
+
+Checkout the https://humanstxt.org/ protocol to see how you should format your
+humans.txt file!
