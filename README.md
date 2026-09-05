@@ -55,6 +55,7 @@ shared link previews exactly what the visitor will land on.
 | Command                          | What it does                          |
 | :------------------------------- | :------------------------------------ |
 | `bun install`                    | Install dependencies                  |
+| `bunx playwright install chromium` | One-off, before the first `test`    |
 | `bun run dev`                    | Dev server on `localhost:4321`        |
 | `bun run build`                  | Build to `./dist/`                    |
 | `bun run preview`                | Serve the built site                  |
