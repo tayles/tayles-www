@@ -106,6 +106,17 @@ This is a portfolio piece, not a demo. Push past the first obvious idea.
 
 ## 4. Verify
 
+On a fresh checkout — which is what the weekly cloud routine gets — install
+the browser Playwright needs first, or every test will fail:
+
+```bash
+bun install
+bunx playwright install --with-deps chromium
+```
+
+If `--with-deps` fails for want of root, `bunx playwright install chromium`
+on its own is enough.
+
 ```bash
 bun run verify
 ```
