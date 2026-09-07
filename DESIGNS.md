@@ -7,8 +7,20 @@
 generated, screenshotted and merged automatically. Every design it has ever
 worn stays online at its own URL. Newest first.
 
-**7 designs** ·
+**8 designs** ·
 [Browse them live](https://tayles.co.uk/designs)
+
+---
+
+## Rose Window
+
+7 September 2026 · `rose-window`
+
+A Gothic rose generated in SVG — twenty-four leaded lancets, gilded roundels and a lit oculus — set into a stone wall, with the coloured light it throws drifting slowly across the name.
+
+[![Rose Window](src/designs/rose-window/screenshot.webp)](src/designs/rose-window/)
+
+[Live](https://tayles.co.uk/designs/rose-window) · [Source](src/designs/rose-window/index.astro) · `stained-glass` `gothic` `svg` `jewel` `illustrative` `blackletter`
 
 ---
 
