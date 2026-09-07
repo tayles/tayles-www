@@ -1,0 +1,556 @@
+---
+// Rose Window — a Gothic rose worked out in polar coordinates at build time
+// and emitted as a single inline SVG: twenty-four lancets, a band of gilded
+// roundels, a lit oculus and the iron saddle bars that hold the glass up.
+// The word sits on the stone beside it, in the light the window throws.
+
+const LEAD = '#0b0910';
+
+interface Pane {
+  readonly d: string;
+  readonly fill: string;
+}
+
+interface Roundel {
+  readonly x: number;
+  readonly y: number;
+  readonly fill: string;
+}
+
+/** A point on the circle of radius `r`, with 0° at twelve o'clock. */
+function point(r: number, degrees: number): { x: number; y: number } {
+  const radians = ((degrees - 90) * Math.PI) / 180;
+  return { x: r * Math.cos(radians), y: r * Math.sin(radians) };
+}
+
+function polar(r: number, degrees: number): string {
+  const { x, y } = point(r, degrees);
+  return `${x.toFixed(2)} ${y.toFixed(2)}`;
+}
+
+/** One lancet: an arc along the inside, two curves out to a point. */
+function lancet(r0: number, r1: number, a0: number, a1: number): string {
+  const shoulder = r0 + (r1 - r0) * 0.74;
+  return [
+    `M${polar(r0, a0)}`,
+    `A${r0} ${r0} 0 0 1 ${polar(r0, a1)}`,
+    `Q${polar(shoulder, a1)} ${polar(r1, (a0 + a1) / 2)}`,
+    `Q${polar(shoulder, a0)} ${polar(r0, a0)}`,
+    'Z',
+  ].join(' ');
+}
+
+/** A plain annular light, for the band the roundels are set into. */
+function segment(r0: number, r1: number, a0: number, a1: number): string {
+  return [
+    `M${polar(r0, a0)}`,
+    `A${r0} ${r0} 0 0 1 ${polar(r0, a1)}`,
+    `L${polar(r1, a1)}`,
+    `A${r1} ${r1} 0 0 0 ${polar(r1, a0)}`,
+    'Z',
+  ].join(' ');
+}
+
+type Shape = (r0: number, r1: number, a0: number, a1: number) => string;
+
+/** A ring of `count` lights, coloured by a repeating sequence. */
+function ring(
+  count: number,
+  r0: number,
+  r1: number,
+  gap: number,
+  colours: readonly string[],
+  offset = 0,
+  shape: Shape = lancet,
+): Pane[] {
+  const step = 360 / count;
+  return Array.from({ length: count }, (_, i) => ({
+    d: shape(
+      r0,
+      r1,
+      offset + i * step + gap / 2,
+      offset + (i + 1) * step - gap / 2,
+    ),
+    fill: colours[i % colours.length] ?? LEAD,
+  }));
+}
+
+// Cobalt carries the window, ruby answers it and gold picks out every fourth
+// light — each sequence divides into its ring, so the rose stays symmetrical.
+const outer = ring(24, 62, 88, 1.1, [
+  '#16309a',
+  '#7e1029',
+  '#0c1f70',
+  '#c9942a',
+  '#7e1029',
+  '#1d3fb4',
+]);
+const middle = ring(
+  12,
+  32,
+  50,
+  1.6,
+  ['#0b5a4c', '#1d3fb4', '#8f1230', '#c9942a'],
+  15,
+);
+const inner = ring(
+  8,
+  18.6,
+  29.5,
+  2,
+  ['#8f1230', '#16309a', '#e8dcbb', '#16309a'],
+  22.5,
+);
+const rosette = ring(8, 4, 13, 7, ['#f2d27a', '#efe6cd']);
+
+// The band the roundels are bedded into — plain lights, deep and cool, so
+// the bosses on top of them read as gold.
+const band = ring(
+  24,
+  50.8,
+  61.4,
+  0.9,
+  ['#0c1f70', '#122a86', '#0c1f70', '#111f5e'],
+  0,
+  segment,
+);
+
+const roundels: Roundel[] = Array.from({ length: 24 }, (_, i) => ({
+  ...point(56, i * 15),
+  fill: i % 2 === 0 ? '#d9b45c' : '#efe6cd',
+}));
+
+/** Iron bars across the glass; each chord stops at the stone. */
+const bars = [-72, -40, 40, 72].map((y) => ({
+  y,
+  x: Math.sqrt(88 * 88 - y * y),
+}));
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Pirata+One&display=swap"
+/>
+
+<div class="rose">
+  <div class="wall" aria-hidden="true"></div>
+  <div class="bloom" aria-hidden="true"></div>
+
+  <div class="window" aria-hidden="true">
+    <svg viewBox="-100 -100 200 200">
+      <defs>
+        <clipPath id="rw-round"><circle r="88"></circle></clipPath>
+        <linearGradient id="rw-stone" x1="12%" y1="0%" x2="82%" y2="96%">
+          <stop offset="0%" stop-color="#7d7268"></stop>
+          <stop offset="46%" stop-color="#4b433c"></stop>
+          <stop offset="100%" stop-color="#241f1b"></stop>
+        </linearGradient>
+        <radialGradient id="rw-light" cx="34%" cy="26%" r="74%">
+          <stop offset="0%" stop-color="#fff8e2" stop-opacity="0.16"></stop>
+          <stop offset="52%" stop-color="#fff2d0" stop-opacity="0.03"></stop>
+          <stop offset="100%" stop-color="#06040c" stop-opacity="0.42"></stop>
+        </radialGradient>
+        <filter id="rw-grain" x="-5%" y="-5%" width="110%" height="110%">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="1.1"
+            numOctaves="3"
+            seed="11"></feTurbulence>
+          <feColorMatrix type="saturate" values="0"></feColorMatrix>
+        </filter>
+      </defs>
+
+      {/* Masonry surround, with a joint every ninth degree. */}
+      <circle
+        r="95.5"
+        fill="none"
+        stroke="url(#rw-stone)"
+        stroke-width="9"></circle>
+      <circle
+        r="95.5"
+        fill="none"
+        stroke="#221d1a"
+        stroke-width="9"
+        stroke-dasharray="1.1 13.9"></circle>
+      <circle r="90.6" fill="none" stroke={LEAD} stroke-width="2.2"></circle>
+
+      {/* Tracery: the stone the glass is set into. */}
+      <circle r="90" fill="#100d0c"></circle>
+      <circle r="90" fill="url(#rw-stone)" opacity="0.14"></circle>
+
+      <g id="rw-glass" stroke={LEAD} stroke-width="2" stroke-linejoin="round">
+        {outer.map((pane) => <path d={pane.d} fill={pane.fill}></path>)}
+        {band.map((pane) => <path d={pane.d} fill={pane.fill}></path>)}
+        {middle.map((pane) => <path d={pane.d} fill={pane.fill}></path>)}
+        {inner.map((pane) => <path d={pane.d} fill={pane.fill}></path>)}
+
+        {
+          roundels.map((r) => (
+            <>
+              <circle
+                cx={r.x.toFixed(2)}
+                cy={r.y.toFixed(2)}
+                r="6.4"
+                fill="none"
+                stroke="url(#rw-stone)"
+                stroke-width="1.6"
+              />
+              <circle
+                cx={r.x.toFixed(2)}
+                cy={r.y.toFixed(2)}
+                r="5"
+                fill={r.fill}
+              />
+            </>
+          ))
+        }
+
+        <circle
+          r="17.4"
+          fill="none"
+          stroke="url(#rw-stone)"
+          stroke-width="2.6"></circle>
+        <circle r="16.4" fill="#0a1a5e"></circle>
+        {rosette.map((pane) => <path d={pane.d} fill={pane.fill}></path>)}
+        <circle r="3.1" fill="#f6e9c4"></circle>
+      </g>
+
+      {/* The light coming through, then the mottle of hand-blown glass. */}
+      <circle r="88" fill="url(#rw-light)"></circle>
+      <g clip-path="url(#rw-round)" class="grain">
+        <rect x="-90" y="-90" width="180" height="180" filter="url(#rw-grain)"
+        ></rect>
+      </g>
+
+      <g stroke="#08060d" stroke-width="0.9" opacity="0.7">
+        {
+          bars.map((bar) => (
+            <line
+              x1={(-bar.x).toFixed(2)}
+              y1={bar.y}
+              x2={bar.x.toFixed(2)}
+              y2={bar.y}
+            />
+          ))
+        }
+      </g>
+    </svg>
+
+    <div class="sheen"></div>
+  </div>
+
+  <p class="stamp">Rose Window <span class="dim">· No. 08 · leaded glass</span></p>
+
+  <div class="base">
+    <h1 class="word">tayles</h1>
+    <p class="caption">Twenty-four lancets, twelve roundels, one lit oculus</p>
+
+    <nav class="links" aria-label="Elsewhere">
+      <a href="https://github.com/tayles">GitHub</a>
+      <a href="https://linkedin.com/in/tayles">LinkedIn</a>
+    </nav>
+  </div>
+
+  <div class="cast" aria-hidden="true">
+    <svg viewBox="-100 -100 200 200"><use href="#rw-glass"></use></svg>
+  </div>
+</div>
+
+<style>
+  .rose {
+    --gold: #e7c169;
+    --cream: #f4e9cf;
+    --dia: min(116vh, 84vw);
+    --cx: 79%;
+    --cy: 44%;
+
+    position: relative;
+    display: grid;
+    overflow: hidden;
+    min-height: 100dvh;
+    align-content: space-between;
+    gap: 2rem;
+    padding: clamp(1.5rem, 4vw, 3.25rem) clamp(1.25rem, 5vw, 4.5rem)
+      calc(clamp(1.5rem, 4vw, 3.25rem) + 3.5rem);
+    background: #13111a;
+    color: #c9bcab;
+    font-family: 'Cinzel', 'Times New Roman', serif;
+  }
+
+  /* Coursed stone, lit from the window side. */
+  .wall {
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        rgb(255 255 255 / 0.03) 0 1px,
+        rgb(255 255 255 / 0) 1px 86px
+      ),
+      radial-gradient(
+        100% 80% at 76% 42%,
+        rgb(78 92 168 / 0.32) 0%,
+        rgb(78 92 168 / 0) 60%
+      ),
+      radial-gradient(
+        70% 60% at 4% 100%,
+        rgb(8 6 12 / 0.94) 0%,
+        rgb(8 6 12 / 0) 72%
+      ),
+      radial-gradient(
+        60% 50% at 30% 8%,
+        rgb(120 96 70 / 0.16) 0%,
+        rgb(120 96 70 / 0) 70%
+      ),
+      linear-gradient(168deg, #1a1620 0%, #262029 44%, #0c0a11 100%);
+    pointer-events: none;
+  }
+
+  .bloom {
+    position: absolute;
+    top: var(--cy);
+    left: var(--cx);
+    width: calc(var(--dia) * 1.4);
+    aspect-ratio: 1;
+    background: radial-gradient(
+      closest-side,
+      rgb(96 124 255 / 0.3) 0%,
+      rgb(72 48 132 / 0.14) 52%,
+      rgb(72 48 132 / 0) 72%
+    );
+    filter: blur(34px);
+    translate: -50% -50%;
+    animation: breathe 24s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .window {
+    position: absolute;
+    top: var(--cy);
+    left: var(--cx);
+    width: var(--dia);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    pointer-events: none;
+  }
+
+  .window svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 2.4rem rgb(118 148 255 / 0.24));
+  }
+
+  .grain {
+    opacity: 0.3;
+    mix-blend-mode: multiply;
+  }
+
+  /* A slow bloom of daylight travelling across the glass. */
+  .sheen {
+    position: absolute;
+    overflow: hidden;
+    border-radius: 50%;
+    inset: 7%;
+    opacity: 0.22;
+    mix-blend-mode: screen;
+  }
+
+  .sheen::after {
+    position: absolute;
+    background: radial-gradient(
+      closest-side,
+      rgb(255 244 214 / 0.42) 0%,
+      rgb(255 244 214 / 0) 66%
+    );
+    content: '';
+    inset: -42%;
+    animation: drift 38s ease-in-out infinite;
+  }
+
+  /* The window itself, thrown across the wall: the same glass, raked over
+     and blurred, so the shapes on the stone are the ones in the tracery. */
+  .cast {
+    position: absolute;
+    bottom: -20%;
+    left: -14%;
+    width: 56%;
+    aspect-ratio: 1;
+    opacity: 0.44;
+    filter: blur(19px) saturate(1.45) brightness(1.1);
+    mask-image: radial-gradient(closest-side, #000 34%, transparent 76%);
+    mix-blend-mode: screen;
+    transform: skewX(26deg) skewY(-13deg) scale(1.05);
+    animation: cast 64s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .cast svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .stamp,
+  .base {
+    position: relative;
+    z-index: 1;
+  }
+
+  .stamp {
+    margin: 0;
+    font-size: clamp(0.62rem, 1.1vw, 0.74rem);
+    font-weight: 600;
+    letter-spacing: 0.34em;
+    text-indent: 0.34em;
+    text-transform: uppercase;
+    color: var(--cream);
+  }
+
+  .dim {
+    font-weight: 400;
+    color: rgb(201 188 171 / 0.5);
+  }
+
+  .base {
+    display: grid;
+    justify-items: start;
+    max-width: min(100%, 34rem);
+    gap: 1.4rem;
+  }
+
+  /* Gilded glass: the gradient reads as light raking across the letters. */
+  .word {
+    margin: 0;
+    background: linear-gradient(
+      166deg,
+      #fff4d4 0%,
+      #eec96c 24%,
+      #a5702a 50%,
+      #ffeec2 72%,
+      #c08e39 100%
+    );
+    background-clip: text;
+    color: transparent;
+    font-family: 'Pirata One', 'Cinzel', serif;
+    font-size: clamp(3.4rem, 11vw, 9.5rem);
+    font-weight: 400;
+    line-height: 0.92;
+    letter-spacing: 0.012em;
+    filter: drop-shadow(0 0.05em 0.36em rgb(226 176 78 / 0.34));
+  }
+
+  .caption {
+    max-width: 44ch;
+    margin: 0;
+    font-size: clamp(0.62rem, 1.2vw, 0.74rem);
+    line-height: 1.9;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgb(201 188 171 / 0.6);
+    text-wrap: pretty;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+  }
+
+  /* Each link is its own little lancet — leaded edge, glass inside. */
+  .links a {
+    padding: 0.72rem 1.35rem 0.62rem;
+    border: 1px solid rgb(232 200 128 / 0.35);
+    border-radius: 1.4rem 1.4rem 0.2rem 0.2rem;
+    background: linear-gradient(180deg, #1e3f9c 0%, #0b1c58 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.18),
+      inset 0 0 0 3px rgb(11 9 16 / 0.85),
+      0 0.7rem 1.6rem rgb(8 6 14 / 0.6);
+    color: var(--cream);
+    font-size: clamp(0.6rem, 1.1vw, 0.72rem);
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-indent: 0.24em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition:
+      background-color 220ms ease,
+      box-shadow 220ms ease,
+      color 220ms ease;
+  }
+
+  .links a:hover,
+  .links a:focus-visible {
+    background: linear-gradient(180deg, #3a68e4 0%, #14308c 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.28),
+      inset 0 0 0 3px rgb(11 9 16 / 0.85),
+      0 0 2.2rem rgb(122 158 255 / 0.5);
+    color: #fff6dd;
+    outline: none;
+  }
+
+  .links a:focus-visible {
+    border-color: var(--gold);
+  }
+
+  @keyframes breathe {
+    0%,
+    100% {
+      opacity: 0.78;
+      scale: 1;
+    }
+    50% {
+      opacity: 1;
+      scale: 1.05;
+    }
+  }
+
+  @keyframes drift {
+    0%,
+    100% {
+      transform: translate(-15%, -9%);
+    }
+    50% {
+      transform: translate(16%, 11%);
+    }
+  }
+
+  /* The sun moving: the projection creeps and swells across the stone. */
+  @keyframes cast {
+    0%,
+    100% {
+      opacity: 0.32;
+      transform: skewX(26deg) skewY(-13deg) scale(1.05);
+    }
+    50% {
+      opacity: 0.46;
+      transform: skewX(22deg) skewY(-10deg) scale(1.14) translate(5%, -4%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bloom,
+    .cast,
+    .sheen::after {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .rose {
+      --dia: min(56vh, 108vw);
+      --cx: 58%;
+      --cy: 35%;
+
+      gap: 1.25rem;
+    }
+
+    .cast {
+      bottom: 8%;
+      left: -18%;
+      width: 88%;
+    }
+  }
+</style>
