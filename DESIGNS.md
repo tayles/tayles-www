@@ -7,8 +7,20 @@
 generated, screenshotted and merged automatically. Every design it has ever
 worn stays online at its own URL. Newest first.
 
-**8 designs** ·
+**9 designs** ·
 [Browse them live](https://tayles.co.uk/designs)
+
+---
+
+## Survey
+
+14 September 2026 · `survey`
+
+An Ordnance-style map sheet where the word is the land — the letterforms drive a height field that a canvas inks as contour lines, soundings and spot heights on aged paper.
+
+[![Survey](src/designs/survey/screenshot.webp)](src/designs/survey/)
+
+[Live](https://tayles.co.uk/designs/survey) · [Source](src/designs/survey/index.astro) · `cartography` `contours` `canvas` `generative` `paper` `sepia` `light`
 
 ---
 
