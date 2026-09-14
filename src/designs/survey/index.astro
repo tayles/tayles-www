@@ -1,0 +1,977 @@
+---
+// Survey — the word read as terrain. A canvas turns the letterforms into a
+// height field, washes it with hypsometric tint and inks marching-squares
+// contours over the top; the sheet marginalia carry the label and the links.
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500&family=Spectral:ital,wght@0,300;0,800;1,300&display=swap"
+/>
+
+<div class="sheet">
+  <header class="margin">
+    <p>Tayles Archipelago — Sheet 7 NW</p>
+    <p>1:25 000 · Surveyed MMXXVI</p>
+  </header>
+
+  <div class="frame">
+    <canvas
+      class="map"
+      data-map
+      role="img"
+      aria-label="A survey sheet on which the word tayles rises out of the sea as a contoured archipelago."></canvas>
+
+    <div class="annotation">
+      <h1>tayles</h1>
+      <p class="sub">Group of six islands · basalt · uninhabited</p>
+      <span class="leader" aria-hidden="true"></span>
+    </div>
+
+    <aside class="block">
+      <p class="block-head">References</p>
+      <nav class="links" aria-label="Elsewhere">
+        <a href="https://github.com/tayles">
+          <span class="sym" aria-hidden="true">△</span>GitHub
+        </a>
+        <a href="https://linkedin.com/in/tayles">
+          <span class="sym" aria-hidden="true">◇</span>LinkedIn
+        </a>
+      </nav>
+      <p class="block-foot">Contour interval 20 m</p>
+    </aside>
+
+    <div class="compass" aria-hidden="true">
+      <svg viewBox="0 0 24 46" width="16" height="31">
+        <path d="M12 2 L18 34 L12 28 L6 34 Z" fill="currentColor"></path>
+        <path d="M12 2 L12 28" stroke="#f3ead6" stroke-width="1"></path>
+      </svg>
+      <span>N</span>
+    </div>
+
+    <div class="scale" aria-hidden="true">
+      <div class="bar">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <p>0 · 1 · 2 · 3 · 4 km</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .sheet {
+    --paper: #f3ead6;
+    --ink: #4a3a28;
+    --faint: #8a7a5f;
+    --accent: #a8442a;
+
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: clamp(0.4rem, 1.2vw, 0.8rem);
+    min-height: 100dvh;
+    padding: clamp(0.7rem, 2vw, 1.5rem);
+    padding-bottom: calc(clamp(0.7rem, 2vw, 1.5rem) + 3.5rem);
+    background:
+      radial-gradient(
+        ellipse at 50% 38%,
+        #f7f0e0 0%,
+        #ece1c6 62%,
+        #ded0af 100%
+      );
+    color: var(--ink);
+    font-family: 'Barlow Condensed', ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .margin {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    padding-inline: 0.15rem;
+  }
+
+  .margin p {
+    margin: 0;
+    font-size: clamp(0.62rem, 1.4vw, 0.78rem);
+    line-height: 1.3;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .frame {
+    position: relative;
+    overflow: hidden;
+    background: var(--paper);
+    box-shadow: 0 1px 10px rgb(74 58 40 / 12%);
+  }
+
+  /* The ruled border, with survey ticks along every edge. */
+  .frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border: 1px solid var(--ink);
+    box-shadow:
+      inset 0 0 0 3px var(--paper),
+      inset 0 0 0 4px rgb(74 58 40 / 45%);
+    background:
+      repeating-linear-gradient(
+          90deg,
+          rgb(74 58 40 / 55%) 0 1px,
+          transparent 1px 36px
+        )
+        top left / 100% 4px no-repeat,
+      repeating-linear-gradient(
+          90deg,
+          rgb(74 58 40 / 55%) 0 1px,
+          transparent 1px 36px
+        )
+        bottom left / 100% 4px no-repeat,
+      repeating-linear-gradient(
+          0deg,
+          rgb(74 58 40 / 55%) 0 1px,
+          transparent 1px 36px
+        )
+        top left / 4px 100% no-repeat,
+      repeating-linear-gradient(
+          0deg,
+          rgb(74 58 40 / 55%) 0 1px,
+          transparent 1px 36px
+        )
+        top right / 4px 100% no-repeat;
+  }
+
+  .map {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .annotation {
+    position: absolute;
+    top: clamp(1.1rem, 5%, 3rem);
+    left: clamp(1.1rem, 6%, 5rem);
+    max-width: min(20rem, 70%);
+  }
+
+  .annotation h1 {
+    margin: 0;
+    font-family: 'Spectral', ui-serif, Georgia, serif;
+    font-weight: 300;
+    font-size: clamp(1.05rem, 2.7vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: 0.58em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-shadow:
+      0 0 5px var(--paper),
+      0 0 12px var(--paper),
+      0 0 24px var(--paper);
+    animation: ink 900ms ease-out 300ms backwards;
+  }
+
+  .sub {
+    margin: 0.45rem 0 0;
+    font-size: clamp(0.6rem, 1.35vw, 0.74rem);
+    line-height: 1.4;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--faint);
+    text-shadow:
+      0 0 4px var(--paper),
+      0 0 10px var(--paper),
+      0 0 18px var(--paper);
+    animation: ink 900ms ease-out 520ms backwards;
+  }
+
+  /* A leader hairline down to the survey station on the coast. */
+  .leader {
+    display: block;
+    width: 1px;
+    height: clamp(1.6rem, 13vh, 7rem);
+    margin: 0.55rem 0 0 0.1rem;
+    background: linear-gradient(to bottom, var(--faint), rgb(74 58 40 / 25%));
+    animation: ink 900ms ease-out 700ms backwards;
+  }
+
+  .leader::after {
+    content: '';
+    display: block;
+    width: 5px;
+    height: 5px;
+    margin: -2px 0 0 -2px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    translate: 0 100%;
+  }
+
+  .block {
+    position: absolute;
+    bottom: clamp(0.8rem, 3%, 1.6rem);
+    left: clamp(0.8rem, 3%, 1.6rem);
+    padding: 0.7rem 0.95rem 0.6rem;
+    border: 1px solid rgb(74 58 40 / 55%);
+    background: rgb(243 234 214 / 90%);
+    box-shadow:
+      inset 0 0 0 1px rgb(243 234 214 / 90%),
+      inset 0 0 0 2px rgb(74 58 40 / 22%);
+    animation: ink 900ms ease-out 900ms backwards;
+  }
+
+  .block-head,
+  .block-foot {
+    margin: 0;
+    font-size: 0.62rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .block-head {
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid rgb(74 58 40 / 25%);
+  }
+
+  .block-foot {
+    padding-top: 0.5rem;
+    margin-top: 0.55rem;
+    border-top: 1px solid rgb(74 58 40 / 25%);
+    font-size: 0.56rem;
+    opacity: 0.8;
+  }
+
+  .links {
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .links a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    width: fit-content;
+    font-size: clamp(0.8rem, 1.6vw, 0.95rem);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px dotted rgb(74 58 40 / 50%);
+    transition: color 160ms ease;
+  }
+
+  .links a:hover,
+  .links a:focus-visible {
+    color: var(--accent);
+    border-bottom-style: solid;
+    border-bottom-color: var(--accent);
+    outline: none;
+  }
+
+  .links a:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  .sym {
+    font-size: 0.7em;
+    color: var(--accent);
+  }
+
+  .compass {
+    position: absolute;
+    top: clamp(0.9rem, 4%, 2rem);
+    right: clamp(0.9rem, 4%, 2.4rem);
+    display: grid;
+    justify-items: center;
+    gap: 0.15rem;
+    color: rgb(74 58 40 / 70%);
+    animation: ink 900ms ease-out 1000ms backwards;
+  }
+
+  .compass span {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+  }
+
+  .scale {
+    position: absolute;
+    right: clamp(0.8rem, 3%, 1.6rem);
+    bottom: clamp(0.8rem, 3%, 1.6rem);
+    display: grid;
+    justify-items: end;
+    gap: 0.25rem;
+    animation: ink 900ms ease-out 1050ms backwards;
+  }
+
+  .bar {
+    display: flex;
+    width: clamp(5rem, 12vw, 8rem);
+    height: 6px;
+    border: 1px solid var(--ink);
+  }
+
+  .bar span {
+    flex: 1;
+  }
+
+  .bar span:nth-child(odd) {
+    background: var(--ink);
+  }
+
+  .scale p {
+    margin: 0;
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  @keyframes ink {
+    from {
+      opacity: 0;
+      translate: 0 4px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* Tight screens: the sheet keeps its label, block and compass only. */
+  @media (max-width: 30rem) {
+    .scale {
+      display: none;
+    }
+
+    .block {
+      right: clamp(0.8rem, 3%, 1.6rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .annotation h1,
+    .sub,
+    .leader,
+    .block,
+    .compass,
+    .scale {
+      animation: none;
+    }
+
+    .links a {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  interface Field {
+    gw: number;
+    gh: number;
+    values: Float32Array;
+    tint: HTMLCanvasElement;
+  }
+
+  interface Band {
+    path: Path2D;
+    color: string;
+    width: number;
+    dash: number[];
+  }
+
+  interface Marks {
+    peaks: { x: number; y: number; height: number }[];
+    soundings: { x: number; y: number; depth: number }[];
+    stipple: { x: number; y: number }[];
+  }
+
+  const WORD = 'tayles';
+  const SEA = 0.5;
+  const PAPER = '#f3ead6';
+  const DURATION = 1700;
+
+  /** Sea floor first, then the coast, then every contour up to the summits. */
+  const SEA_LEVELS = [0.26, 0.32, 0.38, 0.44];
+  const LAND_LEVELS = [
+    0.54, 0.58, 0.62, 0.66, 0.7, 0.74, 0.78, 0.82, 0.86, 0.9, 0.94,
+  ];
+
+  /** Hypsometric wash, shallowest-to-highest, as flat RGB triples. */
+  const TINTS: [number, number, number][] = [
+    [150, 180, 193],
+    [176, 202, 208],
+    [203, 220, 216],
+    [235, 224, 193],
+    [227, 210, 166],
+    [214, 190, 136],
+    [198, 169, 112],
+    [179, 145, 92],
+  ];
+
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-map]');
+  const ctx = canvas?.getContext('2d');
+
+  function hash(x: number, y: number): number {
+    const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+    return s - Math.floor(s);
+  }
+
+  function noise(x: number, y: number): number {
+    const ix = Math.floor(x);
+    const iy = Math.floor(y);
+    const fx = x - ix;
+    const fy = y - iy;
+    const sx = fx * fx * (3 - 2 * fx);
+    const sy = fy * fy * (3 - 2 * fy);
+    const a = hash(ix, iy);
+    const b = hash(ix + 1, iy);
+    const c = hash(ix, iy + 1);
+    const d = hash(ix + 1, iy + 1);
+    return a + (b - a) * sx + (c - a) * sy + (a - b - c + d) * sx * sy;
+  }
+
+  function fbm(x: number, y: number): number {
+    let sum = 0;
+    let amp = 0.5;
+    let freq = 1;
+    for (let i = 0; i < 4; i++) {
+      sum += noise(x * freq + i * 19, y * freq - i * 7) * amp;
+      amp *= 0.5;
+      freq *= 2.03;
+    }
+    return sum;
+  }
+
+  /** Chamfer distance transform: cells marked 1 are the seeds, at distance 0. */
+  function distances(seeds: Uint8Array, gw: number, gh: number): Float32Array {
+    const far = gw + gh;
+    const out = new Float32Array(gw * gh);
+    for (let i = 0; i < out.length; i++) {
+      out[i] = seeds[i] === 1 ? 0 : far;
+    }
+
+    const relax = (i: number, j: number, cost: number) => {
+      const candidate = (out[j] ?? far) + cost;
+      if (candidate < (out[i] ?? far)) out[i] = candidate;
+    };
+
+    for (let y = 0; y < gh; y++) {
+      for (let x = 0; x < gw; x++) {
+        const i = y * gw + x;
+        if (x > 0) relax(i, i - 1, 1);
+        if (y > 0) relax(i, i - gw, 1);
+        if (x > 0 && y > 0) relax(i, i - gw - 1, Math.SQRT2);
+        if (x < gw - 1 && y > 0) relax(i, i - gw + 1, Math.SQRT2);
+      }
+    }
+
+    for (let y = gh - 1; y >= 0; y--) {
+      for (let x = gw - 1; x >= 0; x--) {
+        const i = y * gw + x;
+        if (x < gw - 1) relax(i, i + 1, 1);
+        if (y < gh - 1) relax(i, i + gw, 1);
+        if (x < gw - 1 && y < gh - 1) relax(i, i + gw + 1, Math.SQRT2);
+        if (x > 0 && y < gh - 1) relax(i, i + gw - 1, Math.SQRT2);
+      }
+    }
+
+    return out;
+  }
+
+  /** The letterforms, rasterised at grid resolution. */
+  function letterMask(gw: number, gh: number): Uint8Array {
+    const mask = new Uint8Array(gw * gh);
+    const off = document.createElement('canvas');
+    off.width = gw;
+    off.height = gh;
+    const octx = off.getContext('2d', { willReadFrequently: true });
+    if (!octx) return mask;
+
+    octx.textAlign = 'center';
+    octx.textBaseline = 'middle';
+    octx.font = '800 100px Spectral, Georgia, serif';
+    const width = octx.measureText(WORD).width || 100;
+    // Tall sheets give the word more of their width and sit it more centrally.
+    const wide = gw / gh > 1.2;
+    const size = Math.min((gw * (wide ? 0.79 : 0.9) * 100) / width, gh * 0.5);
+    octx.font = `800 ${size}px Spectral, Georgia, serif`;
+    octx.fillStyle = '#000';
+    octx.fillText(WORD, gw / 2, gh * (wide ? 0.58 : 0.5));
+
+    const pixels = octx.getImageData(0, 0, gw, gh).data;
+    for (let i = 0; i < mask.length; i++) {
+      mask[i] = (pixels[i * 4 + 3] ?? 0) > 110 ? 1 : 0;
+    }
+    return mask;
+  }
+
+  /**
+   * Elevation: a smooth ridge over the letterforms, roughened by noise where
+   * there is land, easing offshore into a sea floor with basins of its own.
+   */
+  function buildField(gw: number, gh: number): Field {
+    const mask = letterMask(gw, gh);
+    const inverse = new Uint8Array(mask.length);
+    for (let i = 0; i < mask.length; i++) inverse[i] = mask[i] === 1 ? 0 : 1;
+
+    const outward = distances(mask, gw, gh);
+    const inward = distances(inverse, gw, gh);
+    const values = new Float32Array(gw * gh);
+    const falloff = Math.max(5, gw * 0.026);
+
+    for (let y = 0; y < gh; y++) {
+      for (let x = 0; x < gw; x++) {
+        const i = y * gw + x;
+        const signed = (inward[i] ?? 0) - (outward[i] ?? 0);
+        // Both axes share a divisor, so the noise stays square on screen.
+        const nx = (x / gw) * 13;
+        const ny = (y / gw) * 13;
+
+        const shore = 0.5 + 0.5 * Math.tanh(signed / falloff);
+        const rough =
+          (fbm(nx, ny) - 0.5) * 0.3 +
+          (fbm(nx * 3.2 + 31, ny * 3.2 + 17) - 0.5) * 0.1;
+        const land = shore + rough * Math.min(1, shore * 2.2);
+
+        const floor = 0.14 + fbm(nx * 0.8 + 41, ny * 0.8 + 23) * 0.32;
+        const blend = clamp01((shore - 0.14) / 0.34);
+
+        values[i] = clamp01(blend * land + (1 - blend) * floor);
+      }
+    }
+
+    return { gw, gh, values, tint: washTint(gw, gh, values) };
+  }
+
+  /** A small canvas of banded colour, scaled up later into a soft wash. */
+  function washTint(
+    gw: number,
+    gh: number,
+    values: Float32Array,
+  ): HTMLCanvasElement {
+    const tint = document.createElement('canvas');
+    tint.width = gw;
+    tint.height = gh;
+    const tctx = tint.getContext('2d');
+    if (!tctx) return tint;
+
+    const image = tctx.createImageData(gw, gh);
+    for (let i = 0; i < gw * gh; i++) {
+      const value = values[i] ?? 0;
+      const band =
+        value < SEA
+          ? Math.min(2, Math.floor((SEA - value) / 0.17))
+          : 3 + Math.min(4, Math.floor((value - SEA) / 0.105));
+      const rgb = TINTS[Math.min(TINTS.length - 1, band)] ?? TINTS[0];
+      image.data[i * 4] = rgb?.[0] ?? 0;
+      image.data[i * 4 + 1] = rgb?.[1] ?? 0;
+      image.data[i * 4 + 2] = rgb?.[2] ?? 0;
+      image.data[i * 4 + 3] = 255;
+    }
+    tctx.putImageData(image, 0, 0);
+    return tint;
+  }
+
+  function crossing(a: number, b: number, level: number): number {
+    const span = b - a;
+    if (Math.abs(span) < 1e-6) return 0.5;
+    return Math.min(1, Math.max(0, (level - a) / span));
+  }
+
+  /** Marching squares — one Path2D of loose segments per contour level. */
+  function contour(field: Field, level: number): Path2D {
+    const { gw, gh, values } = field;
+    const path = new Path2D();
+
+    for (let y = 0; y < gh - 1; y++) {
+      for (let x = 0; x < gw - 1; x++) {
+        const i = y * gw + x;
+        const tl = values[i] ?? 0;
+        const tr = values[i + 1] ?? 0;
+        const br = values[i + gw + 1] ?? 0;
+        const bl = values[i + gw] ?? 0;
+
+        let key = 0;
+        if (tl > level) key |= 8;
+        if (tr > level) key |= 4;
+        if (br > level) key |= 2;
+        if (bl > level) key |= 1;
+        if (key === 0 || key === 15) continue;
+
+        const top: [number, number] = [x + crossing(tl, tr, level), y];
+        const right: [number, number] = [x + 1, y + crossing(tr, br, level)];
+        const bottom: [number, number] = [x + crossing(bl, br, level), y + 1];
+        const left: [number, number] = [x, y + crossing(tl, bl, level)];
+
+        const segment = (a: [number, number], b: [number, number]) => {
+          path.moveTo(a[0], a[1]);
+          path.lineTo(b[0], b[1]);
+        };
+
+        switch (key) {
+          case 1:
+          case 14:
+            segment(left, bottom);
+            break;
+          case 2:
+          case 13:
+            segment(bottom, right);
+            break;
+          case 3:
+          case 12:
+            segment(left, right);
+            break;
+          case 4:
+          case 11:
+            segment(top, right);
+            break;
+          case 6:
+          case 9:
+            segment(top, bottom);
+            break;
+          case 7:
+          case 8:
+            segment(top, left);
+            break;
+          // Saddles: split them the same way every time so the ink is stable.
+          case 5:
+            segment(top, left);
+            segment(bottom, right);
+            break;
+          case 10:
+            segment(top, right);
+            segment(left, bottom);
+            break;
+        }
+      }
+    }
+
+    return path;
+  }
+
+  function buildBands(field: Field): Band[] {
+    const bands: Band[] = [];
+
+    for (const level of SEA_LEVELS) {
+      bands.push({
+        path: contour(field, level),
+        color: 'rgb(88 124 140 / 60%)',
+        width: 0.8,
+        dash: [3, 4],
+      });
+    }
+
+    bands.push({
+      path: contour(field, SEA),
+      color: 'rgb(58 44 28 / 92%)',
+      width: 1.5,
+      dash: [],
+    });
+
+    LAND_LEVELS.forEach((level, index) => {
+      const isIndex = index % 3 === 2;
+      bands.push({
+        path: contour(field, level),
+        color: isIndex ? 'rgb(92 64 34 / 82%)' : 'rgb(132 100 62 / 62%)',
+        width: isIndex ? 1.1 : 0.7,
+        dash: [],
+      });
+    });
+
+    return bands;
+  }
+
+  /** The corners the marginalia sit in; no printed figure may land there. */
+  function inMargin(x: number, y: number, gw: number, gh: number): boolean {
+    const u = x / gw;
+    const v = y / gh;
+    return (
+      (u < 0.36 && v < 0.32) ||
+      (u < 0.32 && v > 0.72) ||
+      (u > 0.72 && v > 0.82) ||
+      (u > 0.84 && v < 0.2)
+    );
+  }
+
+  /** Summits, soundings and the stipple that fringes every coast. */
+  function buildMarks(field: Field, scale: number): Marks {
+    const { gw, gh, values } = field;
+    const marks: Marks = { peaks: [], soundings: [], stipple: [] };
+    // Spacing is set in screen pixels so a small sheet is not overprinted.
+    const step = Math.min(44, Math.max(8, Math.round(104 / scale)));
+
+    for (let y = 2; y < gh - 2; y += 2) {
+      for (let x = 2; x < gw - 2; x += 2) {
+        const value = values[y * gw + x] ?? 0;
+        if (value > 0.41 && value < SEA && hash(x, y * 3) > 0.66) {
+          marks.stipple.push({ x, y });
+        }
+      }
+    }
+
+    // Soundings on a jittered lattice, so the figures spread over the water.
+    for (let y = step; y < gh - step / 2; y += step) {
+      for (let x = step; x < gw - step / 2; x += step) {
+        const jx = x + Math.round((hash(x, y) - 0.5) * step * 0.8);
+        const jy = y + Math.round((hash(y, x) - 0.5) * step * 0.8);
+        const value = values[jy * gw + jx] ?? 0;
+        if (value > 0.44 || inMargin(jx, jy, gw, gh)) continue;
+        marks.soundings.push({
+          x: jx,
+          y: jy,
+          depth: Math.round((SEA - value) * 280) / 10,
+        });
+      }
+    }
+
+    // Summits: the highest cell in each neighbourhood, kept well apart.
+    let highest = 0;
+    for (let i = 0; i < values.length; i++) {
+      highest = Math.max(highest, values[i] ?? 0);
+    }
+
+    const spread = Math.min(70, Math.max(14, Math.round(190 / scale)));
+    for (let y = 3; y < gh - 3; y += 2) {
+      for (let x = 3; x < gw - 3; x += 2) {
+        const value = values[y * gw + x] ?? 0;
+        if (value < highest - 0.08 || inMargin(x, y, gw, gh)) continue;
+        const clash = marks.peaks.some(
+          (peak) => Math.hypot(peak.x - x, peak.y - y) < spread,
+        );
+        if (clash) continue;
+        marks.peaks.push({
+          x,
+          y,
+          height: Math.round(value * 760 + hash(x, y) * 280),
+        });
+      }
+    }
+
+    return marks;
+  }
+
+  /** Deterministic paper speckle, tiled under everything else. */
+  function grain(target: CanvasRenderingContext2D): CanvasPattern | null {
+    const tile = document.createElement('canvas');
+    tile.width = 150;
+    tile.height = 150;
+    const tctx = tile.getContext('2d');
+    if (!tctx) return null;
+
+    for (let i = 0; i < 2400; i++) {
+      const alpha = 0.03 + hash(i, 5) * 0.06;
+      tctx.fillStyle =
+        hash(i, 7) > 0.45
+          ? `rgb(92 70 44 / ${alpha})`
+          : `rgb(255 250 235 / ${alpha * 1.6})`;
+      tctx.fillRect(hash(i, 1) * 150, hash(i, 2) * 150, 1, 1);
+    }
+
+    return target.createPattern(tile, 'repeat');
+  }
+
+  function clamp01(value: number): number {
+    return Math.min(1, Math.max(0, value));
+  }
+
+  if (canvas && ctx) {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
+      .matches;
+    const speckle = grain(ctx);
+
+    let field: Field | undefined;
+    let bands: Band[] = [];
+    let marks: Marks | undefined;
+    let width = 0;
+    let height = 0;
+    let frame = 0;
+    let resizeTimer = 0;
+
+    function paint(progress: number) {
+      if (!ctx || !field || !marks) return;
+
+      const scale = width / field.gw;
+      const wash = clamp01(progress / 0.22);
+      const labels = clamp01((progress - 0.72) / 0.28);
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas!.width, canvas!.height);
+      ctx.scale(canvas!.width / width, canvas!.height / height);
+
+      ctx.fillStyle = PAPER;
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.save();
+      ctx.globalAlpha = wash * 0.88;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(field.tint, 0, 0, width, height);
+      ctx.restore();
+
+      // Graticule, ruled under the contours.
+      ctx.save();
+      ctx.globalAlpha = wash;
+      ctx.strokeStyle = 'rgb(74 58 40 / 16%)';
+      ctx.lineWidth = 0.6;
+      ctx.setLineDash([1, 5]);
+      const gap = Math.max(56, Math.round(width / 12));
+      for (let x = gap; x < width; x += gap) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      for (let y = gap; y < height; y += gap) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Contours, inked from the sea floor upward.
+      ctx.save();
+      ctx.scale(scale, scale);
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      bands.forEach((band, index) => {
+        const alpha = clamp01(progress * (bands.length + 4) - index);
+        if (alpha <= 0) return;
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = band.color;
+        ctx.lineWidth = band.width / scale;
+        ctx.setLineDash(band.dash.map((part) => part / scale));
+        ctx.stroke(band.path);
+      });
+      ctx.restore();
+
+      // Coastal stipple.
+      ctx.save();
+      ctx.globalAlpha = labels * 0.5;
+      ctx.fillStyle = 'rgb(86 116 130 / 80%)';
+      for (const dot of marks.stipple) {
+        ctx.fillRect(dot.x * scale, dot.y * scale, 1.2, 1.2);
+      }
+      ctx.restore();
+
+      // Soundings and spot heights.
+      ctx.save();
+      ctx.globalAlpha = labels;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = 'italic 300 10px Spectral, Georgia, serif';
+      ctx.fillStyle = 'rgb(74 104 120 / 85%)';
+      for (const sounding of marks.soundings) {
+        ctx.fillText(
+          sounding.depth.toFixed(1),
+          sounding.x * scale,
+          sounding.y * scale,
+        );
+      }
+
+      ctx.font = '500 11.5px "Barlow Condensed", sans-serif';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = 'rgb(243 234 214 / 85%)';
+      ctx.lineWidth = 2.4;
+      for (const peak of marks.peaks) {
+        const px = peak.x * scale;
+        const py = peak.y * scale;
+        ctx.fillStyle = 'rgb(168 68 42 / 90%)';
+        ctx.beginPath();
+        ctx.moveTo(px, py - 4);
+        ctx.lineTo(px + 3.6, py + 2.4);
+        ctx.lineTo(px - 3.6, py + 2.4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = 'rgb(74 58 40 / 92%)';
+        ctx.strokeText(`${peak.height} m`, px + 1, py + 11);
+        ctx.fillText(`${peak.height} m`, px + 1, py + 11);
+      }
+      ctx.restore();
+
+      // Paper: speckle first, then the light falling off toward the margins.
+      if (speckle) {
+        ctx.save();
+        ctx.globalAlpha = 0.55;
+        ctx.fillStyle = speckle;
+        ctx.fillRect(0, 0, width, height);
+        ctx.restore();
+      }
+
+      const vignette = ctx.createRadialGradient(
+        width / 2,
+        height * 0.45,
+        Math.min(width, height) * 0.25,
+        width / 2,
+        height * 0.45,
+        Math.max(width, height) * 0.72,
+      );
+      vignette.addColorStop(0, 'rgb(120 96 60 / 0%)');
+      vignette.addColorStop(1, 'rgb(110 84 48 / 20%)');
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    function animate() {
+      const started = performance.now();
+      cancelAnimationFrame(frame);
+
+      const tick = () => {
+        const progress = clamp01((performance.now() - started) / DURATION);
+        paint(progress);
+        if (progress < 1) frame = requestAnimationFrame(tick);
+      };
+
+      frame = requestAnimationFrame(tick);
+    }
+
+    function rebuild(animated: boolean) {
+      const rect = canvas!.getBoundingClientRect();
+      if (rect.width < 2 || rect.height < 2) return;
+
+      width = rect.width;
+      height = rect.height;
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      canvas!.width = Math.round(width * dpr);
+      canvas!.height = Math.round(height * dpr);
+
+      const gw = Math.min(420, Math.max(150, Math.round(width / 2.8)));
+      const gh = Math.max(60, Math.round((gw * height) / width));
+
+      field = buildField(gw, gh);
+      bands = buildBands(field);
+      marks = buildMarks(field, width / gw);
+
+      if (animated) animate();
+      else paint(1);
+    }
+
+    async function start() {
+      // The height field is traced from the webfont, so wait for the real one.
+      const faces = [
+        '800 100px Spectral',
+        'italic 300 12px Spectral',
+        '500 12px "Barlow Condensed"',
+      ];
+      await Promise.all(
+        faces.map((face) => document.fonts.load(face).catch(() => [])),
+      );
+      await document.fonts.ready;
+
+      rebuild(!reduced);
+
+      window.addEventListener('resize', () => {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(() => rebuild(false), 180);
+      });
+    }
+
+    void start();
+  }
+</script>
