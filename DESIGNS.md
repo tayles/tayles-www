@@ -7,8 +7,20 @@
 generated, screenshotted and merged automatically. Every design it has ever
 worn stays online at its own URL. Newest first.
 
-**9 designs** ·
+**10 designs** ·
 [Browse them live](https://tayles.co.uk/designs)
+
+---
+
+## Loom
+
+21 September 2026 · `loom`
+
+A length of indigo cloth still on the loom — the word is dyed into the weft itself, thread by thread, and the picks are beaten down over bare warp as the page loads.
+
+[![Loom](src/designs/loom/screenshot.webp)](src/designs/loom/)
+
+[Live](https://tayles.co.uk/designs/loom) · [Source](src/designs/loom/index.astro) · `textile` `weaving` `indigo` `canvas` `tactile` `craft`
 
 ---
 

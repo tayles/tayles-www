@@ -1,0 +1,724 @@
+---
+// Loom — the word woven into indigo cloth. A canvas samples the letterforms
+// into a thread grid, dyes the yarn cell by cell, and beats the weft rows in
+// over bare warp still under tension.
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@300;500;700&display=swap"
+/>
+
+<div class="mill">
+  <div class="panel">
+    <div class="cloth-wrap">
+      <span class="beam" aria-hidden="true"></span>
+      <canvas
+        class="cloth"
+        data-cloth
+        role="img"
+        aria-label="A length of indigo cloth on the loom with the word tayles woven into it in undyed linen thread."></canvas>
+      <span class="selvedge selvedge-left" aria-hidden="true"></span>
+      <span class="selvedge selvedge-right" aria-hidden="true"></span>
+    </div>
+
+    <div class="docket">
+      <h1>tayles</h1>
+      <p class="line">Handwoven · plain weave · piece no. 10</p>
+
+      <nav class="tapes" aria-label="Elsewhere">
+        <a href="https://github.com/tayles">GitHub</a>
+        <a href="https://linkedin.com/in/tayles">LinkedIn</a>
+      </nav>
+
+      <dl class="spec">
+        <div><dt>Warp</dt><dd>16/2 linen, natural</dd></div>
+        <div><dt>Weft</dt><dd>indigo, madder, ochre</dd></div>
+        <div><dt>Sett</dt><dd>24 ends per inch</dd></div>
+      </dl>
+    </div>
+  </div>
+</div>
+
+<style>
+  .mill {
+    --void: #090c12;
+    --linen: #e4d8bc;
+    --indigo: #1e3156;
+    --indigo-deep: #14213d;
+    --madder: #a8442f;
+    --ochre: #b8863c;
+
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 100dvh;
+    padding: clamp(1rem, 3.5vw, 2.5rem);
+    padding-bottom: calc(clamp(1rem, 3.5vw, 2.5rem) + 3.5rem);
+    overflow-x: clip;
+    background:
+      radial-gradient(
+        118% 84% at 50% -6%,
+        #1b2231 0%,
+        #10141d 54%,
+        #070a0f 100%
+      );
+    color: var(--linen);
+    font-family: 'Zilla Slab', ui-serif, Georgia, serif;
+  }
+
+  /* A faint dust of fibre on the air, so the dark wall is not flat. */
+  .mill::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    background:
+      radial-gradient(
+        1px 1px at 18% 24%,
+        rgb(228 216 188 / 22%) 0%,
+        transparent 100%
+      ),
+      radial-gradient(
+        1px 1px at 72% 12%,
+        rgb(228 216 188 / 16%) 0%,
+        transparent 100%
+      ),
+      radial-gradient(
+        1px 1px at 86% 66%,
+        rgb(228 216 188 / 18%) 0%,
+        transparent 100%
+      ),
+      radial-gradient(
+        1px 1px at 34% 82%,
+        rgb(228 216 188 / 14%) 0%,
+        transparent 100%
+      );
+  }
+
+  .panel {
+    position: relative;
+    width: min(100%, 74rem);
+  }
+
+  .cloth-wrap {
+    position: relative;
+    width: 100%;
+    height: clamp(15rem, 58vh, 34rem);
+    transform: rotate(-0.7deg);
+    filter: drop-shadow(0 26px 46px rgb(0 0 0 / 62%));
+  }
+
+  .cloth {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* The cloth beam the warp is dressed on, and its two end caps. */
+  .beam {
+    position: absolute;
+    top: clamp(-0.85rem, -1.2vw, -0.5rem);
+    right: clamp(-1.4rem, -2vw, -0.6rem);
+    left: clamp(-1.4rem, -2vw, -0.6rem);
+    height: clamp(0.7rem, 1.5vw, 1.15rem);
+    z-index: 1;
+    border-radius: 999px;
+    background: linear-gradient(
+      to bottom,
+      #6a4c33 0%,
+      #4a3423 38%,
+      #2a1c12 78%,
+      #120c08 100%
+    );
+    box-shadow:
+      0 1px 0 rgb(214 176 132 / 35%) inset,
+      0 10px 18px rgb(0 0 0 / 55%);
+  }
+
+  .beam::before,
+  .beam::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: clamp(0.5rem, 0.9vw, 0.75rem);
+    height: clamp(1.15rem, 2.4vw, 1.8rem);
+    transform: translateY(-50%);
+    border-radius: 2px;
+    background: linear-gradient(to bottom, #553c28, #1a110b);
+    box-shadow: 0 6px 12px rgb(0 0 0 / 55%);
+  }
+
+  .beam::before {
+    left: clamp(-0.5rem, -0.9vw, -0.3rem);
+  }
+
+  .beam::after {
+    right: clamp(-0.5rem, -0.9vw, -0.3rem);
+  }
+
+  /* Both edges of the cloth are bound tighter than the field between them. */
+  .selvedge {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: clamp(6px, 0.8vw, 12px);
+    pointer-events: none;
+    background: linear-gradient(
+      to right,
+      rgb(9 12 18 / 72%),
+      rgb(9 12 18 / 0%)
+    );
+  }
+
+  .selvedge-left {
+    left: 0;
+  }
+
+  .selvedge-right {
+    right: 0;
+    transform: scaleX(-1);
+  }
+
+  /* The maker's docket, pinned to the cloth and hanging off its corner. */
+  .docket {
+    position: absolute;
+    bottom: clamp(-2.6rem, -3vh, -1.4rem);
+    left: clamp(0.75rem, 5%, 4rem);
+    z-index: 2;
+    width: min(26rem, calc(100% - 1.5rem));
+    padding: clamp(0.85rem, 2vw, 1.25rem) clamp(1rem, 2.4vw, 1.5rem)
+      clamp(0.9rem, 2vw, 1.2rem);
+    transform: rotate(0.55deg);
+    background:
+      linear-gradient(
+        104deg,
+        rgb(255 255 255 / 10%) 0%,
+        rgb(0 0 0 / 0%) 46%,
+        rgb(0 0 0 / 7%) 100%
+      ),
+      #e7dcc3;
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 40%) inset,
+      0 18px 34px rgb(0 0 0 / 52%);
+    color: var(--indigo-deep);
+    animation: settle 700ms cubic-bezier(0.2, 0.8, 0.3, 1) 900ms backwards;
+  }
+
+  /* Tacking stitches all round the edge of the docket. */
+  .docket::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    pointer-events: none;
+    border: 1px dashed rgb(20 33 61 / 38%);
+  }
+
+  .docket h1 {
+    margin: 0;
+    font-weight: 700;
+    font-size: clamp(1.35rem, 3.1vw, 1.85rem);
+    line-height: 1;
+    letter-spacing: 0.3em;
+    color: var(--indigo);
+  }
+
+  .line {
+    margin: 0.5rem 0 0;
+    font-weight: 300;
+    font-size: clamp(0.66rem, 1.5vw, 0.78rem);
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: rgb(20 33 61 / 62%);
+  }
+
+  .tapes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: clamp(0.8rem, 1.8vw, 1.05rem);
+  }
+
+  /* Each link is a length of woven tape, stitched down at both ends. */
+  .tapes a {
+    position: relative;
+    padding: 0.42rem 0.9rem;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        rgb(255 255 255 / 7%) 0 1px,
+        transparent 1px 3px
+      ),
+      var(--indigo);
+    box-shadow: 0 2px 0 rgb(20 33 61 / 45%);
+    color: var(--linen);
+    font-weight: 500;
+    font-size: clamp(0.72rem, 1.6vw, 0.84rem);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition:
+      transform 180ms ease,
+      background-color 180ms ease;
+  }
+
+  /* The running stitch that holds the tape to the docket. */
+  .tapes a::before {
+    content: '';
+    position: absolute;
+    inset: 3px 5px;
+    border-top: 1px dashed rgb(228 216 188 / 55%);
+    border-bottom: 1px dashed rgb(228 216 188 / 55%);
+  }
+
+  .tapes a:hover {
+    transform: translateY(-2px);
+    background:
+      repeating-linear-gradient(
+        90deg,
+        rgb(255 255 255 / 8%) 0 1px,
+        transparent 1px 3px
+      ),
+      var(--madder);
+  }
+
+  .tapes a:focus-visible {
+    outline: 2px solid var(--ochre);
+    outline-offset: 3px;
+  }
+
+  .spec {
+    display: grid;
+    gap: 0.14rem;
+    margin: clamp(0.8rem, 1.8vw, 1.05rem) 0 0;
+    font-weight: 300;
+    font-size: clamp(0.62rem, 1.4vw, 0.72rem);
+    letter-spacing: 0.08em;
+    color: rgb(20 33 61 / 58%);
+  }
+
+  .spec div {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .spec dt {
+    flex: 0 0 3.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: rgb(20 33 61 / 42%);
+  }
+
+  .spec dd {
+    margin: 0;
+  }
+
+  @media (max-width: 52rem) {
+    .cloth-wrap {
+      height: clamp(13rem, 44vh, 24rem);
+    }
+
+    .docket {
+      position: static;
+      width: auto;
+      max-width: 26rem;
+      margin: 1.5rem auto 0;
+      transform: none;
+    }
+  }
+
+  @keyframes settle {
+    from {
+      opacity: 0;
+      transform: rotate(0.55deg) translateY(10px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .docket {
+      animation: none;
+    }
+
+    .tapes a {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  type RGB = [number, number, number];
+
+  const WORD = 'tayles';
+  const DURATION = 1500;
+
+  /** The dye lot: indigo ground, undyed linen for the word, two accents. */
+  const VOID: RGB = [9, 12, 18];
+  const INDIGO: RGB = [32, 52, 90];
+  const INDIGO_DEEP: RGB = [21, 34, 62];
+  const LINEN: RGB = [230, 218, 190];
+  const MADDER: RGB = [156, 66, 48];
+  const OCHRE: RGB = [176, 130, 56];
+
+  /** Deterministic yarn irregularity, so a resize reweaves the same cloth. */
+  function rng(seed: number): () => number {
+    let state = seed >>> 0;
+    return () => {
+      state = (state + 0x6d2b79f5) >>> 0;
+      let t = state;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function mix(a: RGB, b: RGB, amount: number): RGB {
+    const t = Math.min(1, Math.max(0, amount));
+    return [
+      a[0] + (b[0] - a[0]) * t,
+      a[1] + (b[1] - a[1]) * t,
+      a[2] + (b[2] - a[2]) * t,
+    ];
+  }
+
+  function shade(colour: RGB, k: number): RGB {
+    return [colour[0] * k, colour[1] * k, colour[2] * k];
+  }
+
+  function css(colour: RGB): string {
+    const r = Math.round(colour[0]);
+    const g = Math.round(colour[1]);
+    const b = Math.round(colour[2]);
+    return `rgb(${r} ${g} ${b})`;
+  }
+
+  function surface(width: number, height: number): HTMLCanvasElement {
+    const element = document.createElement('canvas');
+    element.width = Math.max(1, width);
+    element.height = Math.max(1, height);
+    return element;
+  }
+
+  function face(size: number): string {
+    return `700 ${size}px 'Zilla Slab', Georgia, serif`;
+  }
+
+  /**
+   * One cell of the thread grid per pixel: the letterforms, rasterised at the
+   * sett of the cloth, decide which picks are thrown in linen.
+   */
+  function buildMask(cols: number, rows: number): Uint8Array {
+    const mask = new Uint8Array(cols * rows);
+    const sheet = surface(cols, rows);
+    const pen = sheet.getContext('2d', { willReadFrequently: true });
+    if (!pen) return mask;
+
+    pen.fillStyle = '#000';
+    pen.fillRect(0, 0, cols, rows);
+    pen.fillStyle = '#fff';
+    pen.textAlign = 'center';
+    pen.textBaseline = 'middle';
+
+    const probe = Math.max(8, rows * 0.4);
+    pen.font = face(probe);
+    const measured = Math.max(1, pen.measureText(WORD).width);
+    const size = Math.min((probe * (cols * 0.84)) / measured, rows * 0.5);
+    pen.font = face(size);
+    pen.fillText(WORD, cols / 2, rows * 0.4);
+
+    const pixels = pen.getImageData(0, 0, cols, rows).data;
+    for (let i = 0; i < mask.length; i++) mask[i] = pixels[i * 4] ?? 0;
+    return mask;
+  }
+
+  /**
+   * A two-by-two repeat of the weave, in grey, that lights the crown of every
+   * thread and drops its sides away. Overlaid, it rounds the yarn.
+   */
+  function weaveTile(cell: number): HTMLCanvasElement {
+    const tile = surface(cell * 2, cell * 2);
+    const pen = tile.getContext('2d');
+    if (!pen) return tile;
+
+    pen.fillStyle = '#808080';
+    pen.fillRect(0, 0, cell * 2, cell * 2);
+
+    const round = (x: number, y: number, warpOnTop: boolean) => {
+      const gradient = warpOnTop
+        ? pen.createLinearGradient(x, y, x + cell, y)
+        : pen.createLinearGradient(x, y, x, y + cell);
+      gradient.addColorStop(0, '#1c1c1c');
+      gradient.addColorStop(0.2, '#8f8f8f');
+      gradient.addColorStop(0.44, '#dedede');
+      gradient.addColorStop(0.76, '#6b6b6b');
+      gradient.addColorStop(1, '#141414');
+      pen.fillStyle = gradient;
+      pen.fillRect(x, y, cell, cell);
+    };
+
+    round(0, 0, false);
+    round(cell, 0, true);
+    round(0, cell, true);
+    round(cell, cell, false);
+    return tile;
+  }
+
+  /** Loose fibre, so the cloth is never machine-even. */
+  function fuzzTile(seed: number): HTMLCanvasElement {
+    const tile = surface(72, 72);
+    const pen = tile.getContext('2d');
+    if (!pen) return tile;
+
+    const image = pen.createImageData(72, 72);
+    const random = rng(seed);
+    for (let i = 0; i < image.data.length; i += 4) {
+      const value = 108 + random() * 40;
+      image.data[i] = value;
+      image.data[i + 1] = value;
+      image.data[i + 2] = value;
+      image.data[i + 3] = 255;
+    }
+    pen.putImageData(image, 0, 0);
+    return tile;
+  }
+
+  function overlay(
+    pen: CanvasRenderingContext2D,
+    tile: HTMLCanvasElement,
+    width: number,
+    height: number,
+    alpha: number,
+  ) {
+    const pattern = pen.createPattern(tile, 'repeat');
+    if (!pattern) return;
+    pen.save();
+    pen.globalCompositeOperation = 'overlay';
+    pen.globalAlpha = alpha;
+    pen.fillStyle = pattern;
+    pen.fillRect(0, 0, width, height);
+    pen.restore();
+  }
+
+  /** The fall of the cloth: a long soft crease and darker outer edges. */
+  function drape(pen: CanvasRenderingContext2D, width: number, height: number) {
+    const fold = pen.createLinearGradient(0, 0, width, 0);
+    fold.addColorStop(0, 'rgb(0 0 0 / 52%)');
+    fold.addColorStop(0.16, 'rgb(0 0 0 / 8%)');
+    fold.addColorStop(0.38, 'rgb(255 255 255 / 7%)');
+    fold.addColorStop(0.62, 'rgb(0 0 0 / 22%)');
+    fold.addColorStop(0.84, 'rgb(255 255 255 / 4%)');
+    fold.addColorStop(1, 'rgb(0 0 0 / 56%)');
+    pen.fillStyle = fold;
+    pen.fillRect(0, 0, width, height);
+
+    const lift = pen.createLinearGradient(0, 0, 0, height);
+    lift.addColorStop(0, 'rgb(0 0 0 / 34%)');
+    lift.addColorStop(0.3, 'rgb(0 0 0 / 0%)');
+    lift.addColorStop(1, 'rgb(0 0 0 / 40%)');
+    pen.fillStyle = lift;
+    pen.fillRect(0, 0, width, height);
+  }
+
+  /** The finished cloth: every pick thrown, beaten and shaded. */
+  function weaveCloth(
+    width: number,
+    height: number,
+    cell: number,
+    mask: Uint8Array,
+    cols: number,
+    rows: number,
+    warpShade: Float32Array,
+  ): HTMLCanvasElement {
+    const cloth = surface(width, height);
+    const pen = cloth.getContext('2d');
+    if (!pen) return cloth;
+
+    pen.fillStyle = css(VOID);
+    pen.fillRect(0, 0, width, height);
+
+    const random = rng(0x5eed);
+    const weftShade = new Float32Array(rows);
+    for (let row = 0; row < rows; row++) {
+      weftShade[row] = 0.84 + random() * 0.3;
+    }
+
+    // Most picks are indigo; now and then the weaver throws a stripe, and
+    // the warp it crosses takes a little of that dye too.
+    const ground: RGB[] = [];
+    const under: RGB[] = [];
+    while (ground.length < rows) {
+      if (random() > 0.955) {
+        const span = 1 + Math.floor(random() * 2);
+        const accent = random() > 0.45 ? MADDER : OCHRE;
+        for (let k = 0; k < span && ground.length < rows; k++) {
+          ground.push(mix(INDIGO, accent, 0.84));
+          under.push(mix(INDIGO_DEEP, accent, 0.4));
+        }
+      } else {
+        ground.push(INDIGO);
+        under.push(INDIGO_DEEP);
+      }
+    }
+
+    const gap = cell * 0.14;
+    const thread = cell - gap;
+
+    for (let r = 0; r < rows; r++) {
+      const y = r * cell;
+      const pick = ground[r] ?? INDIGO;
+      for (let c = 0; c < cols; c++) {
+        const ink = (mask[r * cols + c] ?? 0) / 255;
+        if ((r + c) % 2 === 0) {
+          const yarn = mix(pick, LINEN, ink);
+          pen.fillStyle = css(shade(yarn, weftShade[r] ?? 1));
+          pen.fillRect(c * cell, y + gap / 2, cell, thread);
+        } else {
+          const yarn = mix(under[r] ?? INDIGO_DEEP, LINEN, ink * 0.94);
+          pen.fillStyle = css(shade(yarn, warpShade[c] ?? 1));
+          pen.fillRect(c * cell + gap / 2, y, thread, cell);
+        }
+      }
+    }
+
+    overlay(pen, weaveTile(cell), width, height, 0.72);
+    overlay(pen, fuzzTile(0x1eaf), width, height, 0.14);
+    drape(pen, width, height);
+    return cloth;
+  }
+
+  /** The warp above the fell line: dressed, tensioned, nothing thrown yet. */
+  function dressLoom(
+    width: number,
+    height: number,
+    cell: number,
+    cols: number,
+    warpShade: Float32Array,
+  ): HTMLCanvasElement {
+    const loom = surface(width, height);
+    const pen = loom.getContext('2d');
+    if (!pen) return loom;
+
+    pen.fillStyle = '#05070b';
+    pen.fillRect(0, 0, width, height);
+
+    const gap = cell * 0.14;
+    for (let c = 0; c < cols; c++) {
+      const k = (warpShade[c] ?? 1) * 0.88;
+      pen.fillStyle = css(shade(INDIGO_DEEP, k));
+      pen.fillRect(c * cell + gap / 2, 0, cell - gap, height);
+    }
+
+    const tile = surface(cell, cell);
+    const tilePen = tile.getContext('2d');
+    if (tilePen) {
+      const gradient = tilePen.createLinearGradient(0, 0, cell, 0);
+      gradient.addColorStop(0, '#191919');
+      gradient.addColorStop(0.42, '#c4c4c4');
+      gradient.addColorStop(1, '#141414');
+      tilePen.fillStyle = gradient;
+      tilePen.fillRect(0, 0, cell, cell);
+      overlay(pen, tile, width, height, 0.55);
+    }
+
+    drape(pen, width, height);
+    return loom;
+  }
+
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-cloth]');
+  const ctx = canvas?.getContext('2d');
+
+  if (canvas && ctx) {
+    const reduced = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+
+    let woven: HTMLCanvasElement | undefined;
+    let bare: HTMLCanvasElement | undefined;
+    let cellSize = 8;
+    let frame = 0;
+    let resizeTimer = 0;
+
+    /** Paint the cloth as far down as it has been beaten. */
+    function paint(progress: number) {
+      if (!woven || !bare) return;
+      const width = canvas!.width;
+      const height = canvas!.height;
+      const clamped = Math.min(1, Math.max(0, progress));
+      const fell = Math.round((1 - Math.pow(1 - clamped, 3)) * height);
+
+      ctx!.globalCompositeOperation = 'source-over';
+      ctx!.clearRect(0, 0, width, height);
+      ctx!.drawImage(bare, 0, 0);
+      if (fell > 0) {
+        ctx!.drawImage(woven, 0, 0, width, fell, 0, 0, width, fell);
+      }
+
+      if (fell > 0 && fell < height) {
+        const top = fell - cellSize * 2;
+        const glow = ctx!.createLinearGradient(0, top, 0, fell + cellSize * 7);
+        glow.addColorStop(0, 'rgb(230 218 190 / 0%)');
+        glow.addColorStop(0.2, 'rgb(230 218 190 / 26%)');
+        glow.addColorStop(0.24, 'rgb(230 218 190 / 60%)');
+        glow.addColorStop(0.3, 'rgb(5 7 11 / 62%)');
+        glow.addColorStop(1, 'rgb(5 7 11 / 0%)');
+        ctx!.fillStyle = glow;
+        ctx!.fillRect(0, top, width, cellSize * 9);
+      }
+    }
+
+    function animate() {
+      const started = performance.now();
+      cancelAnimationFrame(frame);
+
+      const tick = () => {
+        const progress = (performance.now() - started) / DURATION;
+        paint(progress);
+        if (progress < 1) frame = requestAnimationFrame(tick);
+      };
+
+      frame = requestAnimationFrame(tick);
+    }
+
+    function rebuild(animated: boolean) {
+      const rect = canvas!.getBoundingClientRect();
+      if (rect.width < 2 || rect.height < 2) return;
+
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const width = Math.round(rect.width * dpr);
+      const height = Math.round(rect.height * dpr);
+      canvas!.width = width;
+      canvas!.height = height;
+
+      const cssCell = Math.min(9, Math.max(3.4, rect.width / 180));
+      cellSize = Math.max(3, Math.round(cssCell * dpr));
+      const cols = Math.ceil(width / cellSize);
+      const rows = Math.ceil(height / cellSize);
+
+      const random = rng(0xc107);
+      const warpShade = new Float32Array(cols);
+      for (let c = 0; c < cols; c++) warpShade[c] = 0.84 + random() * 0.32;
+
+      const mask = buildMask(cols, rows);
+      woven = weaveCloth(width, height, cellSize, mask, cols, rows, warpShade);
+      bare = dressLoom(width, height, cellSize, cols, warpShade);
+
+      if (animated) animate();
+      else paint(1);
+    }
+
+    async function start() {
+      // The weave is traced from the webfont, so wait for the real one.
+      await document.fonts.load("700 100px 'Zilla Slab'").catch(() => []);
+      await document.fonts.ready;
+
+      rebuild(!reduced);
+
+      window.addEventListener('resize', () => {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(() => rebuild(false), 180);
+      });
+    }
+
+    void start();
+  }
+</script>
