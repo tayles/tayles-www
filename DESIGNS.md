@@ -7,8 +7,20 @@
 generated, screenshotted and merged automatically. Every design it has ever
 worn stays online at its own URL. Newest first.
 
-**10 designs** ·
+**11 designs** ·
 [Browse them live](https://tayles.co.uk/designs)
+
+---
+
+## Lido
+
+28 September 2026 · `lido`
+
+An open-air swimming pool from directly above — the word is laid into the floor in dark mosaic tiles, wobbling under the refracting surface while a net of caustic light drifts over it. Move the cursor and the water answers.
+
+[![Lido](src/designs/lido/screenshot.webp)](src/designs/lido/)
+
+[Live](https://tayles.co.uk/designs/lido) · [Source](src/designs/lido/index.astro) · `pool` `water` `caustics` `mosaic` `turquoise` `canvas` `cursor`
 
 ---
 
