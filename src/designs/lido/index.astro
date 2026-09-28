@@ -1,0 +1,725 @@
+---
+// Lido — a municipal open-air pool seen from directly above. A canvas lays the
+// word into the floor as ceramic mosaic, redraws it in strips through a
+// refracting water surface, and washes a net of caustic light over the top.
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Josefin+Sans:wght@400;600;700&display=swap"
+/>
+
+<div class="lido">
+  <header class="deck">
+    <div class="board">
+      <h1>tayles</h1>
+      <p class="est">Open-air lido · Est. MMXXVI · Unheated</p>
+    </div>
+
+    <nav class="plaques" aria-label="Elsewhere">
+      <a href="https://github.com/tayles">GitHub</a>
+      <a href="https://linkedin.com/in/tayles">LinkedIn</a>
+    </nav>
+  </header>
+
+  <div class="pool">
+    <canvas
+      class="water"
+      data-water
+      role="img"
+      aria-label="Looking down into a swimming pool: the word tayles is laid into the floor in dark mosaic tiles, rippling under the water while caustic light drifts across it."
+    ></canvas>
+
+    <div class="kerb" aria-hidden="true">
+      <span>0.9m</span>
+      <span>1.4m</span>
+      <span>2.2m</span>
+      <span>3.0m</span>
+    </div>
+
+    <svg class="ladder" viewBox="0 0 54 96" aria-hidden="true">
+      <defs>
+        <linearGradient id="lido-chrome" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stop-color="#8e9ba1"></stop>
+          <stop offset="0.35" stop-color="#f2f6f7"></stop>
+          <stop offset="0.6" stop-color="#c3ced2"></stop>
+          <stop offset="1" stop-color="#76858c"></stop>
+        </linearGradient>
+      </defs>
+      <g fill="url(#lido-chrome)">
+        <rect x="4" y="0" width="8" height="96" rx="4"></rect>
+        <rect x="42" y="0" width="8" height="96" rx="4"></rect>
+        <rect x="8" y="30" width="38" height="7" rx="3.5"></rect>
+        <rect x="8" y="56" width="38" height="7" rx="3.5"></rect>
+        <rect x="8" y="82" width="38" height="7" rx="3.5"></rect>
+      </g>
+    </svg>
+
+    <div class="rope" aria-hidden="true"></div>
+    <div class="deep" aria-hidden="true"></div>
+    <div class="glare" aria-hidden="true"></div>
+  </div>
+</div>
+
+<style>
+  .lido {
+    --deck: #e9e3d6;
+    --deck-dark: #d6cebc;
+    --tile: #f4f7f4;
+    --ink: #0d4257;
+    --enamel: #0a6b8a;
+    --gutter: #26505e;
+
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 100dvh;
+    background: var(--deck);
+    color: var(--ink);
+    font-family: 'Josefin Sans', ui-sans-serif, system-ui, sans-serif;
+  }
+
+  /* The concrete apron: warm, sun-bleached, faintly troweled. */
+  .deck {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: clamp(0.9rem, 2.5vw, 2.5rem);
+    padding: clamp(1.1rem, 3.4vw, 2.6rem) clamp(1.1rem, 4vw, 3.4rem)
+      clamp(1rem, 2.6vw, 2rem);
+    background:
+      radial-gradient(
+        ellipse at 22% 0%,
+        rgb(255 252 240 / 75%) 0%,
+        rgb(255 252 240 / 0%) 62%
+      ),
+      repeating-linear-gradient(
+        92deg,
+        rgb(150 138 112 / 5%) 0 2px,
+        rgb(150 138 112 / 0%) 2px 9px
+      ),
+      linear-gradient(180deg, #efe9dd 0%, var(--deck) 58%, var(--deck-dark));
+  }
+
+  .board {
+    min-width: 0;
+  }
+
+  /* Painted straight onto the concrete, so it sits slightly proud of it. */
+  .lido h1 {
+    margin: 0;
+    font-size: clamp(2.7rem, 8.2vw, 6rem);
+    font-weight: 700;
+    line-height: 0.92;
+    letter-spacing: clamp(0.02em, 0.9vw, 0.12em);
+    color: var(--ink);
+    text-shadow:
+      0 1px 0 rgb(255 255 255 / 55%),
+      0 -1px 0 rgb(13 66 87 / 18%);
+  }
+
+  .est {
+    margin: clamp(0.45rem, 1.2vw, 0.9rem) 0 0;
+    font-size: clamp(0.6rem, 1.2vw, 0.78rem);
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgb(13 66 87 / 62%);
+  }
+
+  .plaques {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(0.5rem, 1.4vw, 0.9rem);
+  }
+
+  /* Vitreous-enamel poolside signs, bolted to the fence. */
+  .plaques a {
+    position: relative;
+    padding: 0.55em 1.15em 0.5em;
+    border: 2px solid var(--enamel);
+    border-radius: 0.2rem;
+    background: linear-gradient(170deg, #fdfefe 0%, #eaf3f4 100%);
+    box-shadow:
+      inset 0 0 0 2px #fdfefe,
+      0 2px 0 rgb(13 66 87 / 22%),
+      0 6px 14px rgb(13 66 87 / 14%);
+    color: var(--enamel);
+    font-size: clamp(0.82rem, 1.5vw, 1rem);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition:
+      translate 180ms ease,
+      box-shadow 180ms ease,
+      color 180ms ease;
+  }
+
+  .plaques a::after {
+    content: '';
+    position: absolute;
+    top: 0.42em;
+    right: 0.42em;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgb(13 66 87 / 30%);
+  }
+
+  .plaques a:hover,
+  .plaques a:focus-visible {
+    translate: 0 -3px;
+    box-shadow:
+      inset 0 0 0 2px #fdfefe,
+      0 5px 0 rgb(13 66 87 / 22%),
+      0 12px 22px rgb(13 66 87 / 20%);
+    color: #063c50;
+    outline: none;
+  }
+
+  .plaques a:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 4px;
+  }
+
+  .pool {
+    position: relative;
+    overflow: hidden;
+    /* The overflow channel where the deck gives way to the water. */
+    box-shadow:
+      inset 0 3px 0 var(--gutter),
+      inset 0 5px 7px rgb(6 40 52 / 45%);
+  }
+
+  .water {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* White kerb tiles carrying the depth marks, half-drowned by the water. */
+  .kerb {
+    position: absolute;
+    top: 5px;
+    right: 0;
+    left: 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: clamp(1.15rem, 2.6vw, 1.9rem);
+    background:
+      repeating-linear-gradient(
+        90deg,
+        rgb(13 66 87 / 16%) 0 1px,
+        rgb(13 66 87 / 0%) 1px clamp(1.15rem, 2.6vw, 1.9rem)
+      ),
+      linear-gradient(180deg, var(--tile) 0%, #dfe9e6 100%);
+    box-shadow: 0 2px 6px rgb(6 40 52 / 30%);
+    font-size: clamp(0.5rem, 1vw, 0.66rem);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: rgb(13 66 87 / 70%);
+  }
+
+  .ladder {
+    position: absolute;
+    top: 0;
+    right: clamp(1.4rem, 6vw, 5rem);
+    width: clamp(1.5rem, 3vw, 2.6rem);
+    height: auto;
+    filter: drop-shadow(2px 5px 5px rgb(6 40 52 / 45%));
+  }
+
+  /* A lane rope floating just inside the shallow end. */
+  .rope {
+    position: absolute;
+    top: 17%;
+    right: 0;
+    left: 0;
+    height: clamp(7px, 1vw, 12px);
+    background: repeating-linear-gradient(
+      90deg,
+      #0a6b8a 0 calc(clamp(7px, 1vw, 12px) * 1.5),
+      #f2f7f6 calc(clamp(7px, 1vw, 12px) * 1.5)
+        calc(clamp(7px, 1vw, 12px) * 3)
+    );
+    border-radius: 999px;
+    box-shadow:
+      inset 0 2px 2px rgb(255 255 255 / 35%),
+      0 6px 10px rgb(6 40 52 / 30%);
+    opacity: 0.94;
+    animation: bob 5.5s ease-in-out infinite;
+  }
+
+  /* Sun on the surface, and the water going over at the far end. */
+  .glare {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        ellipse 55% 40% at 14% 6%,
+        rgb(255 253 236 / 42%) 0%,
+        rgb(255 253 236 / 0%) 70%
+      ),
+      radial-gradient(
+        ellipse 70% 45% at 82% 18%,
+        rgb(255 253 236 / 20%) 0%,
+        rgb(255 253 236 / 0%) 70%
+      );
+    mix-blend-mode: screen;
+  }
+
+  /* The far end falls away, and takes the nav chrome into shadow with it. */
+  .deep {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgb(4 40 56 / 0%) 55%,
+      rgb(4 40 56 / 34%) 100%
+    );
+  }
+
+  @keyframes bob {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 0 5px;
+    }
+  }
+
+  /* Narrow screens: drop the ladder, tighten the rope and the kerb marks. */
+  @media (max-width: 34rem) {
+    .ladder {
+      display: none;
+    }
+
+    .kerb span:nth-child(2),
+    .kerb span:nth-child(3) {
+      display: none;
+    }
+
+    .plaques {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rope {
+      animation: none;
+    }
+
+    .plaques a {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  interface Ripple {
+    x: number;
+    y: number;
+    born: number;
+  }
+
+  const WORD = 'tayles';
+  /** Kept clear at the foot of the pool so the nav chrome covers only water. */
+  const NAV_RESERVE = 56;
+  const INTRO_MS = 900;
+
+  /** Pale ceramic floor tiles, and the dark ones the word is laid in. */
+  const FLOOR: [number, number, number][] = [
+    [206, 233, 232],
+    [189, 224, 226],
+    [215, 239, 237],
+    [178, 215, 219],
+  ];
+  const INLAY: [number, number, number][] = [
+    [16, 66, 94],
+    [12, 51, 75],
+    [23, 83, 111],
+    [9, 44, 66],
+  ];
+  const EDGE: [number, number, number] = [116, 164, 183];
+
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-water]');
+  const ctx = canvas?.getContext('2d', { alpha: false });
+
+  function hash(x: number, y: number): number {
+    const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+    return s - Math.floor(s);
+  }
+
+  function shade(
+    rgb: [number, number, number],
+    amount: number,
+  ): string {
+    const r = Math.round(Math.min(255, Math.max(0, rgb[0] * amount)));
+    const g = Math.round(Math.min(255, Math.max(0, rgb[1] * amount)));
+    const b = Math.round(Math.min(255, Math.max(0, rgb[2] * amount)));
+    return `rgb(${r} ${g} ${b})`;
+  }
+
+  /**
+   * The word, rasterised at floor resolution so each tile can ask whether it
+   * falls inside a letter.
+   */
+  interface Inlay {
+    alpha: Uint8ClampedArray;
+    size: number;
+  }
+
+  function wordAlpha(
+    fw: number,
+    fh: number,
+    pad: number,
+    width: number,
+    height: number,
+  ): Inlay | undefined {
+    const mask = document.createElement('canvas');
+    mask.width = fw;
+    mask.height = fh;
+    const m = mask.getContext('2d', { willReadFrequently: true });
+    if (!m) return undefined;
+
+    m.textAlign = 'center';
+    m.textBaseline = 'middle';
+    m.font = '100px "Archivo Black", sans-serif';
+    const unit = m.measureText(WORD).width || 100;
+    // Wide pools give the word less of their width; tall ones more.
+    const fill = width / height > 1.5 ? 0.72 : 0.92;
+    const size = Math.min((width * fill * 100) / unit, height * 0.5);
+    m.font = `${size}px "Archivo Black", sans-serif`;
+    m.fillStyle = '#000';
+    m.fillText(WORD, pad + width / 2, pad + (height - NAV_RESERVE) / 2);
+
+    return { alpha: m.getImageData(0, 0, fw, fh).data, size };
+  }
+
+  /**
+   * The pool floor, built once per resize: grouted mosaic with the word inlaid,
+   * then tinted through the depth of the water. It carries a margin all round
+   * so the refraction can sample outside the visible frame without gaps.
+   */
+  function buildFloor(
+    width: number,
+    height: number,
+    pad: number,
+  ): HTMLCanvasElement {
+    const fw = width + pad * 2;
+    const fh = height + pad * 2;
+    const floor = document.createElement('canvas');
+    floor.width = fw;
+    floor.height = fh;
+    const f = floor.getContext('2d');
+    if (!f) return floor;
+
+    const inlay = wordAlpha(fw, fh, pad, width, height);
+    const alpha = inlay?.alpha;
+    // Roughly twenty-six courses of tile to a letter, whatever the viewport.
+    const pitch = Math.max(
+      5,
+      Math.min(
+        Math.round(Math.min(width, height) / 34),
+        Math.round((inlay?.size ?? width / 4) / 26),
+      ),
+    );
+    const grout = Math.max(1, Math.round(pitch * 0.14));
+
+    // Grout first; every tile is then inset into it.
+    f.fillStyle = '#e6efec';
+    f.fillRect(0, 0, fw, fh);
+
+    for (let ty = 0; ty < fh; ty += pitch) {
+      for (let tx = 0; tx < fw; tx += pitch) {
+        // Nine samples per tile, so letter edges land on a mid tone rather
+        // than snapping to the grid.
+        let hits = 0;
+        if (alpha) {
+          for (let sy = 0; sy < 3; sy++) {
+            for (let sx = 0; sx < 3; sx++) {
+              const px = Math.min(
+                fw - 1,
+                Math.round(tx + (pitch * (sx + 0.5)) / 3),
+              );
+              const py = Math.min(
+                fh - 1,
+                Math.round(ty + (pitch * (sy + 0.5)) / 3),
+              );
+              if ((alpha[(py * fw + px) * 4 + 3] ?? 0) > 120) hits++;
+            }
+          }
+        }
+
+        const pick = Math.floor(hash(tx, ty) * 4);
+        const inWord = hits >= 5;
+        let rgb: [number, number, number];
+        if (inWord) rgb = INLAY[pick % 4] ?? INLAY[0]!;
+        else if (hits > 0) rgb = EDGE;
+        else rgb = FLOOR[pick % 4] ?? FLOOR[0]!;
+
+        // The letters are grouted in their own dark mortar; pale grout running
+        // through them would dissolve the word at small sizes.
+        if (inWord) {
+          f.fillStyle = '#16465f';
+          f.fillRect(tx, ty, pitch, pitch);
+        }
+
+        // Each tile varies a little, and the far end of the pool sits deeper.
+        const jitter = 0.94 + hash(ty, tx) * 0.12;
+        const x = tx + grout;
+        const y = ty + grout;
+        const size = pitch - grout;
+
+        f.fillStyle = shade(rgb, jitter);
+        f.fillRect(x, y, size, size);
+
+        // Glazed relief: light catches the top edge, the bottom falls away.
+        f.fillStyle = `rgb(255 255 255 / ${0.16 + hash(tx, ty + 7) * 0.12})`;
+        f.fillRect(x, y, size, Math.max(1, grout * 0.7));
+        f.fillStyle = 'rgb(6 40 52 / 12%)';
+        f.fillRect(x, y + size - Math.max(1, grout * 0.7), size, grout * 0.7);
+      }
+    }
+
+    // The water itself: shallow and bright at the near end, deep at the far.
+    f.globalCompositeOperation = 'multiply';
+    const depth = f.createLinearGradient(0, 0, 0, fh);
+    depth.addColorStop(0, 'rgb(196 247 245)');
+    depth.addColorStop(0.5, 'rgb(126 219 222)');
+    depth.addColorStop(1, 'rgb(44 146 168)');
+    f.fillStyle = depth;
+    f.fillRect(0, 0, fw, fh);
+    f.globalCompositeOperation = 'source-over';
+
+    return floor;
+  }
+
+  if (canvas && ctx) {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
+      .matches;
+
+    const ripples: Ripple[] = [];
+    let floor: HTMLCanvasElement | undefined;
+    let caustic: HTMLCanvasElement | undefined;
+    let glow: HTMLCanvasElement | undefined;
+    let cctx: CanvasRenderingContext2D | null = null;
+    let gctx: CanvasRenderingContext2D | null = null;
+    let cells: ImageData | undefined;
+    let width = 0;
+    let height = 0;
+    let pad = 0;
+    let swell = 0;
+    let strip = 3;
+    let raf = 0;
+    let resizeTimer = 0;
+    let started = 0;
+    let lastRipple = 0;
+
+    /** The moving net of focused light on the floor. */
+    function paintCaustics(t: number) {
+      if (!cctx || !caustic || !cells) return;
+      const cw = caustic.width;
+      const ch = caustic.height;
+      const data = cells.data;
+
+      for (let j = 0; j < ch; j++) {
+        for (let i = 0; i < cw; i++) {
+          // Warping the sample point first breaks the sine lattice into
+          // irregular cells — without it the light reads as wallpaper.
+          const wx =
+            i +
+            11 * Math.sin(i * 0.017 + j * 0.023 + t * 0.26) +
+            5 * Math.sin(j * 0.051 - t * 0.19);
+          const wy =
+            j +
+            11 * Math.cos(i * 0.019 - j * 0.014 - t * 0.22) +
+            5 * Math.cos(i * 0.043 + t * 0.17);
+
+          let s =
+            Math.sin(wx * 0.16 + wy * 0.07 + t * 0.85) +
+            Math.sin(wx * -0.1 + wy * 0.19 - t * 1.1) +
+            Math.sin((wx + wy) * 0.115 + t * 0.6) +
+            0.8 * Math.sin((wx - wy) * 0.052 - t * 0.45);
+
+          for (const r of ripples) {
+            const age = t - r.born;
+            const dx = i - r.x * cw;
+            const dy = j - r.y * ch;
+            const d = Math.sqrt(dx * dx + dy * dy);
+            s +=
+              1.7 *
+              Math.sin(d * 0.5 - age * 9) *
+              Math.exp(-d * 0.032) *
+              Math.exp(-age * 1.9);
+          }
+
+          // Light piles up where the wavefronts cancel, in thin bright seams,
+          // and a slower swell decides which stretches of floor catch it.
+          const pool = 0.5 + 0.5 * Math.sin(i * 0.021 + j * 0.017 - t * 0.3);
+          const thick =
+            0.74 +
+            0.2 * pool +
+            0.16 * Math.sin(wx * 0.047 - wy * 0.039 + t * 0.5);
+          const k = Math.max(0, 1 - Math.abs(s) * thick);
+          const k2 = k * k;
+          const o = (j * cw + i) * 4;
+          data[o] = 255;
+          data[o + 1] = 251;
+          data[o + 2] = 231;
+          data[o + 3] = Math.min(255, k2 * k2 * k2 * (0.4 + 0.6 * pool) * 210);
+        }
+      }
+
+      cctx.putImageData(cells, 0, 0);
+    }
+
+    function paint(t: number, intro: number) {
+      if (!ctx || !floor) return;
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = '#2f93a6';
+      ctx.fillRect(0, 0, width, height);
+
+      // Refraction: the floor is redrawn a strip at a time, each strip
+      // sampled from a slightly different place under the moving surface.
+      const amp = swell * (0.45 + 0.55 * intro);
+      for (let y = 0; y < height; y += strip) {
+        const dx =
+          amp * Math.sin(y * 0.035 + t * 0.9) +
+          amp * 0.55 * Math.sin(y * -0.066 - t * 1.35) +
+          amp * 0.7 * Math.sin(y * 0.0196 + t * 0.55);
+        const dy = amp * 0.3 * Math.sin(y * 0.041 + t * 1.05);
+        const h = Math.min(strip, height - y);
+        ctx.drawImage(
+          floor,
+          pad - dx,
+          pad + y - dy,
+          width,
+          h,
+          0,
+          y,
+          width,
+          h,
+        );
+      }
+
+      if (caustic) {
+        paintCaustics(t);
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+
+        // Downscaling and blowing it back up is a cheap, well-behaved blur.
+        if (gctx && glow) {
+          gctx.clearRect(0, 0, glow.width, glow.height);
+          gctx.drawImage(caustic, 0, 0, glow.width, glow.height);
+          ctx.globalAlpha = 0.3 * intro;
+          ctx.drawImage(glow, 0, 0, width, height);
+        }
+
+        ctx.globalAlpha = 0.42 * intro;
+        ctx.drawImage(caustic, 0, 0, width, height);
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'source-over';
+      }
+    }
+
+    function tick(now: number) {
+      const t = (now - started) / 1000;
+      const intro = Math.min(1, (now - started) / INTRO_MS);
+
+      // Spent ripples stop costing anything.
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        if (t - (ripples[i]?.born ?? 0) > 2.4) ripples.splice(i, 1);
+      }
+
+      paint(t, intro);
+      raf = requestAnimationFrame(tick);
+    }
+
+    function rebuild() {
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width < 2 || rect.height < 2) return;
+
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      width = Math.round(rect.width * dpr);
+      height = Math.round(rect.height * dpr);
+      canvas.width = width;
+      canvas.height = height;
+
+      swell = Math.max(2, 2.6 * dpr);
+      pad = Math.ceil(swell * 2.2) + 2;
+      strip = Math.max(2, Math.round(3 * dpr));
+      floor = buildFloor(width, height, pad);
+
+      caustic = document.createElement('canvas');
+      caustic.width = Math.min(460, Math.max(190, Math.round(width / 6)));
+      caustic.height = Math.max(
+        60,
+        Math.round((caustic.width * height) / width),
+      );
+      cctx = caustic.getContext('2d');
+      cells = cctx?.createImageData(caustic.width, caustic.height);
+
+      glow = document.createElement('canvas');
+      glow.width = Math.max(24, Math.round(caustic.width / 3));
+      glow.height = Math.max(16, Math.round(caustic.height / 3));
+      gctx = glow.getContext('2d');
+    }
+
+    async function start() {
+      // The mosaic is cut from the webfont, so wait for the real face.
+      await Promise.all(
+        ['100px "Archivo Black"', '700 1rem "Josefin Sans"'].map((face) =>
+          document.fonts.load(face).catch(() => []),
+        ),
+      );
+      await document.fonts.ready;
+
+      rebuild();
+
+      if (reduced) {
+        // Still water: one settled frame, and nothing moves again.
+        paint(0.6, 1);
+      } else {
+        started = performance.now();
+        raf = requestAnimationFrame(tick);
+
+        canvas!.addEventListener('pointermove', (event) => {
+          const now = performance.now();
+          if (now - lastRipple < 150) return;
+          lastRipple = now;
+          const rect = canvas!.getBoundingClientRect();
+          ripples.push({
+            x: (event.clientX - rect.left) / rect.width,
+            y: (event.clientY - rect.top) / rect.height,
+            born: (now - started) / 1000,
+          });
+          if (ripples.length > 4) ripples.shift();
+        });
+      }
+
+      window.addEventListener('resize', () => {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(() => {
+          rebuild();
+          if (reduced) paint(0.6, 1);
+        }, 180);
+      });
+
+      window.addEventListener('pagehide', () => cancelAnimationFrame(raf));
+    }
+
+    void start();
+  }
+</script>
