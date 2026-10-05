@@ -1,0 +1,865 @@
+---
+// Departures — a Solari split-flap board on a station wall. Every glyph is a
+// real hinged card: four stacked surfaces per cell whose characters live in
+// `data-g` and are painted by `::after`, so the board renders already settled
+// without JavaScript. The script rewinds each cell a few notches down the drum
+// and flips it forward again, column by column, until the word lands.
+
+/** One flap cell: two static halves, a cast shadow, and the hinged leaf. */
+const cell = (ch: string) =>
+  [
+    '<span class="cell">',
+    `<span class="cell__half cell__half--top" data-g="${ch}"></span>`,
+    `<span class="cell__half cell__half--bottom" data-g="${ch}"></span>`,
+    '<span class="cell__shade"></span>',
+    '<span class="cell__leaf">',
+    `<span class="cell__face cell__face--front" data-g="${ch}"></span>`,
+    `<span class="cell__face cell__face--back" data-g="${ch}"></span>`,
+    '</span>',
+    '</span>',
+  ].join('');
+
+// Only ever called with the fixed strings below — all A-Z, 0-9, ':' or ' '.
+const flaps = (text: string) => [...text.toUpperCase()].map(cell).join('');
+
+const services = [
+  {
+    href: 'https://github.com/tayles',
+    label: 'GitHub — github.com/tayles',
+    time: '09:41',
+    dest: 'GITHUB  ',
+    plat: '1',
+    status: 'ON TIME  ',
+    offset: 0,
+  },
+  {
+    href: 'https://linkedin.com/in/tayles',
+    label: 'LinkedIn — linkedin.com/in/tayles',
+    time: '10:07',
+    dest: 'LINKEDIN',
+    plat: '2',
+    status: 'BOARDING ',
+    offset: 100,
+  },
+];
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Azeret+Mono:wght@400;500&display=swap"
+/>
+
+<div class="station">
+  <div class="hall" aria-hidden="true"></div>
+
+  <section class="board">
+    <div class="board__head">
+      <span class="board__label">
+        <span class="board__lamp" aria-hidden="true"></span>Departures
+      </span>
+      <span
+        class="group group--clock"
+        aria-hidden="true"
+        data-group
+        data-clock
+        data-begin="200"
+        data-stagger="34"
+        data-speed="56"
+        set:html={flaps('09:38')}
+      ></span>
+    </div>
+
+    <h1 class="name">
+      <span class="sr">tayles</span>
+      <span
+        class="group group--name"
+        aria-hidden="true"
+        data-group
+        data-begin="60"
+        data-stagger="52"
+        data-speed="64"
+        set:html={flaps('tayles')}
+      ></span>
+    </h1>
+
+    <div class="services">
+      <div class="services__head" aria-hidden="true">
+        <span class="col col--time">Time</span>
+        <span class="col col--dest">Destination</span>
+        <span class="col col--plat">Plat</span>
+        <span class="col col--status">Status</span>
+      </div>
+
+      {
+        services.map((service) => (
+          <a class="service" href={service.href}>
+            <span class="sr">{service.label}</span>
+            <span
+              class="group group--time col col--time"
+              aria-hidden="true"
+              data-group
+              data-begin={440 + service.offset}
+              data-stagger="24"
+              data-speed="48"
+              set:html={flaps(service.time)}
+            ></span>
+            <span
+              class="group group--dest col col--dest"
+              aria-hidden="true"
+              data-group
+              data-begin={520 + service.offset}
+              data-stagger="26"
+              data-speed="48"
+              set:html={flaps(service.dest)}
+            ></span>
+            <span
+              class="group group--plat col col--plat"
+              aria-hidden="true"
+              data-group
+              data-begin={620 + service.offset}
+              data-speed="48"
+              set:html={flaps(service.plat)}
+            ></span>
+            <span
+              class="group group--status col col--status"
+              aria-hidden="true"
+              data-group
+              data-status
+              data-begin={680 + service.offset}
+              data-stagger="22"
+              data-speed="46"
+              set:html={flaps(service.status)}
+            ></span>
+          </a>
+        ))
+      }
+    </div>
+
+    <p class="board__foot">
+      Platform 1 &amp; 2 &middot; all services running to time &middot;
+      tayles.co.uk
+    </p>
+  </section>
+</div>
+
+<style>
+  .station {
+    --ink: #07090b;
+    --panel: #11151a;
+    --panel-edge: #272d35;
+    --slot: #040608;
+    --flap-top: #1c2127;
+    --flap-top-lit: #23282f;
+    --flap-bottom: #191e24;
+    --flap-bottom-lit: #1f252c;
+    --warm: #f6efe1;
+    --amber: #ffad2b;
+    --green: #74dfa2;
+    --muted: #6c7682;
+    /* One scale for the board: every cell is a fraction of this. */
+    --unit: clamp(2rem, min(10.4vw, 12vh), 9.5rem);
+
+    position: relative;
+    display: grid;
+    min-height: 100dvh;
+    place-items: center;
+    padding: clamp(1.5rem, 5vmin, 4rem) clamp(0.75rem, 3vw, 3rem) 5.5rem;
+    overflow: hidden;
+    background: var(--ink);
+    font-family: 'Oswald', 'Arial Narrow', sans-serif;
+    color: var(--warm);
+  }
+
+  /* The wall behind the board: one overhead light, a cold floor, a vignette. */
+  .hall {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        58% 42% at 50% 62%,
+        rgb(255 173 43 / 7%) 0%,
+        transparent 72%
+      ),
+      radial-gradient(
+        120% 62% at 50% -14%,
+        rgb(255 206 140 / 15%) 0%,
+        rgb(255 196 120 / 4%) 40%,
+        transparent 70%
+      ),
+      radial-gradient(
+        90% 55% at 50% 112%,
+        rgb(118 148 180 / 8%) 0%,
+        transparent 65%
+      ),
+      linear-gradient(180deg, #0c1013 0%, #07090b 55%, #05070a 100%);
+  }
+
+  /* A whisper of concrete tooth, so the wall is never flat black. */
+  .hall::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E")
+      repeat;
+    opacity: 0.035;
+  }
+
+  .hall::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      80% 60% at 50% 45%,
+      transparent 35%,
+      rgb(0 0 0 / 62%) 100%
+    );
+  }
+
+  .board {
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
+    padding: clamp(0.7rem, 2.2vmin, 1.5rem) clamp(0.6rem, 2vmin, 1.6rem)
+      clamp(0.6rem, 1.8vmin, 1.2rem);
+    border-radius: clamp(3px, 0.6vmin, 7px);
+    background:
+      radial-gradient(
+          6px 6px at 10px 10px,
+          #2e343c 0%,
+          #15191e 55%,
+          transparent 60%
+        )
+        no-repeat,
+      radial-gradient(
+          6px 6px at calc(100% - 10px) 10px,
+          #2e343c 0%,
+          #15191e 55%,
+          transparent 60%
+        )
+        no-repeat,
+      radial-gradient(
+          6px 6px at 10px calc(100% - 10px),
+          #2e343c 0%,
+          #15191e 55%,
+          transparent 60%
+        )
+        no-repeat,
+      radial-gradient(
+          6px 6px at calc(100% - 10px) calc(100% - 10px),
+          #2e343c 0%,
+          #15191e 55%,
+          transparent 60%
+        )
+        no-repeat,
+      linear-gradient(180deg, #1a1f25 0%, var(--panel) 18%, #0d1014 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 9%),
+      inset 0 0 0 1px rgb(255 255 255 / 4%),
+      0 0 0 1px #000,
+      0 2px 0 2px #0b0e11,
+      0 36px 70px -24px rgb(0 0 0 / 95%),
+      0 0 140px -30px rgb(255 173 43 / 30%);
+    animation: wake 620ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  }
+
+  /* Two rods into the dark — the board hangs over the concourse. */
+  .board::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: clamp(1.25rem, 10vh, 6rem);
+    background-image:
+      linear-gradient(180deg, rgb(38 44 51 / 0%), rgb(58 66 75 / 100%)),
+      linear-gradient(180deg, rgb(38 44 51 / 0%), rgb(58 66 75 / 100%));
+    background-size: 3px 100%, 3px 100%;
+    background-position: 24% 0, 76% 0;
+    background-repeat: no-repeat;
+  }
+
+  @keyframes wake {
+    from {
+      opacity: 0;
+      translate: 0 1.1rem;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  .board__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: clamp(0.45rem, 1.4vmin, 0.9rem);
+    margin-bottom: clamp(0.5rem, 1.6vmin, 1rem);
+    border-bottom: 1px solid rgb(255 255 255 / 7%);
+  }
+
+  .board__label,
+  .board__foot,
+  .services__head {
+    font-family: 'Azeret Mono', ui-monospace, monospace;
+    font-size: clamp(0.5rem, 1.15vw, 0.66rem);
+    font-weight: 500;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .board__label {
+    display: flex;
+    align-items: center;
+    gap: 0.65em;
+    color: #8e99a6;
+  }
+
+  .board__lamp {
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 0.5em rgb(255 173 43 / 90%);
+    animation: pulse 3.4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 0.35;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .name {
+    margin: 0;
+    line-height: 1;
+  }
+
+  .group {
+    display: flex;
+    gap: var(--gap);
+  }
+
+  .group--name {
+    --cw: var(--unit);
+    --gap: max(2px, calc(var(--cw) * 0.055));
+
+    justify-content: center;
+    padding-block: calc(var(--unit) * 0.14);
+  }
+
+  .group--clock {
+    --cw: max(0.72rem, calc(var(--unit) * 0.175));
+    --gap: 1px;
+  }
+
+  /*
+   * The service rows are sized so their total width tracks the name above
+   * them — the ratio changes with the number of columns on show.
+   */
+  .services {
+    --ratio: 0.225;
+    --cw: max(0.7rem, calc(var(--unit) * var(--ratio)));
+    --gap: max(1px, calc(var(--cw) * 0.05));
+    --colgap: calc(var(--unit) * 0.3);
+
+    display: grid;
+    gap: clamp(0.3rem, 1vmin, 0.6rem);
+    margin-top: clamp(0.4rem, 1.4vmin, 1rem);
+  }
+
+  .services__head,
+  .service {
+    display: flex;
+    align-items: center;
+    gap: var(--colgap);
+  }
+
+  .services__head {
+    font-size: clamp(0.44rem, 1vw, 0.58rem);
+    letter-spacing: 0.2em;
+    color: #58626e;
+  }
+
+  .col--time {
+    width: calc(5 * var(--cw) + 4 * var(--gap));
+  }
+
+  .col--dest {
+    width: calc(8 * var(--cw) + 7 * var(--gap));
+  }
+
+  .col--plat {
+    width: var(--cw);
+    justify-content: center;
+    text-align: center;
+  }
+
+  .col--status {
+    width: calc(9 * var(--cw) + 8 * var(--gap));
+  }
+
+  .service {
+    position: relative;
+    padding: clamp(0.2rem, 0.9vmin, 0.5rem) clamp(0.25rem, 1vmin, 0.6rem);
+    margin-inline: calc(-1 * clamp(0.25rem, 1vmin, 0.6rem));
+    border-radius: 3px;
+    text-decoration: none;
+    transition: background 220ms ease;
+  }
+
+  .service:hover,
+  .service:focus-visible {
+    background: rgb(255 173 43 / 7%);
+  }
+
+  .service:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 2px;
+  }
+
+  .service:hover :global(.cell__half),
+  .service:focus-visible :global(.cell__half),
+  .service:hover :global(.cell__face),
+  .service:focus-visible :global(.cell__face) {
+    --flap-top: var(--flap-top-lit);
+    --flap-bottom: var(--flap-bottom-lit);
+  }
+
+  /*
+   * The cells are built as markup in the frontmatter, so Astro's scoping
+   * attribute never lands on them. Every rule below is therefore anchored to
+   * `.board`, which is scoped — the styles stay inside this design's own root.
+   */
+
+  /* The cell: a slot in the panel with a hinged card standing in it. */
+  .board :global(.cell) {
+    --ch: calc(var(--cw) * 1.34);
+
+    position: relative;
+    width: var(--cw);
+    height: var(--ch);
+    border-radius: max(1px, calc(var(--cw) * 0.045));
+    background: var(--slot);
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 60%);
+  }
+
+  /*
+   * A cell only needs its 3D context while a card is actually falling.
+   * Granting it for the lifetime of the page would promote two compositor
+   * layers per cell — 114 of them — for motion that lasts a second.
+   */
+  .board :global(.cell.is-flipping) {
+    perspective: calc(var(--ch) * 3.2);
+  }
+
+  .board :global(.cell.is-flipping) :global(.cell__leaf) {
+    transform-style: preserve-3d;
+  }
+
+  .board :global(.cell.is-flipping) :global(.cell__face--back) {
+    visibility: visible;
+  }
+
+  .board :global(.cell__half) {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 50%;
+    overflow: hidden;
+  }
+
+  /* The two faces fill the leaf, which is itself one half of the cell. */
+  .board :global(.cell__face) {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    backface-visibility: hidden;
+  }
+
+  .board :global(.cell__half--top),
+  .board :global(.cell__face--front) {
+    top: 0;
+    background: linear-gradient(
+      180deg,
+      var(--flap-top) 0%,
+      color-mix(in srgb, var(--flap-top) 86%, #000) 100%
+    );
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 7%);
+  }
+
+  .board :global(.cell__half--bottom) {
+    bottom: 0;
+    background: linear-gradient(
+      180deg,
+      var(--flap-bottom) 0%,
+      color-mix(in srgb, var(--flap-bottom) 88%, #000) 100%
+    );
+  }
+
+  /* The glyph box is the full cell, so both halves cut the same letter. */
+  .board :global(.cell__half)::after,
+  .board :global(.cell__face)::after {
+    content: attr(data-g);
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: var(--ch);
+    line-height: var(--ch);
+    font-size: calc(var(--ch) * 0.74);
+    font-weight: 500;
+    /* Sit the cap height on the seam rather than the em box. */
+    translate: 0 calc(var(--ch) * -0.047);
+    text-align: center;
+    color: var(--glyph, var(--warm));
+    text-shadow: 0 0 calc(var(--ch) * 0.07) var(--glow, transparent);
+  }
+
+  .board :global(.cell__half--top)::after,
+  .board :global(.cell__face--front)::after {
+    top: 0;
+  }
+
+  .board :global(.cell__half--bottom)::after,
+  .board :global(.cell__face--back)::after {
+    bottom: 0;
+  }
+
+  /* The seam the cards fall through — behind the leaf, above the halves. */
+  .board :global(.cell)::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: max(1px, calc(var(--ch) * 0.028));
+    translate: 0 -50%;
+    background: #030507;
+    box-shadow: 0 1px 0 rgb(255 255 255 / 6%);
+  }
+
+  .board :global(.cell__shade) {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgb(0 0 0 / 78%), rgb(0 0 0 / 0%));
+    opacity: 0;
+  }
+
+  .board :global(.cell__leaf) {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    transform-origin: center bottom;
+  }
+
+  .board :global(.cell__face--back) {
+    visibility: hidden;
+    transform: rotateX(180deg);
+    background: linear-gradient(
+      180deg,
+      var(--flap-bottom) 0%,
+      color-mix(in srgb, var(--flap-bottom) 88%, #000) 100%
+    );
+    box-shadow: inset 0 -1px 0 rgb(0 0 0 / 60%);
+  }
+
+  .group--name {
+    --glyph: var(--warm);
+    --glow: rgb(246 239 225 / 30%);
+  }
+
+  .group--clock,
+  .group--time {
+    --glyph: #e8eef4;
+    --glow: rgb(232 238 244 / 22%);
+  }
+
+  .group--dest,
+  .group--plat {
+    --glyph: var(--amber);
+    --glow: rgb(255 173 43 / 45%);
+  }
+
+  .group--status {
+    --glyph: var(--green);
+    --glow: rgb(116 223 162 / 35%);
+  }
+
+  .board__foot {
+    /* Zero-width so a long strapline never stretches the board. */
+    width: 0;
+    min-width: 100%;
+    margin: clamp(0.6rem, 2vmin, 1.1rem) 0 0;
+    padding-top: clamp(0.4rem, 1.4vmin, 0.8rem);
+    border-top: 1px solid rgb(255 255 255 / 7%);
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Narrow boards drop columns the way a small platform sign does. */
+  @media (width < 34rem) {
+    .services {
+      --ratio: 0.72;
+    }
+
+    .col--time,
+    .col--plat,
+    .col--status {
+      display: none;
+    }
+
+    .services__head,
+    .service {
+      justify-content: center;
+    }
+  }
+
+  @media (34rem <= width < 44rem) {
+    .services {
+      --ratio: 0.4;
+    }
+
+    .col--plat,
+    .col--status {
+      display: none;
+    }
+  }
+
+  @media (44rem <= width < 56rem) {
+    .services {
+      --ratio: 0.37;
+    }
+
+    .col--status {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .board,
+    .board__lamp {
+      animation: none;
+    }
+
+    .service {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  /** The character drum, in the order the cards are stacked on the spindle. */
+  const DRUM = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:./';
+  /** A long run across the drum spins fast, the way a real board does. */
+  const FAST_MS = 30;
+  const LONG_RUN = 12;
+
+  interface Cell {
+    top: HTMLElement;
+    bottom: HTMLElement;
+    front: HTMLElement;
+    back: HTMLElement;
+    root: HTMLElement;
+    leaf: HTMLElement;
+    shade: HTMLElement;
+    char: string;
+    token: number;
+    /** How many runs are driving this cell right now. */
+    busy: number;
+  }
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const sleep = (ms: number) =>
+    new Promise<void>((resolve) => {
+      window.setTimeout(resolve, ms);
+    });
+
+  const indexOf = (char: string) => Math.max(0, DRUM.indexOf(char));
+
+  const distance = (from: string, to: string) =>
+    (indexOf(to) - indexOf(from) + DRUM.length) % DRUM.length;
+
+  function read(root: HTMLElement): Cell | null {
+    const top = root.querySelector<HTMLElement>('.cell__half--top');
+    const bottom = root.querySelector<HTMLElement>('.cell__half--bottom');
+    const front = root.querySelector<HTMLElement>('.cell__face--front');
+    const back = root.querySelector<HTMLElement>('.cell__face--back');
+    const leaf = root.querySelector<HTMLElement>('.cell__leaf');
+    const shade = root.querySelector<HTMLElement>('.cell__shade');
+    if (!top || !bottom || !front || !back || !leaf || !shade) return null;
+    return {
+      root,
+      top,
+      bottom,
+      front,
+      back,
+      leaf,
+      shade,
+      char: top.dataset['g'] ?? ' ',
+      token: 0,
+      busy: 0,
+    };
+  }
+
+  /** Paint a character on all four surfaces at once — no motion. */
+  function settle(cell: Cell, char: string) {
+    cell.char = char;
+    for (const face of [cell.top, cell.bottom, cell.front, cell.back]) {
+      face.dataset['g'] = char;
+    }
+  }
+
+  /** Drop one card: the leaf swings through the seam onto the lower half. */
+  async function step(cell: Cell, duration: number) {
+    const next = DRUM[(indexOf(cell.char) + 1) % DRUM.length] ?? ' ';
+
+    // Revealed behind the falling card, and carried on its underside.
+    cell.top.dataset['g'] = next;
+    cell.back.dataset['g'] = next;
+
+    const fall = cell.leaf.animate(
+      [
+        { transform: 'rotateX(0deg)' },
+        { transform: 'rotateX(-180deg)' },
+      ],
+      { duration, easing: 'cubic-bezier(0.45, 0.05, 0.55, 1)' },
+    );
+    cell.shade.animate(
+      [{ opacity: 0 }, { opacity: 0.5, offset: 0.55 }, { opacity: 0 }],
+      { duration: duration * 1.6, easing: 'ease-out' },
+    );
+
+    await fall.finished;
+
+    // The card has landed: hand its face to the static halves and stand the
+    // leaf back up. Both states show the same character, so nothing flickers.
+    cell.bottom.dataset['g'] = next;
+    cell.front.dataset['g'] = next;
+    cell.char = next;
+    fall.cancel();
+  }
+
+  async function drive(cell: Cell, target: string, speed: number) {
+    const token = ++cell.token;
+    cell.busy += 1;
+    cell.root.classList.add('is-flipping');
+    try {
+      while (cell.char !== target && cell.token === token) {
+        const per = distance(cell.char, target) > LONG_RUN ? FAST_MS : speed;
+        await step(cell, per);
+      }
+    } finally {
+      cell.busy -= 1;
+      if (cell.busy === 0) cell.root.classList.remove('is-flipping');
+    }
+  }
+
+  const root = document.querySelector<HTMLElement>('.station');
+  const groups = root
+    ? [...root.querySelectorAll<HTMLElement>('[data-group]')]
+    : [];
+
+  /** Groups keep their own cells and the word they are meant to show. */
+  const boards = groups.map((group, groupIndex) => {
+    const cells = [...group.querySelectorAll<HTMLElement>('.cell')]
+      .map(read)
+      .filter((cell): cell is Cell => cell !== null);
+    return {
+      group,
+      groupIndex,
+      cells,
+      word: cells.map((cell) => cell.char),
+      begin: Number(group.dataset['begin'] ?? 0),
+      stagger: Number(group.dataset['stagger'] ?? 0),
+      speed: Number(group.dataset['speed'] ?? 60),
+    };
+  });
+
+  if (!reduced) {
+    // Rewind first, in one synchronous pass, so the board never shows the
+    // finished word before it has flipped to it.
+    for (const board of boards) {
+      board.cells.forEach((cell, index) => {
+        const travel = 4 + ((board.groupIndex * 3 + index * 5) % 5);
+        const start = indexOf(cell.char) - travel + DRUM.length * 2;
+        settle(cell, DRUM[start % DRUM.length] ?? ' ');
+      });
+    }
+
+    for (const board of boards) {
+      board.cells.forEach((cell, index) => {
+        const target = board.word[index] ?? ' ';
+        void sleep(board.begin + index * board.stagger).then(() =>
+          drive(cell, target, board.speed),
+        );
+      });
+    }
+  }
+
+  // Point at a service and the board tells you it is leaving.
+  for (const service of document.querySelectorAll<HTMLElement>('.service')) {
+    const group = service.querySelector<HTMLElement>('[data-status]');
+    const board = boards.find((entry) => entry.group === group);
+    if (!board) continue;
+
+    const show = (word: readonly string[]) => {
+      board.cells.forEach((cell, index) => {
+        const char = word[index] ?? ' ';
+        if (reduced) settle(cell, char);
+        else void drive(cell, char, 40);
+      });
+    };
+
+    const departing = [...'DEPARTING'];
+    for (const event of ['pointerenter', 'focus'] as const) {
+      service.addEventListener(event, () => show(departing));
+    }
+    for (const event of ['pointerleave', 'blur'] as const) {
+      service.addEventListener(event, () => show(board.word));
+    }
+  }
+
+  // The board clock keeps its own time, a minute at a time.
+  const clockBoard = boards.find((board) => 'clock' in board.group.dataset);
+  if (clockBoard && !reduced) {
+    let minutes = 9 * 60 + 38;
+    window.setInterval(() => {
+      minutes = (minutes + 1) % (24 * 60);
+      const hh = String(Math.floor(minutes / 60)).padStart(2, '0');
+      const mm = String(minutes % 60).padStart(2, '0');
+      const next = [...`${hh}:${mm}`];
+      clockBoard.word = next;
+      clockBoard.cells.forEach((cell, index) => {
+        const char = next[index] ?? ' ';
+        if (cell.char !== char) void drive(cell, char, 58);
+      });
+    }, 9000);
+  }
+</script>

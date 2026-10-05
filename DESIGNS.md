@@ -7,8 +7,20 @@
 generated, screenshotted and merged automatically. Every design it has ever
 worn stays online at its own URL. Newest first.
 
-**11 designs** ·
+**12 designs** ·
 [Browse them live](https://tayles.co.uk/designs)
+
+---
+
+## Departures
+
+5 October 2026 · `departures`
+
+A Solari split-flap board on a station wall — fifty-seven hinged cards clatter through the alphabet until the word lands, and the two links sit below it as departures with times, platforms and a status that flips to DEPARTING when you point at them.
+
+[![Departures](src/designs/departures/screenshot.webp)](src/designs/departures/)
+
+[Live](https://tayles.co.uk/designs/departures) · [Source](src/designs/departures/index.astro) · `split-flap` `signage` `mechanical` `3d` `amber` `kinetic-type` `dark`
 
 ---
 
