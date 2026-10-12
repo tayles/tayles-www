@@ -7,8 +7,20 @@
 generated, screenshotted and merged automatically. Every design it has ever
 worn stays online at its own URL. Newest first.
 
-**12 designs** ·
+**13 designs** ·
 [Browse them live](https://tayles.co.uk/designs)
+
+---
+
+## Riso Press
+
+12 October 2026 · `riso-press`
+
+A two-colour risograph sheet — fluoro pink through the drum first, federal blue second, landing a few pixels out of register. Dot-grid halftones, a thirty-six ray sunburst and trim marks on 100gsm rag.
+
+[![Riso Press](src/designs/riso-press/screenshot.webp)](src/designs/riso-press/)
+
+[Live](https://tayles.co.uk/designs/riso-press) · [Source](src/designs/riso-press/index.astro) · `risograph` `print` `duotone` `fluorescent` `halftone` `slab` `light`
 
 ---
 
