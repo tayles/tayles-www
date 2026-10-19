@@ -7,8 +7,20 @@
 generated, screenshotted and merged automatically. Every design it has ever
 worn stays online at its own URL. Newest first.
 
-**13 designs** ·
+**14 designs** ·
 [Browse them live](https://tayles.co.uk/designs)
+
+---
+
+## Deadwax
+
+19 October 2026 · `deadwax`
+
+A turntable seen from directly above — a 12-inch record bleeds off the left edge with the name printed on its cream label, and the two links are the tracks on side one. Cue one and the tonearm walks in to that groove.
+
+[![Deadwax](src/designs/deadwax/screenshot.webp)](src/designs/deadwax/)
+
+[Live](https://tayles.co.uk/designs/deadwax) · [Source](src/designs/deadwax/index.astro) · `vinyl` `turntable` `object` `dark` `didone` `css-only` `tactile`
 
 ---
 

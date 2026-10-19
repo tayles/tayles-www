@@ -1,0 +1,727 @@
+---
+// Deadwax — a turntable photographed from directly above. The record bleeds
+// off the left edge with the name printed on its label, the two links are the
+// tracks on side one, and cueing one swings the tonearm to that radius. No
+// JavaScript: the arm is moved entirely by :has() off the link's own state.
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..800&family=DM+Mono:wght@300;400;500&display=swap"
+/>
+
+<div class="deck">
+  <div class="stage">
+    <div class="platter">
+      <div class="strobe" aria-hidden="true"></div>
+
+      <div class="record">
+        <div class="grooves" aria-hidden="true"></div>
+        <div class="sheen" aria-hidden="true"></div>
+        <div class="gloss" aria-hidden="true"></div>
+        <p class="etch" aria-hidden="true">TYL-001-A ∴</p>
+
+        <div class="label">
+          <h1>tayles</h1>
+          <p class="imprint">Tayles Recordings</p>
+          <p class="side">Side one · 33⅓</p>
+          <span class="spindle" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="armbase" aria-hidden="true"></div>
+    <div class="rest" aria-hidden="true"></div>
+
+    <div class="arm" aria-hidden="true">
+      <span class="tube"></span>
+      <span class="head"></span>
+      <span class="weight"></span>
+      <span class="pivot"></span>
+    </div>
+  </div>
+
+  <div class="sleeve">
+    <p class="cat"><span>Tayles Recordings</span><span>TYL-001</span></p>
+    <p class="format">Long playing · Stereo · 180 g</p>
+
+    <p class="side-head">Side one</p>
+    <nav class="tracks" aria-label="Elsewhere">
+      <a class="track t1" href="https://github.com/tayles">
+        <span class="no">A1</span>
+        <span class="name">GitHub</span>
+        <span class="dots" aria-hidden="true"></span>
+        <span class="time">3:41</span>
+      </a>
+      <a class="track t2" href="https://linkedin.com/in/tayles">
+        <span class="no">A2</span>
+        <span class="name">LinkedIn</span>
+        <span class="dots" aria-hidden="true"></span>
+        <span class="time">4:28</span>
+      </a>
+    </nav>
+
+    <p class="colophon">
+      Cut at half speed · Pressed MMXXVI
+    </p>
+  </div>
+</div>
+
+<style>
+  .deck {
+    --disc: clamp(15.5rem, max(74vmin, 40vw), 50rem);
+    --pad: clamp(1.25rem, 3.5vw, 3rem);
+    --vinyl: #100f0e;
+    --cream: #ece0c8;
+    --paper: #e9dcbe;
+    --ink: #1a1512;
+    --ochre: #cf9a3f;
+    --ox: #8d2f23;
+    --muted: #9a8c77;
+
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    align-items: center;
+    gap: clamp(1.25rem, 4vw, 3.5rem);
+    overflow-x: clip;
+    min-height: 100dvh;
+    padding: var(--pad);
+    padding-bottom: calc(var(--pad) + 3.5rem);
+    background:
+      radial-gradient(
+        66% 52% at 62% 10%,
+        rgb(255 226 178 / 13%) 0%,
+        rgb(255 226 178 / 0%) 70%
+      ),
+      radial-gradient(120% 100% at 55% 30%, #2b241e 0%, #15110e 55%, #090706
+        100%);
+    color: var(--cream);
+    font-family: 'DM Mono', ui-monospace, 'SFMono-Regular', monospace;
+    font-weight: 300;
+  }
+
+  /* The deck surface: fine brushed grain under the spotlight. */
+  .deck::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      96deg,
+      rgb(255 255 255 / 1.6%) 0 1px,
+      rgb(0 0 0 / 0%) 1px 4px
+    );
+    opacity: 0.55;
+  }
+
+  /* ---------------------------------------------------------------- deck */
+
+  .stage {
+    position: relative;
+    width: var(--disc);
+    aspect-ratio: 1;
+    margin-left: calc(var(--disc) * -0.25 - var(--pad));
+    animation: settle 1100ms cubic-bezier(0.22, 0.8, 0.3, 1) both;
+  }
+
+  .platter {
+    position: absolute;
+    inset: -4.5%;
+    border-radius: 50%;
+    background:
+      conic-gradient(
+        from 210deg,
+        #4b453c 0deg,
+        #7b7366 40deg,
+        #3d382f 120deg,
+        #6b6458 210deg,
+        #38332c 300deg,
+        #4b453c 360deg
+      ),
+      #46413a;
+    box-shadow:
+      0 2.2rem 3.5rem rgb(0 0 0 / 55%),
+      inset 0 0 0 1px rgb(255 240 210 / 14%);
+  }
+
+  /* 33⅓ strobe dots around the platter rim. */
+  .strobe {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: repeating-conic-gradient(
+      from 0deg,
+      rgb(255 243 220 / 60%) 0deg 1.05deg,
+      rgb(0 0 0 / 0%) 1.05deg 3.6deg
+    );
+    mask: radial-gradient(
+      circle closest-side,
+      #0000 0 93.5%,
+      #000 94.2% 98.5%,
+      #0000 99.2%
+    );
+  }
+
+  .record {
+    position: absolute;
+    inset: 4.3%;
+    border-radius: 50%;
+    background:
+      radial-gradient(
+        circle closest-side,
+        rgb(255 255 255 / 0%) 0 88%,
+        rgb(255 236 200 / 7%) 93%,
+        rgb(0 0 0 / 55%) 99.4%,
+        rgb(0 0 0 / 0%) 100%
+      ),
+      radial-gradient(circle closest-side, #171513 0 36%, #0d0c0b 70%, #121110
+        100%);
+    box-shadow:
+      0 0.9rem 1.6rem rgb(0 0 0 / 50%),
+      inset 0 0 2.5rem rgb(0 0 0 / 65%);
+  }
+
+  /* The groove field, plus the brighter lands between tracks. */
+  .grooves {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+      radial-gradient(
+        circle closest-side,
+        #0000 0 51.5%,
+        rgb(255 244 222 / 16%) 51.9% 52.4%,
+        #0000 52.8%
+      ),
+      radial-gradient(
+        circle closest-side,
+        #0000 0 67%,
+        rgb(255 244 222 / 14%) 67.4% 67.9%,
+        #0000 68.3%
+      ),
+      radial-gradient(
+        circle closest-side,
+        #0000 0 81%,
+        rgb(255 244 222 / 12%) 81.4% 81.9%,
+        #0000 82.3%
+      ),
+      radial-gradient(
+        circle closest-side,
+        #0000 0 92%,
+        rgb(255 244 222 / 18%) 92.4% 93%,
+        #0000 93.4%
+      ),
+      repeating-radial-gradient(
+        circle closest-side,
+        rgb(255 248 230 / 5.5%) 0 0.6px,
+        rgb(0 0 0 / 22%) 0.6px 1.3px,
+        rgb(0 0 0 / 0%) 1.3px 2.6px
+      );
+    mask: radial-gradient(
+      circle closest-side,
+      #0000 0 44%,
+      #000 45% 95.5%,
+      #0000 96.5%
+    );
+  }
+
+  /* Lamplight travelling slowly around the disc. */
+  .sheen {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      rgb(255 228 184 / 0%) 0deg,
+      rgb(255 228 184 / 13%) 26deg,
+      rgb(255 228 184 / 0%) 58deg,
+      rgb(255 228 184 / 0%) 172deg,
+      rgb(255 228 184 / 9%) 204deg,
+      rgb(255 228 184 / 0%) 238deg,
+      rgb(255 228 184 / 0%) 360deg
+    );
+    mask: radial-gradient(
+      circle closest-side,
+      #0000 0 44%,
+      #000 45% 96%,
+      #0000 97%
+    );
+    mix-blend-mode: screen;
+    animation: revolve 48s linear infinite;
+  }
+
+  /* The fixed specular from the lamp above right. */
+  .gloss {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(
+      58% 44% at 74% 16%,
+      rgb(255 232 196 / 11%) 0%,
+      rgb(255 232 196 / 0%) 72%
+    );
+    mix-blend-mode: screen;
+  }
+
+  /* Matrix number scratched into the run-out. */
+  .etch {
+    position: absolute;
+    top: 70.2%;
+    left: 50%;
+    translate: -50% 0;
+    margin: 0;
+    color: rgb(255 243 222 / 24%);
+    font-size: calc(var(--disc) * 0.0165);
+    letter-spacing: 0.22em;
+    text-shadow: 0 1px 0 rgb(0 0 0 / 70%);
+    white-space: nowrap;
+  }
+
+  /* --------------------------------------------------------------- label */
+
+  .label {
+    position: absolute;
+    inset: 31.5%;
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    justify-items: center;
+    padding: calc(var(--disc) * 0.055) calc(var(--disc) * 0.019)
+      calc(var(--disc) * 0.052);
+    border-radius: 50%;
+    background:
+      repeating-conic-gradient(
+        from 0deg,
+        rgb(0 0 0 / 1.6%) 0deg 0.7deg,
+        rgb(0 0 0 / 0%) 0.7deg 1.6deg
+      ),
+      radial-gradient(
+        circle closest-side,
+        #f3e8cd 0 62%,
+        var(--paper) 86%,
+        #d9c9a4 100%
+      );
+    box-shadow:
+      inset 0 0 0 calc(var(--disc) * 0.004) rgb(141 47 35 / 85%),
+      inset 0 0 0 calc(var(--disc) * 0.016) rgb(243 232 205 / 90%),
+      inset 0 0 0 calc(var(--disc) * 0.019) rgb(26 21 18 / 35%),
+      0 0 calc(var(--disc) * 0.02) rgb(0 0 0 / 45%);
+    color: var(--ink);
+    text-align: center;
+  }
+
+  .imprint {
+    grid-row: 3;
+    margin: 0 0 calc(var(--disc) * 0.007);
+    color: var(--ox);
+    font-size: calc(var(--disc) * 0.0145);
+    white-space: nowrap;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+  }
+
+  .label h1 {
+    margin: 0;
+    color: var(--ink);
+    font-family: 'Bodoni Moda', 'Didot', 'Times New Roman', serif;
+    font-size: calc(var(--disc) * 0.08);
+    font-weight: 700;
+    font-variation-settings: 'opsz' 72;
+    line-height: 0.92;
+    letter-spacing: -0.015em;
+  }
+
+  .side {
+    grid-row: 4;
+    align-self: end;
+    margin: 0;
+    color: rgb(26 21 18 / 70%);
+    font-size: calc(var(--disc) * 0.016);
+    letter-spacing: 0.18em;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+
+  .spindle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(var(--disc) * 0.028);
+    height: calc(var(--disc) * 0.028);
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 35% 30%,
+      #f6f1e6 0%,
+      #a39a8a 45%,
+      #4a443c 100%
+    );
+    box-shadow:
+      0 0 0 calc(var(--disc) * 0.004) rgb(26 21 18 / 55%),
+      0 calc(var(--disc) * 0.004) calc(var(--disc) * 0.008) rgb(0 0 0 / 45%);
+  }
+
+  /* ------------------------------------------------------------- tonearm */
+
+  /* The arm board, sunk into the plinth just outboard of the platter. */
+  .armbase {
+    position: absolute;
+    top: calc(50% - var(--disc) * 0.455);
+    left: calc(50% + var(--disc) * 0.542);
+    width: calc(var(--disc) * 0.185);
+    height: calc(var(--disc) * 0.185);
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 42% 34%, #3a352e 0%, #1a1714 78%);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 240 210 / 10%),
+      0 calc(var(--disc) * 0.01) calc(var(--disc) * 0.022) rgb(0 0 0 / 60%);
+  }
+
+  /* Arm rest and its cradle. */
+  .rest {
+    position: absolute;
+    isolation: isolate;
+    top: calc(50% - var(--disc) * 0.2);
+    left: calc(50% + var(--disc) * 0.69);
+    width: calc(var(--disc) * 0.038);
+    height: calc(var(--disc) * 0.072);
+    translate: -50% -50%;
+    rotate: 24deg;
+    border-radius: calc(var(--disc) * 0.019);
+    background: linear-gradient(170deg, #9a9284 0%, #4b463e 55%, #26231e 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 22%),
+      0 calc(var(--disc) * 0.008) calc(var(--disc) * 0.018) rgb(0 0 0 / 55%);
+  }
+
+  /* The rest's collar, screwed into the plinth. */
+  .rest::before {
+    content: '';
+    position: absolute;
+    top: 44%;
+    left: 50%;
+    width: 210%;
+    height: 118%;
+    translate: -50% -50%;
+    z-index: -1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 44% 36%, #332e28 0%, #16130f 76%);
+    box-shadow: inset 0 0 0 1px rgb(255 240 210 / 9%);
+  }
+
+  .rest::after {
+    content: '';
+    position: absolute;
+    top: 14%;
+    left: 50%;
+    width: 52%;
+    height: 34%;
+    translate: -50% 0;
+    border-radius: 999px;
+    background: #15120f;
+  }
+
+  .arm {
+    position: absolute;
+    top: calc(50% - var(--disc) * 0.455);
+    left: calc(50% + var(--disc) * 0.542);
+    width: 0;
+    height: 0;
+    rotate: 100deg;
+    transform-origin: 0 0;
+    filter: drop-shadow(calc(var(--disc) * 0.006) calc(var(--disc) * 0.014)
+      calc(var(--disc) * 0.01) rgb(0 0 0 / 70%));
+    transition: rotate 1.25s cubic-bezier(0.32, 0.72, 0.24, 1);
+  }
+
+  .arm span {
+    position: absolute;
+    display: block;
+  }
+
+  /* The thicker base section of the arm tube. */
+  .tube::before {
+    content: '';
+    position: absolute;
+    top: calc(var(--disc) * -0.007);
+    left: calc(var(--disc) * -0.012);
+    width: calc(var(--disc) * 0.2);
+    height: calc(var(--disc) * 0.032);
+    border-radius: 999px;
+    background: linear-gradient(
+      180deg,
+      #e8e0d1 0%,
+      #b6ae9e 30%,
+      #776f63 68%,
+      #3e3932 100%
+    );
+  }
+
+  .tube {
+    top: calc(var(--disc) * -0.009);
+    left: calc(var(--disc) * 0.02);
+    width: calc(var(--disc) * 0.675);
+    height: calc(var(--disc) * 0.018);
+    border-radius: 999px;
+    background: linear-gradient(
+      180deg,
+      #f0e9db 0%,
+      #c3bbab 26%,
+      #867e71 62%,
+      #4a443c 100%
+    );
+  }
+
+  .head {
+    top: calc(var(--disc) * -0.021);
+    left: calc(var(--disc) * 0.672);
+    width: calc(var(--disc) * 0.098);
+    height: calc(var(--disc) * 0.044);
+    rotate: 21deg;
+    transform-origin: 0 50%;
+    border-radius: calc(var(--disc) * 0.008) calc(var(--disc) * 0.003)
+      calc(var(--disc) * 0.003) calc(var(--disc) * 0.008);
+    background: linear-gradient(180deg, #3a3a38 0%, #1d1d1b 58%, #0a0a0a 100%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 20%);
+  }
+
+  /* The cartridge nose and its stylus. */
+  .head::after {
+    content: '';
+    position: absolute;
+    top: 86%;
+    right: calc(var(--disc) * 0.006);
+    width: calc(var(--disc) * 0.018);
+    height: calc(var(--disc) * 0.018);
+    border-radius: 0 0 55% 55%;
+    background: linear-gradient(#a83526, #4d1510);
+  }
+
+  .weight {
+    top: calc(var(--disc) * -0.0425);
+    left: calc(var(--disc) * -0.108);
+    width: calc(var(--disc) * 0.085);
+    height: calc(var(--disc) * 0.085);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 36% 28%,
+      #6b6459 0%,
+      #332e28 52%,
+      #15120f 100%
+    );
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 16%);
+  }
+
+  .pivot {
+    top: calc(var(--disc) * -0.0385);
+    left: calc(var(--disc) * -0.0385);
+    width: calc(var(--disc) * 0.077);
+    height: calc(var(--disc) * 0.077);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 34% 28%,
+      #ece4d4 0%,
+      #9a9284 44%,
+      #39342c 100%
+    );
+    box-shadow: 0 0 0 calc(var(--disc) * 0.007) rgb(14 12 10 / 75%);
+  }
+
+  /* Cueing a track walks the arm in to that radius. */
+  .deck:has(.t1:is(:hover, :focus-visible)) .arm {
+    rotate: 107deg;
+  }
+
+  .deck:has(.t2:is(:hover, :focus-visible)) .arm {
+    rotate: 117deg;
+  }
+
+  /* -------------------------------------------------------------- sleeve */
+
+  .sleeve {
+    align-self: end;
+    display: grid;
+    gap: clamp(0.5rem, 1.4vh, 1rem);
+    max-width: 30rem;
+    animation: rise 900ms 160ms cubic-bezier(0.22, 0.8, 0.3, 1) both;
+  }
+
+  .cat {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid rgb(236 224 200 / 22%);
+    color: var(--ochre);
+    font-size: clamp(0.6rem, 1.15vw, 0.72rem);
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  .format {
+    margin: 0;
+    color: var(--muted);
+    font-size: clamp(0.6rem, 1.1vw, 0.7rem);
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+
+  .side-head {
+    margin: clamp(0.5rem, 2vh, 1.4rem) 0 0;
+    color: var(--cream);
+    font-family: 'Bodoni Moda', 'Didot', 'Times New Roman', serif;
+    font-size: clamp(1.6rem, 3.6vw, 2.9rem);
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1;
+  }
+
+  .tracks {
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  .track {
+    position: relative;
+    display: grid;
+    align-items: baseline;
+    grid-template-columns: auto auto 1fr auto;
+    gap: 0 0.7rem;
+    padding: 0.5rem 0.2rem;
+    border-bottom: 1px solid rgb(236 224 200 / 12%);
+    color: var(--cream);
+    font-size: clamp(0.82rem, 1.6vw, 1.05rem);
+    text-decoration: none;
+    transition:
+      color 220ms ease,
+      padding-left 320ms cubic-bezier(0.32, 0.72, 0.24, 1);
+  }
+
+  .no {
+    color: var(--ochre);
+    font-size: 0.75em;
+    letter-spacing: 0.12em;
+  }
+
+  .name {
+    font-weight: 400;
+    letter-spacing: 0.02em;
+  }
+
+  .dots {
+    height: 1px;
+    translate: 0 -0.28em;
+    background: repeating-linear-gradient(
+      90deg,
+      rgb(236 224 200 / 45%) 0 1px,
+      rgb(0 0 0 / 0%) 1px 5px
+    );
+  }
+
+  .time {
+    color: var(--muted);
+    font-size: 0.82em;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.06em;
+  }
+
+  .track:is(:hover, :focus-visible) {
+    padding-left: 0.85rem;
+    color: #fff6e2;
+    outline: none;
+  }
+
+  .track:is(:hover, :focus-visible) .name {
+    color: var(--ochre);
+  }
+
+  .track:focus-visible {
+    box-shadow: inset 0 0 0 1px rgb(207 154 63 / 70%);
+  }
+
+  /* The cue mark that slides in beside a track being played. */
+  .track::before {
+    content: '▶';
+    position: absolute;
+    translate: -1rem 0;
+    color: var(--ochre);
+    font-size: 0.6em;
+    opacity: 0;
+    transition: opacity 220ms ease;
+  }
+
+  .track:is(:hover, :focus-visible)::before {
+    opacity: 1;
+  }
+
+  .colophon {
+    margin: clamp(0.4rem, 1.6vh, 1rem) 0 0;
+    color: rgb(154 140 119 / 85%);
+    font-size: clamp(0.56rem, 1.05vw, 0.66rem);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  @keyframes revolve {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  @keyframes settle {
+    from {
+      opacity: 0;
+      scale: 0.965;
+      translate: calc(var(--disc) * -0.03) 0;
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      translate: 0 0.75rem;
+    }
+  }
+
+  @media (width <= 60rem) {
+    .deck {
+      --disc: min(29rem, 106vw);
+
+      grid-template-columns: minmax(0, 1fr);
+      align-content: center;
+      justify-items: start;
+    }
+
+    .stage {
+      margin-left: calc(var(--disc) * -0.26 - var(--pad));
+    }
+
+    /* The deck has no room for the arm rest once the record fills the page. */
+    .rest {
+      display: none;
+    }
+
+    .sleeve {
+      align-self: auto;
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stage,
+    .sleeve,
+    .sheen {
+      animation: none;
+    }
+
+    .arm,
+    .track,
+    .track::before {
+      transition: none;
+    }
+  }
+</style>
