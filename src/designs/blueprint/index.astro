@@ -1,0 +1,948 @@
+---
+// Blueprint — the word drawn up as an engineering sheet on cyanotype paper.
+// The letters are real text, outlined and section-hatched; a small script
+// measures them and drafts the guides, extension lines and dimensions around
+// the actual glyphs, so the numbers are always true. The links are the
+// referenced drawings in the title block.
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Jost:wght@500&family=Share+Tech+Mono&display=swap"
+/>
+
+<div class="sheet" data-sheet>
+  <div class="cross" aria-hidden="true">
+    <span class="cross-x"></span>
+    <span class="cross-y"></span>
+  </div>
+
+  <div class="zones zones-top" aria-hidden="true">
+    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span
+      >6</span
+    >
+  </div>
+  <div class="zones zones-side" aria-hidden="true">
+    <span>A</span><span>B</span><span>C</span><span>D</span>
+  </div>
+
+  <div class="frame">
+    <header class="strip">
+      <p>General arrangement · Wordmark · Elevation</p>
+      <p class="readout" data-readout>X 0000 · Y 0000</p>
+    </header>
+
+    <div class="drawing" data-drawing>
+      <svg class="drafting" data-drafting aria-hidden="true">
+        <defs>
+          <marker
+            id="bp-arrow"
+            viewBox="0 0 10 10"
+            refX="10"
+            refY="5"
+            markerWidth="9"
+            markerHeight="9"
+            markerUnits="userSpaceOnUse"
+            orient="auto-start-reverse"
+          >
+            <path d="M0 1.6 L10 5 L0 8.4 Z"></path>
+          </marker>
+        </defs>
+        <g data-layer></g>
+      </svg>
+
+      <div class="word">
+        <h1><span data-word>tayles</span><span class="probe" data-probe
+          ></span></h1>
+        <span class="hatch" aria-hidden="true">tayles</span>
+      </div>
+
+      <p class="pencil" aria-hidden="true">keep it lowercase ✓</p>
+    </div>
+
+    <footer class="foot">
+      <div class="notes">
+        <p class="notes-head">Notes</p>
+        <ol>
+          <li>All dimensions in px unless stated.</li>
+          <li>Do not scale from drawing — it re-measures itself.</li>
+          <li>Letterforms: Jost 500, 2 px outline, section hatch 45°.</li>
+        </ol>
+      </div>
+
+      <div class="block">
+        <div class="cell cell-title">
+          <span class="k">Title</span>
+          <span class="v">Tayles — wordmark</span>
+        </div>
+        <div class="cell"><span class="k">Dwg no.</span><span class="v"
+            >TYL-015</span
+          ></div>
+        <div class="cell"><span class="k">Scale</span><span class="v">1 : 1</span
+          ></div>
+        <div class="cell"><span class="k">Date</span><span class="v"
+            >2026-10-26</span
+          ></div>
+        <div class="cell cell-proj">
+          <span class="k">Proj.</span>
+          <svg viewBox="0 0 46 20" class="proj" aria-hidden="true">
+            <path d="M2 5 L16 2 L16 18 L2 15 Z"></path>
+            <path d="M0 10 H18 M25 10 H46 M35.5 0 V20"></path>
+            <circle cx="35.5" cy="10" r="8"></circle>
+            <circle cx="35.5" cy="10" r="3.5"></circle>
+          </svg>
+        </div>
+
+        <p class="refs-head">Referenced drawings</p>
+        <nav class="refs" aria-label="Elsewhere">
+          <a class="ref" href="https://github.com/tayles">
+            <span class="ref-no">Ref 01</span>
+            <span class="ref-name">GitHub</span>
+            <span class="ref-path">github.com/tayles ↗</span>
+          </a>
+          <a class="ref" href="https://linkedin.com/in/tayles">
+            <span class="ref-no">Ref 02</span>
+            <span class="ref-name">LinkedIn</span>
+            <span class="ref-path">linkedin.com/in/tayles ↗</span>
+          </a>
+        </nav>
+
+        <div class="cell cell-sheet"><span class="k">Sheet</span><span
+            class="v">1 of 1</span
+          ></div>
+        <div class="cell cell-rev"><span class="k">Rev</span><span class="v"
+            >A</span
+          ></div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<style>
+  .sheet {
+    --blue: #123f80;
+    --deep: #0a2a5c;
+    --line: rgb(232 242 255 / 92%);
+    --dim: rgb(214 232 255 / 62%);
+    --faint: rgb(206 226 255 / 10%);
+    --margin: clamp(0.9rem, 2.4vw, 1.75rem);
+
+    position: relative;
+    overflow: clip;
+    min-height: 100dvh;
+    padding: var(--margin);
+    padding-bottom: calc(var(--margin) + 3.5rem);
+    display: flex;
+    flex-direction: column;
+    color: var(--line);
+    font-family: 'Share Tech Mono', ui-monospace, monospace;
+    font-size: clamp(0.7rem, 0.62rem + 0.3vw, 0.86rem);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background:
+      radial-gradient(
+        120% 90% at 50% 45%,
+        rgb(0 0 0 / 0%) 55%,
+        rgb(2 14 40 / 55%) 100%
+      ),
+      radial-gradient(60% 50% at 18% 22%, rgb(60 120 200 / 32%), #0000 70%),
+      radial-gradient(50% 45% at 86% 78%, rgb(50 110 190 / 26%), #0000 70%),
+      radial-gradient(40% 30% at 70% 14%, rgb(8 30 70 / 40%), #0000 70%),
+      var(--blue);
+  }
+
+  /* Cyanotype grain: the paper has soaked up the chemistry unevenly. */
+  .sheet::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.32;
+    mix-blend-mode: soft-light;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -0.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------------------------------------------------------- zone border */
+
+  .zones {
+    position: absolute;
+    display: grid;
+    color: var(--dim);
+    font-size: 0.72em;
+    pointer-events: none;
+  }
+
+  .zones span {
+    position: relative;
+    display: grid;
+    place-items: center;
+  }
+
+  .zones-top {
+    top: 0;
+    right: var(--margin);
+    left: var(--margin);
+    height: var(--margin);
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .zones-top span + span::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 1px;
+    height: 40%;
+    background: var(--dim);
+  }
+
+  .zones-side {
+    top: var(--margin);
+    bottom: calc(var(--margin) + 3.5rem);
+    left: 0;
+    width: var(--margin);
+    grid-template-rows: repeat(4, 1fr);
+  }
+
+  .zones-side span + span::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40%;
+    height: 1px;
+    background: var(--dim);
+  }
+
+  /* --------------------------------------------------------------- frame */
+
+  .frame {
+    position: relative;
+    flex: 1;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-width: 0;
+    border: 1.5px solid var(--line);
+    box-shadow:
+      inset 0 0 0 5px rgb(0 0 0 / 0%),
+      inset 0 0 0 6px var(--dim);
+    background:
+      linear-gradient(var(--faint) 1px, #0000 1px) 0 0 / 100% 5rem,
+      linear-gradient(90deg, var(--faint) 1px, #0000 1px) 0 0 / 5rem 100%,
+      linear-gradient(rgb(206 226 255 / 4.5%) 1px, #0000 1px) 0 0 / 100% 1rem,
+      linear-gradient(90deg, rgb(206 226 255 / 4.5%) 1px, #0000 1px) 0 0 /
+        1rem 100%;
+    animation: bp-fade 600ms ease-out both;
+  }
+
+  .strip {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem 1.5rem;
+    padding: 0.9rem 1.1rem 0;
+    color: var(--dim);
+  }
+
+  .strip p {
+    margin: 0;
+  }
+
+  .readout {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* -------------------------------------------------------------- drawing */
+
+  .drawing {
+    --size: clamp(4.25rem, min(24vw, 28vh), 28rem);
+
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    padding: calc(var(--size) * 0.24 + 2rem) 1rem
+      calc(var(--size) * 0.3 + 1.25rem);
+  }
+
+  .drafting {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+
+  .drafting marker path {
+    fill: var(--line);
+    stroke: none;
+  }
+
+  .drafting :global(.guide) {
+    stroke: var(--dim);
+    stroke-dasharray: 22 4 2 4;
+  }
+
+  .drafting :global(.ext) {
+    stroke: var(--dim);
+  }
+
+  .drafting :global(.label) {
+    fill: var(--line);
+    stroke: none;
+    font-family: 'Share Tech Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+
+  .drafting :global(.label.small) {
+    fill: var(--dim);
+    font-size: 9.5px;
+  }
+
+  .drafting :global(.balloon) {
+    fill: var(--blue);
+  }
+
+  .drafting :global(.draw) {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: bp-draw 700ms cubic-bezier(0.5, 0, 0.2, 1) var(--d, 0ms)
+      forwards;
+  }
+
+  .drafting :global(.appear) {
+    opacity: 0;
+    animation: bp-fade 400ms ease-out var(--d, 0ms) forwards;
+  }
+
+  .sheet.is-settled .drafting :global(.draw),
+  .sheet.is-settled .drafting :global(.appear) {
+    animation: none;
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+
+  .word {
+    position: relative;
+    font-family: 'Jost', 'Futura', sans-serif;
+    font-size: var(--size);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-transform: none;
+  }
+
+  .word h1 {
+    margin: 0;
+    font: inherit;
+    letter-spacing: inherit;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--line);
+    animation: bp-fade 700ms ease-out 150ms both;
+  }
+
+  .probe {
+    display: inline-block;
+    width: 0;
+    height: 0;
+  }
+
+  /* The section hatch, inked in once the outline is down. */
+  .hatch {
+    position: absolute;
+    inset: 0;
+    color: transparent;
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--line) 0 1.4px,
+      #0000 1.4px 9px
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    opacity: 0.85;
+    pointer-events: none;
+    user-select: none;
+    animation: bp-ink 900ms cubic-bezier(0.6, 0, 0.3, 1) 1000ms both;
+  }
+
+  .pencil {
+    position: absolute;
+    top: clamp(0.6rem, 3vh, 2rem);
+    right: clamp(1rem, 5vw, 5rem);
+    margin: 0;
+    color: rgb(255 248 236 / 86%);
+    font-family: 'Caveat', cursive;
+    font-size: clamp(1.2rem, 1rem + 0.8vw, 1.9rem);
+    letter-spacing: 0;
+    text-transform: none;
+    transform: rotate(-4deg);
+    animation: bp-fade 500ms ease-out 1700ms both;
+  }
+
+  .pencil::before {
+    content: '';
+    position: absolute;
+    right: 100%;
+    bottom: 0.1em;
+    width: 3.2em;
+    height: 1.4em;
+    margin-right: 0.3em;
+    border-bottom: 1.5px solid currentcolor;
+    border-left: 1.5px solid currentcolor;
+    border-bottom-left-radius: 70% 100%;
+  }
+
+  /* --------------------------------------------------------------- footer */
+
+  .foot {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 30rem);
+    align-items: end;
+    gap: 1.25rem 2rem;
+    padding: 0 0 0 1.1rem;
+  }
+
+  .notes {
+    padding-bottom: 1rem;
+    color: var(--dim);
+    line-height: 1.6;
+  }
+
+  .notes-head {
+    margin: 0 0 0.3rem;
+    color: var(--line);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  .notes ol {
+    margin: 0;
+    padding-left: 1.6em;
+    list-style: decimal;
+  }
+
+  .block {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1.5px solid var(--line);
+    border-left: 1.5px solid var(--line);
+    background: #0f377a;
+  }
+
+  .block > * {
+    border-right: 1px solid var(--dim);
+    border-bottom: 1px solid var(--dim);
+  }
+
+  .cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+    padding: 0.45rem 0.6rem;
+  }
+
+  .k {
+    color: var(--dim);
+    font-size: 0.78em;
+  }
+
+  .v {
+    overflow-wrap: anywhere;
+  }
+
+  .cell-title {
+    grid-column: 1 / -1;
+  }
+
+  .cell-title .v {
+    font-family: 'Jost', sans-serif;
+    font-size: 1.45em;
+    letter-spacing: 0.08em;
+  }
+
+  .proj {
+    width: 2.6rem;
+    height: auto;
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 1.1;
+  }
+
+  .refs-head {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 0.35rem 0.6rem;
+    color: var(--dim);
+    font-size: 0.78em;
+  }
+
+  .refs {
+    display: grid;
+    grid-column: 1 / -1;
+    border: 0;
+  }
+
+  .ref {
+    display: grid;
+    grid-template-columns: 4.5em 1fr auto;
+    gap: 0.75rem;
+    align-items: baseline;
+    padding: 0.6rem;
+    color: var(--line);
+    text-decoration: none;
+    transition:
+      background-color 160ms,
+      color 160ms;
+  }
+
+  .ref + .ref {
+    border-top: 1px solid var(--dim);
+  }
+
+  .ref-no {
+    color: var(--dim);
+    font-size: 0.85em;
+  }
+
+  .ref-name {
+    font-size: 1.2em;
+  }
+
+  .ref-path {
+    color: var(--dim);
+    font-size: 0.85em;
+    text-transform: none;
+  }
+
+  .ref:hover,
+  .ref:focus-visible {
+    background: var(--line);
+    color: var(--deep);
+  }
+
+  .ref:hover span,
+  .ref:focus-visible span {
+    color: inherit;
+  }
+
+  .ref:focus-visible {
+    outline: 2px dashed var(--line);
+    outline-offset: 3px;
+  }
+
+  .cell-sheet,
+  .cell-rev {
+    grid-column: span 2;
+  }
+
+  /* ----------------------------------------------------------- crosshair */
+
+  .cross {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 200ms;
+  }
+
+  .sheet.is-pointing .cross {
+    opacity: 1;
+  }
+
+  .cross-x,
+  .cross-y {
+    position: absolute;
+    background: rgb(255 248 236 / 30%);
+  }
+
+  .cross-x {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    transform: translateY(var(--py, -10px));
+  }
+
+  .cross-y {
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 100%;
+    transform: translateX(var(--px, -10px));
+  }
+
+  /* ---------------------------------------------------------- small sheets */
+
+  @media (width < 760px) {
+    .foot {
+      grid-template-columns: minmax(0, 1fr);
+      padding: 0;
+    }
+
+    .notes {
+      padding: 0 1.1rem;
+    }
+
+    .block {
+      border-left: 0;
+    }
+
+    .pencil {
+      display: none;
+    }
+
+    .ref {
+      grid-template-columns: 4.2em 1fr;
+    }
+
+    .ref-path {
+      display: none;
+    }
+  }
+
+  @keyframes bp-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes bp-fade {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes bp-ink {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .frame,
+    .word h1,
+    .hatch,
+    .pencil,
+    .drafting :global(.draw),
+    .drafting :global(.appear) {
+      animation: none;
+      opacity: 1;
+      stroke-dashoffset: 0;
+    }
+
+    .hatch {
+      opacity: 0.85;
+    }
+
+    .ref,
+    .cross {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const SVG = 'http://www.w3.org/2000/svg';
+  /** Once the intro has played, redraws on resize appear without animating. */
+  const INTRO_MS = 2000;
+
+  const sheet = document.querySelector<HTMLElement>('[data-sheet]');
+  const drawing = document.querySelector<HTMLElement>('[data-drawing]');
+  const layer = document.querySelector<SVGGElement>('[data-layer]');
+  const word = document.querySelector<HTMLElement>('[data-word]');
+  const probe = document.querySelector<HTMLElement>('[data-probe]');
+  const readout = document.querySelector<HTMLElement>('[data-readout]');
+
+  function el<K extends keyof SVGElementTagNameMap>(
+    tag: K,
+    attrs: Record<string, string | number>,
+    parent: Element,
+  ): SVGElementTagNameMap[K] {
+    const node = document.createElementNS(SVG, tag);
+    for (const [key, value] of Object.entries(attrs)) {
+      node.setAttribute(key, String(value));
+    }
+    parent.append(node);
+    return node;
+  }
+
+  function line(
+    parent: Element,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    cls: string,
+    delay: number,
+  ) {
+    el(
+      'path',
+      {
+        d: `M${x1} ${y1} L${x2} ${y2}`,
+        class: `${cls} draw`,
+        pathLength: 1,
+        style: `--d:${delay}ms`,
+      },
+      parent,
+    );
+  }
+
+  function label(
+    parent: Element,
+    x: number,
+    y: number,
+    text: string,
+    delay: number,
+    options: { anchor?: string; rotate?: boolean; small?: boolean } = {},
+  ) {
+    const node = el(
+      'text',
+      {
+        x,
+        y,
+        'text-anchor': options.anchor ?? 'middle',
+        class: `label appear${options.small ? ' small' : ''}`,
+        style: `--d:${delay}ms`,
+      },
+      parent,
+    );
+    if (options.rotate) node.setAttribute('transform', `rotate(-90 ${x} ${y})`);
+    node.textContent = text;
+  }
+
+  /** A dimension: a line with an arrowhead at each end and its value. */
+  function dimension(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    value: string,
+    delay: number,
+    showValue = true,
+  ) {
+    if (!layer) return;
+    const group = el('g', {}, layer);
+    el(
+      'path',
+      {
+        d: `M${x1} ${y1} L${x2} ${y2}`,
+        class: 'appear',
+        'marker-start': 'url(#bp-arrow)',
+        'marker-end': 'url(#bp-arrow)',
+        style: `--d:${delay}ms`,
+      },
+      group,
+    );
+    if (!showValue) return;
+    const vertical = x1 === x2;
+    if (vertical) {
+      label(group, x1 - 5, (y1 + y2) / 2, value, delay + 150, {
+        rotate: true,
+      });
+    } else {
+      label(group, (x1 + x2) / 2, y1 - 5, value, delay + 150);
+    }
+  }
+
+  function draft() {
+    if (!sheet || !drawing || !layer || !word || !probe) return;
+    const text = word.firstChild;
+    if (!(text instanceof Text)) return;
+
+    layer.replaceChildren();
+    const box = drawing.getBoundingClientRect();
+    const rect = word.getBoundingClientRect();
+    const style = getComputedStyle(word);
+    const size = parseFloat(style.fontSize);
+
+    // Type metrics from the same loaded face, so the guides sit on the ink.
+    const ctx = document.createElement('canvas').getContext('2d');
+    if (!ctx) return;
+    ctx.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+    const xHeight = ctx.measureText('x').actualBoundingBoxAscent;
+    const ascender = ctx.measureText('l').actualBoundingBoxAscent;
+    const descender = ctx.measureText('y').actualBoundingBoxDescent;
+
+    const left = rect.left - box.left;
+    const right = rect.right - box.left;
+    const baseline = probe.getBoundingClientRect().bottom - box.top;
+    const top = baseline - ascender;
+    const gap = Math.max(14, size * 0.2);
+    const reach = Math.min(size * 0.75, left - 4);
+    const roomy = reach > 72;
+
+    // Each letter's advance, from the text itself.
+    const edges: number[] = [];
+    const range = document.createRange();
+    for (let i = 0; i < text.length; i++) {
+      range.setStart(text, i);
+      range.setEnd(text, i + 1);
+      const r = range.getBoundingClientRect();
+      if (i === 0) edges.push(r.left - box.left);
+      edges.push(r.right - box.left);
+    }
+
+    // Guides: ascender, x-height, baseline, descender.
+    const guides: [number, string][] = [
+      [top, 'Ascender'],
+      [baseline - xHeight, 'X-height'],
+      [baseline, 'Baseline'],
+      [baseline + descender, 'Descender'],
+    ];
+    guides.forEach(([y, name], i) => {
+      line(layer, left - reach, y, right + reach, y, 'guide', 250 + i * 90);
+      if (roomy) {
+        label(layer, right + reach, y - 4, name, 900 + i * 60, {
+          anchor: 'end',
+          small: true,
+        });
+      }
+    });
+
+    // Extension lines up from each letter boundary, then the letter widths.
+    const dimY = top - gap;
+    edges.forEach((x, i) => {
+      line(layer, x, top - 4, x, dimY - 6, 'ext', 700 + i * 40);
+    });
+    for (let i = 0; i < edges.length - 1; i++) {
+      const a = edges[i] ?? 0;
+      const b = edges[i + 1] ?? 0;
+      dimension(
+        a,
+        dimY,
+        b,
+        dimY,
+        String(Math.round(b - a)),
+        950 + i * 60,
+        b - a > 26,
+      );
+    }
+
+    // Overall length below the descender.
+    const oaY = baseline + descender + gap * 1.2;
+    line(layer, left, baseline + 4, left, oaY + 6, 'ext', 900);
+    line(layer, right, baseline + 4, right, oaY + 6, 'ext', 900);
+    dimension(
+      left,
+      oaY,
+      right,
+      oaY,
+      `${Math.round(right - left)} O/A`,
+      1250,
+    );
+
+    // Heights on the left: x-height inside, ascender outside.
+    const hx1 = left - gap;
+    const hx2 = left - gap * 2.1;
+    dimension(
+      hx1,
+      baseline,
+      hx1,
+      baseline - xHeight,
+      String(Math.round(xHeight)),
+      1150,
+      xHeight > 28,
+    );
+    dimension(
+      hx2,
+      baseline,
+      hx2,
+      top,
+      String(Math.round(ascender)),
+      1300,
+      ascender > 28,
+    );
+
+    // Detail A: a centre mark and detail circle on the bowl of the e.
+    const eLeft = edges[4];
+    const eRight = edges[5];
+    if (eLeft !== undefined && eRight !== undefined) {
+      const cx = (eLeft + eRight) / 2;
+      const cy = baseline - xHeight / 2;
+      const r = xHeight * 0.68;
+      const t = size * 0.06;
+      line(layer, cx - t, cy, cx + t, cy, 'ext', 1500);
+      line(layer, cx, cy - t, cx, cy + t, 'ext', 1500);
+      el(
+        'circle',
+        {
+          cx,
+          cy,
+          r,
+          class: 'guide draw',
+          pathLength: 1,
+          style: '--d:1450ms',
+        },
+        layer,
+      );
+      const bx = cx + r * Math.SQRT1_2 + 12;
+      const by = cy - r * Math.SQRT1_2 - 12;
+      line(
+        layer,
+        cx + r * Math.SQRT1_2,
+        cy - r * Math.SQRT1_2,
+        bx,
+        by,
+        'ext',
+        1600,
+      );
+      const ball = el('g', { class: 'appear', style: '--d:1650ms' }, layer);
+      el('circle', { cx: bx + 8, cy: by - 8, r: 11, class: 'balloon' }, ball);
+      label(ball, bx + 8, by - 4, 'A', 0);
+    }
+  }
+
+  function pad(n: number) {
+    return String(Math.round(n)).padStart(4, '0');
+  }
+
+  let frame = 0;
+  function schedule() {
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(draft);
+  }
+
+  if (sheet && drawing) {
+    document.fonts.ready.then(
+      () => {
+        draft();
+        new ResizeObserver(schedule).observe(drawing);
+        window.setTimeout(() => sheet.classList.add('is-settled'), INTRO_MS);
+      },
+      () => draft(),
+    );
+
+    // The drafting machine: a crosshair and a coordinate readout.
+    sheet.addEventListener('pointermove', (event) => {
+      if (event.pointerType !== 'mouse') return;
+      const r = sheet.getBoundingClientRect();
+      const x = event.clientX - r.left;
+      const y = event.clientY - r.top;
+      sheet.style.setProperty('--px', `${x}px`);
+      sheet.style.setProperty('--py', `${y}px`);
+      sheet.classList.add('is-pointing');
+      if (readout) {
+        readout.textContent = `X ${pad(x)} · Y ${pad(y)}`;
+      }
+    });
+    sheet.addEventListener('pointerleave', () => {
+      sheet.classList.remove('is-pointing');
+    });
+  }
+</script>
