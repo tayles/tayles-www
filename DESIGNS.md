@@ -7,8 +7,20 @@
 generated, screenshotted and merged automatically. Every design it has ever
 worn stays online at its own URL. Newest first.
 
-**14 designs** ·
+**15 designs** ·
 [Browse them live](https://tayles.co.uk/designs)
+
+---
+
+## Blueprint
+
+26 October 2026 · `blueprint`
+
+The word drawn up as an engineering sheet on cyanotype paper — outlined, section-hatched letters with guides, extension lines and dimensions measured from the real glyphs, a zoned border, and a title block whose referenced drawings are the two links.
+
+[![Blueprint](src/designs/blueprint/screenshot.webp)](src/designs/blueprint/)
+
+[Live](https://tayles.co.uk/designs/blueprint) · [Source](src/designs/blueprint/index.astro) · `blueprint` `technical-drawing` `cyanotype` `svg` `line-art` `cursor`
 
 ---
 
