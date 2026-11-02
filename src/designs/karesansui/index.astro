@@ -1,0 +1,931 @@
+---
+// Karesansui — a dry Zen garden seen from above. The real DOM letters and link
+// stones are rasterised into a mask, turned into a distance field, and a WebGL
+// shader rakes the sand around them: straight furrows that break into rings
+// wherever something is set into the gravel. The cursor carries a pebble the
+// sand flows around; clicking leaves it behind.
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap"
+/>
+
+<div class="karesansui" data-garden>
+  <canvas
+    class="sand"
+    data-sand
+    role="img"
+    aria-label="Raked white gravel seen from above. Straight furrows run across the garden and break into concentric rings around the letters of the name, two stepping stones and a few mossy rocks."
+  ></canvas>
+
+  <div class="plot">
+    <h1 class="name" data-obstacle="text">tayles</h1>
+
+    <nav class="path" aria-label="Elsewhere">
+      <a class="stone" href="https://github.com/tayles" data-obstacle="stone">
+        <span>GitHub</span>
+      </a>
+      <a
+        class="stone"
+        href="https://linkedin.com/in/tayles"
+        data-obstacle="stone"
+      >
+        <span>LinkedIn</span>
+      </a>
+    </nav>
+  </div>
+
+  <div class="inscription" data-keep-clear aria-hidden="true">
+    <span class="kanji">枯山水</span>
+    <span class="seal">庭</span>
+  </div>
+
+  <p class="hint" data-keep-clear>
+    <span class="hint-fine">Move to carry a pebble</span>
+    <span class="hint-coarse">Tap</span>
+    <span class="hint-fine"> · click</span> to set it in the sand
+  </p>
+</div>
+
+<style>
+  .karesansui {
+    --sand: #e7e1d4;
+    --sand-deep: #cfc6b4;
+    --ink: #262823;
+    --stone-hi: #66685f;
+    --stone: #393b35;
+    --stone-lo: #1d1e1a;
+    --moss: #5d6a3a;
+    --seal: #b2382b;
+
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 100dvh;
+    /* Shown only if WebGL is unavailable: plain raked furrows in CSS. */
+    background:
+      repeating-linear-gradient(
+        180deg,
+        rgb(255 255 255 / 34%) 0 3px,
+        rgb(120 108 88 / 0%) 3px 8px,
+        rgb(120 108 88 / 16%) 8px 11px,
+        rgb(255 255 255 / 0%) 11px 14px
+      ),
+      var(--sand);
+    color: var(--ink);
+    font-family: 'Zen Kaku Gothic New', ui-sans-serif, system-ui, sans-serif;
+    cursor: crosshair;
+  }
+
+  .sand {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* An asymmetric plan: the word set left of centre, a stepping-stone path
+     wandering off below it to the right. */
+  .plot {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    padding: clamp(4.5rem, 12vh, 9rem) clamp(1.25rem, 9vw, 11rem) 5.5rem;
+    pointer-events: none;
+  }
+
+  .name {
+    align-self: flex-start;
+    /* Padding lets the clipped granite reach the descender of the y. */
+    margin: -0.2em 0;
+    padding: 0.2em 0.05em;
+    font-family: 'Shippori Mincho B1', 'Hiragino Mincho ProN', serif;
+    font-size: clamp(4.4rem, 17vw, 15rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    /* Granite, lit from the upper left like the gravel around it. */
+    background: linear-gradient(
+      158deg,
+      var(--stone-hi) 0%,
+      var(--stone) 38%,
+      var(--stone-lo) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(-1px -1px 0 rgb(255 255 255 / 40%));
+    user-select: none;
+  }
+
+  .path {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: clamp(1.4rem, 4vw, 3.4rem);
+    margin: clamp(2.6rem, 8vh, 5.5rem) 0 0 clamp(2rem, 22vw, 26rem);
+  }
+
+  /* Flat river stones, each one a slightly different shape. */
+  .stone {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    padding: 1.05em 2.1em;
+    border-radius: 52% 48% 46% 54% / 58% 52% 48% 42%;
+    background:
+      radial-gradient(
+        ellipse 80% 70% at 32% 26%,
+        var(--stone-hi) 0%,
+        var(--stone) 52%,
+        var(--stone-lo) 100%
+      );
+    box-shadow:
+      inset 1px 2px 1px rgb(255 255 255 / 18%),
+      inset -2px -3px 6px rgb(0 0 0 / 35%);
+    color: #ece6d6;
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-indent: 0.28em;
+    text-transform: uppercase;
+    text-decoration: none;
+    pointer-events: auto;
+    cursor: pointer;
+    transition:
+      translate 260ms ease,
+      background-color 260ms ease;
+  }
+
+  .stone + .stone {
+    margin-top: clamp(1.6rem, 5vh, 3.6rem);
+    border-radius: 44% 56% 58% 42% / 50% 44% 56% 50%;
+  }
+
+  /* Moss creeping over the top as you step onto it. */
+  .stone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      ellipse 70% 55% at 38% 18%,
+      rgb(122 140 72 / 85%) 0%,
+      rgb(93 106 58 / 0%) 70%
+    );
+    opacity: 0;
+    transition: opacity 260ms ease;
+  }
+
+  .stone span {
+    position: relative;
+  }
+
+  .stone:hover,
+  .stone:focus-visible {
+    translate: 0 -2px;
+  }
+
+  .stone:hover::before,
+  .stone:focus-visible::before {
+    opacity: 1;
+  }
+
+  .stone:focus-visible {
+    outline: 2px dashed var(--ink);
+    outline-offset: 7px;
+  }
+
+  /* Brushed inscription and a cinnabar seal, top right. */
+  .inscription {
+    position: absolute;
+    top: clamp(1.25rem, 4vw, 2.75rem);
+    right: clamp(1rem, 3.6vw, 2.75rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9rem;
+    font-family: 'Shippori Mincho B1', serif;
+    pointer-events: none;
+  }
+
+  .kanji {
+    writing-mode: vertical-rl;
+    font-size: clamp(1rem, 1.8vw, 1.45rem);
+    font-weight: 600;
+    letter-spacing: 0.45em;
+    color: rgb(38 40 35 / 78%);
+  }
+
+  .seal {
+    display: grid;
+    place-items: center;
+    width: 1.9em;
+    height: 1.9em;
+    border-radius: 0.18em;
+    background: var(--seal);
+    box-shadow: inset 0 0 0 0.12em rgb(231 225 212 / 55%);
+    color: #f3ece0;
+    font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+    font-weight: 800;
+    line-height: 1;
+    rotate: -3deg;
+    opacity: 0.92;
+  }
+
+  .hint {
+    position: absolute;
+    bottom: clamp(1.1rem, 3vw, 1.6rem);
+    left: clamp(1rem, 3.6vw, 2.75rem);
+    max-width: calc(50% - 5rem);
+    margin: 0;
+    padding: 0.35em 0.7em;
+    border-radius: 0.2rem;
+    background: rgb(231 225 212 / 82%);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: lowercase;
+    color: rgb(38 40 35 / 78%);
+    pointer-events: none;
+  }
+
+  .hint-coarse {
+    display: none;
+  }
+
+  @media (pointer: coarse) {
+    .hint-fine {
+      display: none;
+    }
+
+    .hint-coarse {
+      display: inline;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .plot {
+      padding-top: 6rem;
+    }
+
+    .path {
+      margin-left: clamp(1.5rem, 14vw, 5rem);
+    }
+
+    .hint {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stone,
+    .stone::before {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  /** Furrow pitch in CSS pixels — the width of one tine of the rake. */
+  const LAMBDA = 13;
+  /** How many rings the rake draws around anything set into the gravel. */
+  const RINGS = 6;
+  /** The distance field is solved at this fraction of CSS resolution. */
+  const FIELD_SCALE = 0.5;
+  const RAKE_MS = 1500;
+  const MAX_STONES = 8;
+
+  const VERT = `#version 300 es
+in vec2 aPos;
+void main() { gl_Position = vec4(aPos, 0.0, 1.0); }`;
+
+  const FRAG = `#version 300 es
+precision highp float;
+
+uniform sampler2D uField;
+uniform vec2 uSize;
+uniform float uDpr;
+uniform float uLambda;
+uniform float uRings;
+uniform float uReveal;
+uniform vec3 uStones[${MAX_STONES + 1}];
+
+out vec4 outColor;
+
+float hash(vec2 p) {
+  p = fract(p * vec2(123.34, 456.21));
+  p += dot(p, p + 45.32);
+  return fract(p.x * p.y);
+}
+
+float noise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(
+    mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+    mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x),
+    f.y
+  );
+}
+
+float fbm(vec2 p) {
+  float v = 0.0;
+  float a = 0.5;
+  for (int i = 0; i < 5; i++) {
+    v += a * noise(p);
+    p = p * 2.03 + 17.1;
+    a *= 0.5;
+  }
+  return v;
+}
+
+// Field: r = distance to nearest obstacle, g = depth inside a rock,
+// b = obstacle coverage, a = rock coverage. Distances are in CSS pixels.
+vec4 field(vec2 px) {
+  return texture(uField, px / uSize);
+}
+
+// Distance to the nearest pebble; also reports the one we are inside.
+float pebbles(vec2 px, out vec3 inside) {
+  float d = 1e5;
+  inside = vec3(0.0);
+  for (int i = 0; i < ${MAX_STONES + 1}; i++) {
+    vec3 s = uStones[i];
+    if (s.z <= 0.0) continue;
+    float ds = length(px - s.xy) - s.z;
+    if (ds < d) d = ds;
+    if (ds < 0.0) inside = s;
+  }
+  return d;
+}
+
+// Is this point under something, seen from the light? Soft, four taps.
+float occluded(vec2 px) {
+  vec2 toLight = vec2(-0.62, -0.78);
+  float o = 0.0;
+  for (int i = 1; i <= 4; i++) {
+    vec2 q = px + toLight * float(i) * 3.2;
+    vec3 ins;
+    float pd = pebbles(q, ins);
+    float c = max(field(q).b, 1.0 - smoothstep(-1.0, 1.0, pd));
+    o += c * (1.0 - float(i) * 0.16);
+  }
+  return clamp(o * 0.42, 0.0, 1.0);
+}
+
+vec3 shadeStone(vec2 px, float height, vec3 base) {
+  float dx = dFdx(height) * uDpr;
+  float dy = dFdy(height) * uDpr;
+  vec3 n = normalize(vec3(-dx, -dy, 1.0));
+  vec3 L = normalize(vec3(-0.55, 0.62, 0.56));
+  float diff = max(dot(n, L), 0.0);
+  vec3 H = normalize(L + vec3(0.0, 0.0, 1.0));
+  float spec = pow(max(dot(n, H), 0.0), 28.0) * 0.18;
+
+  float grain = fbm(px * 0.09);
+  float speck = step(0.93, hash(floor(px * 0.9)));
+  vec3 col = base * (0.8 + 0.45 * grain) + speck * 0.07;
+
+  // Moss settles on the flatter, upward-facing crowns.
+  float mossy = smoothstep(0.55, 0.78, fbm(px * 0.035 + 3.0)) *
+    smoothstep(0.75, 0.95, n.z);
+  col = mix(col, vec3(0.33, 0.4, 0.2) * (0.75 + 0.5 * grain), mossy * 0.85);
+
+  return col * (0.32 + 0.95 * diff) + spec;
+}
+
+void main() {
+  vec2 px = vec2(gl_FragCoord.x, uSize.y * uDpr - gl_FragCoord.y) / uDpr;
+  vec4 f = field(px);
+
+  vec3 pebble;
+  float dp = pebbles(px, pebble);
+  float d = min(f.r, dp);
+
+  // --- The rake -------------------------------------------------------
+  float lambda = uLambda;
+  float R = lambda * uRings;
+  // The straight furrows are never quite straight.
+  float wob = (fbm(px * 0.0035) - 0.5) * lambda * 2.4;
+  float linePhase = (px.y + wob) / lambda;
+  float ringPhase = (d - lambda * 0.55) / lambda;
+  float inRings = 1.0 - step(R, d);
+  float phase = mix(linePhase, ringPhase, inRings);
+
+  // Rounded ridges with slightly sharper troughs, as a wooden tine leaves.
+  float ridge = 0.5 - 0.5 * cos(6.2831853 * phase);
+  ridge = pow(ridge, 0.8);
+
+  // The rake passes once, left to right, on load.
+  float sweep = px.x / uSize.x * 0.85 + px.y / uSize.y * 0.15;
+  float raked = smoothstep(sweep - 0.06, sweep, uReveal * 1.12 - 0.04);
+  float loose = fbm(px * 0.06) * 0.35;
+  float h = mix(loose, ridge, raked);
+
+  // Sand is lit by height gradient: a low sun from the upper left.
+  float amp = 4.4;
+  float hx = dFdx(h) * uDpr * amp;
+  float hy = dFdy(h) * uDpr * amp;
+  // Where rings meet the straight furrows the slope jumps; keep it sane.
+  hx = clamp(hx, -1.6, 1.6);
+  hy = clamp(hy, -1.6, 1.6);
+  vec3 n = normalize(vec3(-hx, -hy, 1.0));
+  vec3 L = normalize(vec3(-0.55, 0.62, 0.5));
+  float lit = dot(n, L);
+
+  vec3 sand = vec3(0.905, 0.882, 0.832);
+  float mottle = fbm(px * 0.012);
+  sand *= 0.95 + 0.08 * mottle;
+  float grain = hash(floor(px * uDpr) + 0.5) - 0.5;
+  sand += grain * 0.065;
+  // Darker quartz flecks.
+  sand *= 1.0 - step(0.993, hash(floor(px * uDpr * 0.5) + 7.0)) * 0.2;
+
+  vec3 col = sand * (0.7 + 0.42 * lit);
+  // Occlusion in the bottom of each furrow.
+  col *= 0.9 + 0.1 * h;
+  // Contact shadow hugging every stone, and the cast shadow of each.
+  col *= mix(0.78, 1.0, smoothstep(0.0, 9.0, d));
+  col *= 1.0 - 0.3 * occluded(px);
+
+  // --- Rocks baked into the field --------------------------------------
+  float rockMask = smoothstep(0.3, 0.7, f.a);
+  if (rockMask > 0.0) {
+    float depth = f.g;
+    float crown = sqrt(max(depth, 0.0) * 42.0) + fbm(px * 0.045) * 14.0;
+    vec3 rock = shadeStone(px, crown, vec3(0.3, 0.31, 0.28));
+    col = mix(col, rock, rockMask);
+  }
+
+  // --- Pebbles carried by the cursor -----------------------------------
+  if (pebble.z > 0.0) {
+    vec2 q = px - pebble.xy;
+    float r = pebble.z;
+    float dome = sqrt(max(r * r - dot(q, q), 0.0)) * 1.4 +
+      fbm(px * 0.12) * 1.5;
+    vec3 stone = shadeStone(px + pebble.xy * 3.1, dome, vec3(0.34, 0.33, 0.31));
+    float edge = smoothstep(0.0, 1.2, -dp);
+    col = mix(col, stone, edge);
+  }
+
+  // Soft fall-off toward the garden walls.
+  vec2 uv = px / uSize;
+  float vig = smoothstep(1.25, 0.35, length((uv - vec2(0.45, 0.42)) * vec2(1.0, 1.15)));
+  col *= 0.86 + 0.14 * vig;
+
+  outColor = vec4(col, 1.0);
+}`;
+
+  interface Stone {
+    x: number;
+    y: number;
+    r: number;
+  }
+
+  interface Rect {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  }
+
+  const garden = document.querySelector<HTMLElement>('[data-garden]');
+  const canvas = garden?.querySelector<HTMLCanvasElement>('[data-sand]');
+  const gl = canvas?.getContext('webgl2', {
+    antialias: false,
+    premultipliedAlpha: false,
+  });
+
+  /**
+   * Felzenszwalb & Huttenlocher's exact squared Euclidean distance transform,
+   * one row or column at a time.
+   */
+  function edt1d(
+    f: Float32Array,
+    n: number,
+    d: Float32Array,
+    v: Int32Array,
+    z: Float32Array,
+  ) {
+    let k = 0;
+    v[0] = 0;
+    z[0] = -Infinity;
+    z[1] = Infinity;
+    for (let q = 1; q < n; q++) {
+      const fq = f[q] ?? 0;
+      let s = 0;
+      for (;;) {
+        const vk = v[k] ?? 0;
+        s = (fq + q * q - ((f[vk] ?? 0) + vk * vk)) / (2 * q - 2 * vk);
+        if (s <= (z[k] ?? 0) && k > 0) k--;
+        else break;
+      }
+      k++;
+      v[k] = q;
+      z[k] = s;
+      z[k + 1] = Infinity;
+    }
+    k = 0;
+    for (let q = 0; q < n; q++) {
+      while ((z[k + 1] ?? 0) < q) k++;
+      const vk = v[k] ?? 0;
+      d[q] = (q - vk) * (q - vk) + (f[vk] ?? 0);
+    }
+  }
+
+  /** Distance (in field pixels) from every cell to the nearest seed. */
+  function distanceField(
+    seeds: Uint8Array,
+    w: number,
+    h: number,
+  ): Float32Array {
+    const BIG = 1e10;
+    const grid = new Float32Array(w * h);
+    for (let i = 0; i < grid.length; i++) grid[i] = seeds[i] ? 0 : BIG;
+
+    const n = Math.max(w, h);
+    const f = new Float32Array(n);
+    const d = new Float32Array(n);
+    const v = new Int32Array(n);
+    const z = new Float32Array(n + 1);
+
+    for (let x = 0; x < w; x++) {
+      for (let y = 0; y < h; y++) f[y] = grid[y * w + x] ?? BIG;
+      edt1d(f, h, d, v, z);
+      for (let y = 0; y < h; y++) grid[y * w + x] = d[y] ?? 0;
+    }
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) f[x] = grid[y * w + x] ?? BIG;
+      edt1d(f, w, d, v, z);
+      for (let x = 0; x < w; x++) grid[y * w + x] = Math.sqrt(d[x] ?? 0);
+    }
+    return grid;
+  }
+
+  /** A deterministic wobble, so rocks keep their shape between resizes. */
+  function wobble(seed: number, a: number): number {
+    return (
+      Math.sin(a * 2 + seed * 3.1) * 0.09 +
+      Math.sin(a * 3 + seed * 1.7) * 0.06 +
+      Math.sin(a * 5 + seed * 5.3) * 0.035
+    );
+  }
+
+  function overlaps(a: Rect, b: Rect, pad: number): boolean {
+    return (
+      a.x - pad < b.x + b.w &&
+      a.x + a.w + pad > b.x &&
+      a.y - pad < b.y + b.h &&
+      a.y + a.h + pad > b.y
+    );
+  }
+
+  function compile(
+    context: WebGL2RenderingContext,
+    type: number,
+    src: string,
+  ): WebGLShader | null {
+    const shader = context.createShader(type);
+    if (!shader) return null;
+    context.shaderSource(shader, src);
+    context.compileShader(shader);
+    if (!context.getShaderParameter(shader, context.COMPILE_STATUS)) {
+      context.deleteShader(shader);
+      return null;
+    }
+    return shader;
+  }
+
+  if (garden && canvas && gl) {
+    const reduced = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+
+    const vs = compile(gl, gl.VERTEX_SHADER, VERT);
+    const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG);
+    const program = gl.createProgram();
+    let ready = false;
+
+    if (vs && fs && program) {
+      gl.attachShader(program, vs);
+      gl.attachShader(program, fs);
+      gl.linkProgram(program);
+      ready = Boolean(gl.getProgramParameter(program, gl.LINK_STATUS));
+    }
+
+    if (ready && program) {
+      gl.useProgram(program);
+
+      const quad = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+      gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
+        gl.STATIC_DRAW,
+      );
+      const aPos = gl.getAttribLocation(program, 'aPos');
+      gl.enableVertexAttribArray(aPos);
+      gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+      const texture = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+      const u = {
+        field: gl.getUniformLocation(program, 'uField'),
+        size: gl.getUniformLocation(program, 'uSize'),
+        dpr: gl.getUniformLocation(program, 'uDpr'),
+        lambda: gl.getUniformLocation(program, 'uLambda'),
+        rings: gl.getUniformLocation(program, 'uRings'),
+        reveal: gl.getUniformLocation(program, 'uReveal'),
+        stones: gl.getUniformLocation(program, 'uStones'),
+      };
+
+      let width = 0;
+      let height = 0;
+      let dpr = 1;
+      let raf = 0;
+      let started = 0;
+      let reveal = reduced ? 1 : 0;
+      let resizeTimer = 0;
+
+      /** The pebble in hand: where it is, and where the cursor wants it. */
+      const carried: Stone = { x: 0, y: 0, r: 0 };
+      const target = { x: 0, y: 0, r: 0 };
+      const placed: Stone[] = [];
+
+      /** Rasterise everything set into the gravel and solve its field. */
+      function buildField() {
+        const rect = garden!.getBoundingClientRect();
+        const fw = Math.max(2, Math.ceil(width * FIELD_SCALE));
+        const fh = Math.max(2, Math.ceil(height * FIELD_SCALE));
+        const mask = document.createElement('canvas');
+        mask.width = fw;
+        mask.height = fh;
+        const m = mask.getContext('2d', { willReadFrequently: true });
+        if (!m) return;
+        m.scale(FIELD_SCALE, FIELD_SCALE);
+
+        const keep: Rect[] = [];
+        const toLocal = (r: DOMRect): Rect => ({
+          x: r.left - rect.left,
+          y: r.top - rect.top,
+          w: r.width,
+          h: r.height,
+        });
+
+        // The letters themselves, drawn in the same face at the same place.
+        const name = garden!.querySelector<HTMLElement>(
+          '[data-obstacle="text"]',
+        );
+        const text = name?.firstChild;
+        if (name && text) {
+          const range = document.createRange();
+          range.selectNodeContents(name);
+          const box = toLocal(range.getBoundingClientRect());
+          const style = getComputedStyle(name);
+          m.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+          m.letterSpacing = style.letterSpacing;
+          m.textBaseline = 'alphabetic';
+          m.fillStyle = 'rgb(0 0 255)';
+          const metrics = m.measureText(text.textContent ?? '');
+          const ascent = metrics.fontBoundingBoxAscent;
+          const descent = metrics.fontBoundingBoxDescent;
+          const baseline = box.y + (box.h - (ascent + descent)) / 2 + ascent;
+          m.fillText(text.textContent ?? '', box.x, baseline);
+          keep.push(box);
+        }
+
+        // The stepping stones, as flattened ellipses.
+        for (const stone of garden!.querySelectorAll<HTMLElement>(
+          '[data-obstacle="stone"]',
+        )) {
+          const b = toLocal(stone.getBoundingClientRect());
+          m.fillStyle = 'rgb(0 0 255)';
+          m.beginPath();
+          m.ellipse(
+            b.x + b.w / 2,
+            b.y + b.h / 2,
+            b.w / 2,
+            b.h / 2,
+            0,
+            0,
+            Math.PI * 2,
+          );
+          m.fill();
+          keep.push(b);
+        }
+
+        for (const el of garden!.querySelectorAll<HTMLElement>(
+          '[data-keep-clear]',
+        )) {
+          if (el.offsetParent) keep.push(toLocal(el.getBoundingClientRect()));
+        }
+        // The nav chrome's strip, bottom centre.
+        keep.push({ x: width / 2 - 140, y: height - 72, w: 280, h: 72 });
+
+        // A handful of rocks, laid out relative to the garden; any that would
+        // crowd the content are left out rather than moved.
+        const unit = Math.max(30, Math.min(130, Math.min(width, height) * 0.1));
+        const rocks = [
+          { x: 0.79, y: 0.27, r: unit * 1.05, s: 1, sx: 1.25 },
+          { x: 0.88, y: 0.4, r: unit * 0.48, s: 2, sx: 1.1 },
+          { x: 0.14, y: 0.83, r: unit * 0.66, s: 3, sx: 1.35 },
+          { x: 0.7, y: 0.85, r: unit * 0.34, s: 4, sx: 1.2 },
+          { x: 0.06, y: 0.16, r: unit * 0.4, s: 5, sx: 1.3 },
+        ];
+        m.fillStyle = 'rgb(255 0 0)';
+        for (const rock of rocks) {
+          const cx = rock.x * width;
+          const cy = rock.y * height;
+          const rx = rock.r * rock.sx;
+          const bounds = {
+            x: cx - rx,
+            y: cy - rock.r,
+            w: rx * 2,
+            h: rock.r * 2,
+          };
+          if (keep.some((k) => overlaps(bounds, k, LAMBDA * 3))) continue;
+          m.beginPath();
+          for (let i = 0; i <= 64; i++) {
+            const a = (i / 64) * Math.PI * 2;
+            const k = 1 + wobble(rock.s, a);
+            const px = cx + Math.cos(a) * rx * k;
+            const py = cy + Math.sin(a) * rock.r * k;
+            if (i === 0) m.moveTo(px, py);
+            else m.lineTo(px, py);
+          }
+          m.closePath();
+          m.fill();
+        }
+
+        const pixels = m.getImageData(0, 0, fw, fh).data;
+        const any = new Uint8Array(fw * fh);
+        const notRock = new Uint8Array(fw * fh);
+        for (let i = 0; i < fw * fh; i++) {
+          any[i] = (pixels[i * 4 + 3] ?? 0) > 127 ? 1 : 0;
+          notRock[i] = (pixels[i * 4] ?? 0) > 127 ? 0 : 1;
+        }
+        const outside = distanceField(any, fw, fh);
+        const inside = distanceField(notRock, fw, fh);
+
+        const data = new Float32Array(fw * fh * 4);
+        for (let i = 0; i < fw * fh; i++) {
+          data[i * 4] = (outside[i] ?? 0) / FIELD_SCALE;
+          data[i * 4 + 1] = (inside[i] ?? 0) / FIELD_SCALE;
+          data[i * 4 + 2] = (pixels[i * 4 + 3] ?? 0) / 255;
+          data[i * 4 + 3] =
+            ((pixels[i * 4] ?? 0) / 255) * ((pixels[i * 4 + 3] ?? 0) / 255);
+        }
+
+        gl!.bindTexture(gl!.TEXTURE_2D, texture);
+        gl!.texImage2D(
+          gl!.TEXTURE_2D,
+          0,
+          gl!.RGBA16F,
+          fw,
+          fh,
+          0,
+          gl!.RGBA,
+          gl!.FLOAT,
+          data,
+        );
+      }
+
+      function draw() {
+        const stones = new Float32Array((MAX_STONES + 1) * 3);
+        stones[0] = carried.x;
+        stones[1] = carried.y;
+        stones[2] = carried.r;
+        placed.forEach((s, i) => {
+          stones[(i + 1) * 3] = s.x;
+          stones[(i + 1) * 3 + 1] = s.y;
+          stones[(i + 1) * 3 + 2] = s.r;
+        });
+
+        gl!.viewport(0, 0, canvas!.width, canvas!.height);
+        gl!.uniform1i(u.field, 0);
+        gl!.uniform2f(u.size, width, height);
+        gl!.uniform1f(u.dpr, dpr);
+        gl!.uniform1f(u.lambda, LAMBDA);
+        gl!.uniform1f(u.rings, RINGS);
+        gl!.uniform1f(u.reveal, reveal);
+        gl!.uniform3fv(u.stones, stones);
+        gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4);
+      }
+
+      function frame(now: number) {
+        raf = 0;
+        let busy = false;
+
+        if (reveal < 1) {
+          const t = Math.min(1, (now - started) / RAKE_MS);
+          reveal = t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
+          busy = t < 1;
+        }
+
+        // The pebble trails the cursor, unhurried.
+        const ease = reduced ? 1 : 0.14;
+        carried.x += (target.x - carried.x) * ease;
+        carried.y += (target.y - carried.y) * ease;
+        carried.r += (target.r - carried.r) * (reduced ? 1 : 0.2);
+        if (
+          Math.abs(target.x - carried.x) > 0.05 ||
+          Math.abs(target.y - carried.y) > 0.05 ||
+          Math.abs(target.r - carried.r) > 0.05
+        ) {
+          busy = true;
+        } else {
+          carried.x = target.x;
+          carried.y = target.y;
+          carried.r = target.r;
+        }
+
+        draw();
+        if (busy) request();
+      }
+
+      function request() {
+        if (!raf) raf = requestAnimationFrame(frame);
+      }
+
+      function resize() {
+        const rect = garden!.getBoundingClientRect();
+        if (rect.width < 2 || rect.height < 2) return;
+        dpr = Math.min(2, window.devicePixelRatio || 1);
+        width = rect.width;
+        height = rect.height;
+        canvas!.width = Math.round(width * dpr);
+        canvas!.height = Math.round(height * dpr);
+        buildField();
+        request();
+      }
+
+      function local(event: PointerEvent) {
+        const rect = garden!.getBoundingClientRect();
+        return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      }
+
+      async function start() {
+        // The field is traced from the real glyphs, so wait for the face.
+        await Promise.all(
+          ['800 100px "Shippori Mincho B1"', '500 1rem "Zen Kaku Gothic New"'].map(
+            (face) => document.fonts.load(face).catch(() => []),
+          ),
+        );
+        await document.fonts.ready;
+
+        resize();
+        started = performance.now();
+        request();
+
+        garden!.addEventListener('pointermove', (event) => {
+          if (event.pointerType !== 'mouse') return;
+          const p = local(event);
+          if (carried.r === 0 && target.r === 0) {
+            carried.x = p.x;
+            carried.y = p.y;
+          }
+          target.x = p.x;
+          target.y = p.y;
+          target.r = (event.target as Element).closest('a') ? 0 : 9;
+          request();
+        });
+
+        garden!.addEventListener('pointerleave', () => {
+          target.r = 0;
+          request();
+        });
+
+        garden!.addEventListener('pointerdown', (event) => {
+          if ((event.target as Element).closest('a')) return;
+          const p = local(event);
+          placed.push({ x: p.x, y: p.y, r: 9 + Math.random() * 8 });
+          if (placed.length > MAX_STONES) placed.shift();
+          if (event.pointerType === 'mouse') {
+            // A fresh pebble appears in hand.
+            carried.r = 0;
+          }
+          request();
+        });
+
+        window.addEventListener('resize', () => {
+          window.clearTimeout(resizeTimer);
+          resizeTimer = window.setTimeout(resize, 160);
+        });
+      }
+
+      void start();
+    }
+  }
+</script>
