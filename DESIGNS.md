@@ -7,8 +7,20 @@
 generated, screenshotted and merged automatically. Every design it has ever
 worn stays online at its own URL. Newest first.
 
-**15 designs** ·
+**16 designs** ·
 [Browse them live](https://tayles.co.uk/designs)
+
+---
+
+## Karesansui
+
+2 November 2026 · `karesansui`
+
+A dry Zen garden from above — straight furrows raked across pale gravel break into concentric rings around the letters of the name, two stepping-stone links and a few mossy rocks. The cursor carries a pebble the sand flows around; click to set it down.
+
+[![Karesansui](src/designs/karesansui/screenshot.webp)](src/designs/karesansui/)
+
+[Live](https://tayles.co.uk/designs/karesansui) · [Source](src/designs/karesansui/index.astro) · `zen-garden` `sand` `webgl` `shader` `distance-field` `mincho` `quiet` `cursor`
 
 ---
 
