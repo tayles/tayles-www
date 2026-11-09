@@ -7,8 +7,20 @@
 generated, screenshotted and merged automatically. Every design it has ever
 worn stays online at its own URL. Newest first.
 
-**16 designs** ·
+**17 designs** ·
 [Browse them live](https://tayles.co.uk/designs)
+
+---
+
+## Endpaper
+
+9 November 2026 · `endpaper`
+
+The inside cover of an old book — a sheet of hand-marbled paper in indigo, oxblood and ochre, with a printed bookplate pasted in the middle. The ink is live — drag across it to comb the colours, tap to float a new drop.
+
+[![Endpaper](src/designs/endpaper/screenshot.webp)](src/designs/endpaper/)
+
+[Live](https://tayles.co.uk/designs/endpaper) · [Source](src/designs/endpaper/index.astro) · `marbling` `ebru` `bookbinding` `bookplate` `ink` `generative` `canvas` `fell`
 
 ---
 
