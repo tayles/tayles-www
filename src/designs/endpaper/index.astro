@@ -1,0 +1,673 @@
+---
+// Endpaper — the inside cover of an old book. A canvas floats drops of ink on
+// a size bath and combs them with the exact displacement maps of mathematical
+// marbling; a printed bookplate is pasted on top. Drag to comb, tap to drop.
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap"
+/>
+
+<div class="endpaper" data-endpaper>
+  <canvas class="bath" data-marble aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section class="plate" aria-label="Bookplate">
+    <p class="ex">Ex Libris</p>
+    <p class="fleuron" aria-hidden="true">❦</p>
+    <h1>tayles</h1>
+    <p class="shelf">Marbled endpaper &middot; No. xvii</p>
+
+    <div class="rule" aria-hidden="true"><span>◆</span></div>
+
+    <nav class="links" aria-label="Elsewhere">
+      <a href="https://github.com/tayles">GitHub</a>
+      <span class="sep" aria-hidden="true">❧</span>
+      <a href="https://linkedin.com/in/tayles">LinkedIn</a>
+    </nav>
+
+    <p class="hint">Drag through the ink to comb it &middot; tap to drop more</p>
+  </section>
+</div>
+
+<style>
+  .endpaper {
+    --ink: #2a1d17;
+    --oxblood: #7d2620;
+    --indigo: #1f2d5a;
+
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    min-height: 100dvh;
+    padding: clamp(1.25rem, 5vw, 4rem) 1rem
+      calc(3.5rem + clamp(1rem, 4vw, 3rem));
+    overflow: hidden;
+    background: #e9dcbf;
+    color: var(--ink);
+    font-family: 'IM Fell English', Georgia, 'Times New Roman', serif;
+  }
+
+  .bath {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #e9dcbf;
+    cursor: crosshair;
+    touch-action: none;
+  }
+
+  /* Laid paper, a little foxing, and the shadow of the hinge on the left. */
+  .grain {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        90deg,
+        rgb(24 12 6 / 55%) 0,
+        rgb(24 12 6 / 18%) 1.6%,
+        rgb(24 12 6 / 0%) 6%
+      ),
+      radial-gradient(
+        ellipse at 50% 50%,
+        rgb(0 0 0 / 0%) 55%,
+        rgb(40 22 10 / 28%) 100%
+      ),
+      repeating-linear-gradient(
+        90deg,
+        rgb(255 250 235 / 5%) 0 1px,
+        rgb(255 250 235 / 0%) 1px 4px
+      ),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.25 0 0 0 0 0.15 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+  }
+
+  /* A letterpress bookplate, pasted in slightly off true. */
+  .plate {
+    position: relative;
+    z-index: 2;
+    box-sizing: border-box;
+    width: min(30rem, 100%);
+    padding: clamp(1.9rem, 5vw, 2.9rem) clamp(1.4rem, 5vw, 3rem)
+      clamp(1.6rem, 4.5vw, 2.4rem);
+    background:
+      radial-gradient(
+        ellipse at 28% 18%,
+        rgb(255 251 240 / 90%),
+        rgb(255 251 240 / 0%) 60%
+      ),
+      radial-gradient(
+        circle at 86% 88%,
+        rgb(176 132 70 / 22%),
+        rgb(176 132 70 / 0%) 30%
+      ),
+      linear-gradient(170deg, #f6eedb, #ecdfc2);
+    box-shadow:
+      0 1px 1px rgb(40 20 10 / 35%),
+      0 14px 28px -8px rgb(30 15 5 / 50%),
+      0 34px 70px -24px rgb(30 15 5 / 45%);
+    text-align: center;
+    transform: rotate(-0.7deg);
+  }
+
+  .plate::before,
+  .plate::after {
+    position: absolute;
+    pointer-events: none;
+    content: '';
+  }
+
+  .plate::before {
+    inset: 0.55rem;
+    border: 3px double rgb(42 29 23 / 78%);
+  }
+
+  .plate::after {
+    inset: 1.05rem;
+    border: 1px solid rgb(42 29 23 / 28%);
+  }
+
+  .ex {
+    margin: 0;
+    padding-left: 0.42em;
+    font-family: 'IM Fell English SC', Georgia, serif;
+    font-size: clamp(0.85rem, 2.4vw, 1.05rem);
+    letter-spacing: 0.42em;
+  }
+
+  .fleuron {
+    margin: 0.35rem 0 0;
+    color: var(--oxblood);
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+    line-height: 1;
+  }
+
+  .endpaper h1 {
+    margin: 0.05em 0 0;
+    color: #1c1612;
+    font-size: clamp(3.6rem, 16vw, 6.8rem);
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    text-shadow: 0 0 1px rgb(28 22 18 / 35%);
+  }
+
+  .shelf {
+    margin: 0.5rem 0 0;
+    color: rgb(42 29 23 / 72%);
+    font-size: clamp(0.9rem, 2.4vw, 1.02rem);
+    font-style: italic;
+  }
+
+  .rule {
+    display: flex;
+    gap: 0.7rem;
+    align-items: center;
+    margin: 1.1rem auto 1rem;
+    width: min(14rem, 80%);
+    color: var(--oxblood);
+    font-size: 0.55rem;
+  }
+
+  .rule::before,
+  .rule::after {
+    flex: 1;
+    height: 1px;
+    background: rgb(42 29 23 / 45%);
+    content: '';
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    align-items: baseline;
+    justify-content: center;
+    font-family: 'IM Fell English SC', Georgia, serif;
+    font-size: clamp(1.1rem, 3.4vw, 1.35rem);
+    letter-spacing: 0.1em;
+  }
+
+  .links a {
+    color: var(--oxblood);
+    text-decoration: underline;
+    text-decoration-color: rgb(125 38 32 / 38%);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.24em;
+    transition:
+      color 0.25s ease,
+      text-decoration-color 0.25s ease;
+  }
+
+  .links a:hover {
+    color: var(--indigo);
+    text-decoration-color: currentcolor;
+  }
+
+  .links a:focus-visible {
+    border-radius: 2px;
+    outline: 2px solid var(--indigo);
+    outline-offset: 4px;
+  }
+
+  .sep {
+    color: rgb(42 29 23 / 55%);
+    font-size: 0.9em;
+  }
+
+  .hint {
+    margin: 1.3rem 0 0;
+    color: rgb(42 29 23 / 55%);
+    font-size: 0.82rem;
+    font-style: italic;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .links a {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  /** One floating island of colour: a closed polygon on the bath. */
+  interface Blot {
+    xs: number[];
+    ys: number[];
+    fill: string;
+  }
+
+  /** A displacement spread over time; `apply(k)` moves a fraction k of it. */
+  interface Motion {
+    start: number;
+    ms: number;
+    done: number;
+    apply: (k: number) => void;
+  }
+
+  /** Victorian Spanish marbling: indigo, oxblood, ochre, cream, verdigris. */
+  const PALETTE: [string, number][] = [
+    ['#1f2d5a', 3],
+    ['#8a2b26', 2.2],
+    ['#cf9a3e', 2],
+    ['#efe4c8', 2.3],
+    ['#3d6b6c', 1.4],
+    ['#2b211c', 0.9],
+    ['#9fb3bd', 1.2],
+  ];
+  const BATH = '#e9dcbf';
+  const VEIN = 'rgb(28 18 12 / 40%)';
+  const MAX_VERTICES = 600_000;
+
+  function mulberry32(seed: number): () => number {
+    let a = seed >>> 0;
+    return () => {
+      a = (a + 0x6d2b79f5) >>> 0;
+      let t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  const easeInOut = (t: number): number =>
+    t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
+
+  function start(
+    root: HTMLElement,
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D,
+  ): void {
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const rand = mulberry32(0x7a71e5);
+
+    // The bath is modelled once, at the size the page first opened at, and
+    // scaled to cover the viewport after that.
+    const box = root.getBoundingClientRect();
+    const W = Math.max(320, box.width);
+    const H = Math.max(320, box.height);
+    const S = Math.hypot(W, H);
+    const MARGIN = 0.3 * Math.max(W, H);
+    const MAX_EDGE = Math.max(3, S / 320);
+
+    let blots: Blot[] = [];
+    let motions: Motion[] = [];
+    let dirty = true;
+    let frame = 0;
+
+    const totalWeight = PALETTE.reduce((sum, [, w]) => sum + w, 0);
+    function pickColour(): string {
+      let r = rand() * totalWeight;
+      for (const [colour, weight] of PALETTE) {
+        r -= weight;
+        if (r <= 0) return colour;
+      }
+      return PALETTE[0]?.[0] ?? BATH;
+    }
+
+    /** Move every vertex by f(x, y) — the shared inner loop. */
+    function each(move: (x: number, y: number, out: number[]) => void): void {
+      const out = [0, 0];
+      for (const blot of blots) {
+        const { xs, ys } = blot;
+        for (let i = 0; i < xs.length; i++) {
+          out[0] = xs[i] ?? 0;
+          out[1] = ys[i] ?? 0;
+          move(out[0], out[1], out);
+          xs[i] = out[0] ?? 0;
+          ys[i] = out[1] ?? 0;
+        }
+      }
+    }
+
+    /**
+     * Ink dropped at (cx, cy) pushes everything radially so that area is
+     * conserved: |P' − C|² = |P − C|² + r². Drops at one centre compose by
+     * adding r², so a drop can spread over many frames exactly.
+     */
+    function spread(cx: number, cy: number, r2: number): void {
+      each((x, y, out) => {
+        const dx = x - cx;
+        const dy = y - cy;
+        const d2 = dx * dx + dy * dy;
+        if (d2 === 0) return;
+        const f = Math.sqrt(1 + r2 / d2);
+        out[0] = cx + dx * f;
+        out[1] = cy + dy * f;
+      });
+    }
+
+    function drop(
+      cx: number,
+      cy: number,
+      radius: number,
+      at: number,
+      ms: number,
+    ): void {
+      const fill = pickColour();
+      const r0 = radius * 0.18;
+      const total = radius * radius - r0 * r0;
+      motions.push({
+        start: at,
+        ms,
+        done: 0,
+        apply: (k) => {
+          if (k === 0) return;
+          spread(cx, cy, total * k);
+        },
+      });
+      // The seed of the drop lands when its motion first runs.
+      const seed = motions[motions.length - 1];
+      if (!seed) return;
+      const grow = seed.apply;
+      let landed = false;
+      seed.apply = (k) => {
+        if (!landed) {
+          landed = true;
+          spread(cx, cy, r0 * r0);
+          const n = 72;
+          const xs: number[] = [];
+          const ys: number[] = [];
+          for (let i = 0; i < n; i++) {
+            const a = (i / n) * Math.PI * 2;
+            xs.push(cx + Math.cos(a) * r0);
+            ys.push(cy + Math.sin(a) * r0);
+          }
+          blots.push({ xs, ys, fill });
+        }
+        grow(k);
+      };
+    }
+
+    /**
+     * A comb drawn along y through the bath: each tine slides the ink along
+     * its own line, falling off by half every `c` pixels sideways. Sliding
+     * along the line never changes the distance to it, so this is exact
+     * however it is split across frames.
+     */
+    function comb(at: number, ms: number): void {
+      const pitch = Math.max(56, W / 13);
+      const lines: number[] = [];
+      for (let x = -pitch * 0.5; x < W + pitch; x += pitch) lines.push(x);
+      const z = H * 0.16;
+      const c = pitch * 0.2;
+      motions.push({
+        start: at,
+        ms,
+        done: 0,
+        apply: (k) => {
+          each((x, y, out) => {
+            let dy = 0;
+            for (let j = 0; j < lines.length; j++) {
+              const d = Math.abs(x - (lines[j] ?? 0));
+              dy += (j % 2 === 0 ? 1 : -1) * 0.5 ** (d / c);
+            }
+            out[1] = y + dy * z * k;
+          });
+        },
+      });
+    }
+
+    /** A gentle serpentine pass across the comb lines. */
+    function wave(at: number, ms: number): void {
+      const amp = Math.min(W, H) * 0.035;
+      const length = Math.max(H * 0.42, 260);
+      motions.push({
+        start: at,
+        ms,
+        done: 0,
+        apply: (k) => {
+          each((x, y, out) => {
+            out[0] = x + amp * k * Math.sin((2 * Math.PI * y) / length);
+          });
+        },
+      });
+    }
+
+    /** A stylus dragged through the bath, from (x0, y0) to (x1, y1). */
+    function stroke(x0: number, y0: number, x1: number, y1: number): void {
+      const len = Math.hypot(x1 - x0, y1 - y0);
+      if (len === 0) return;
+      const c = S * 0.018;
+      const steps = Math.ceil(len / (c * 0.5));
+      const mx = (x1 - x0) / len;
+      const my = (y1 - y0) / len;
+      const z = (len / steps) * 0.95;
+      for (let s = 1; s <= steps; s++) {
+        const px = x0 + (x1 - x0) * (s / steps);
+        const py = y0 + (y1 - y0) * (s / steps);
+        each((x, y, out) => {
+          const w = z * 0.5 ** (Math.hypot(x - px, y - py) / c);
+          out[0] = x + mx * w;
+          out[1] = y + my * w;
+        });
+      }
+    }
+
+    const near = (x: number, y: number): boolean =>
+      x > -MARGIN && x < W + MARGIN && y > -MARGIN && y < H + MARGIN;
+
+    /** Keep edges short near the frame so stretched ink stays smooth. */
+    function refine(): void {
+      let count = 0;
+      for (const blot of blots) count += blot.xs.length;
+
+      blots = blots.filter((blot) => {
+        const { xs, ys } = blot;
+        let minX = Infinity;
+        let minY = Infinity;
+        let maxX = -Infinity;
+        let maxY = -Infinity;
+        for (let i = 0; i < xs.length; i++) {
+          const x = xs[i] ?? 0;
+          const y = ys[i] ?? 0;
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+        return !(
+          maxX < -MARGIN ||
+          minX > W + MARGIN ||
+          maxY < -MARGIN ||
+          minY > H + MARGIN
+        );
+      });
+
+      if (count > MAX_VERTICES) return;
+
+      for (const blot of blots) {
+        const { xs, ys } = blot;
+        const n = xs.length;
+        const nx: number[] = [];
+        const ny: number[] = [];
+        let changed = false;
+        for (let i = 0; i < n; i++) {
+          const x0 = xs[i] ?? 0;
+          const y0 = ys[i] ?? 0;
+          const x1 = xs[(i + 1) % n] ?? 0;
+          const y1 = ys[(i + 1) % n] ?? 0;
+          nx.push(x0);
+          ny.push(y0);
+          const len = Math.hypot(x1 - x0, y1 - y0);
+          if (len > MAX_EDGE && (near(x0, y0) || near(x1, y1))) {
+            const parts = Math.min(Math.ceil(len / MAX_EDGE), 24);
+            for (let s = 1; s < parts; s++) {
+              nx.push(x0 + ((x1 - x0) * s) / parts);
+              ny.push(y0 + ((y1 - y0) * s) / parts);
+            }
+            changed = true;
+          }
+        }
+        if (changed) {
+          blot.xs = nx;
+          blot.ys = ny;
+        }
+      }
+    }
+
+    let scale = 1;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    function draw(): void {
+      const cw = canvas.clientWidth;
+      const ch = canvas.clientHeight;
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const pw = Math.round(cw * dpr);
+      const ph = Math.round(ch * dpr);
+      if (canvas.width !== pw || canvas.height !== ph) {
+        canvas.width = pw;
+        canvas.height = ph;
+      }
+      scale = Math.max(cw / W, ch / H);
+      offsetX = (cw - W * scale) / 2;
+      offsetY = (ch - H * scale) / 2;
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.fillStyle = BATH;
+      ctx.fillRect(0, 0, pw, ph);
+      ctx.setTransform(
+        dpr * scale,
+        0,
+        0,
+        dpr * scale,
+        dpr * offsetX,
+        dpr * offsetY,
+      );
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = 0.9 / scale;
+      ctx.strokeStyle = VEIN;
+
+      for (const { xs, ys, fill } of blots) {
+        ctx.beginPath();
+        ctx.moveTo(xs[0] ?? 0, ys[0] ?? 0);
+        for (let i = 1; i < xs.length; i++) ctx.lineTo(xs[i] ?? 0, ys[i] ?? 0);
+        ctx.closePath();
+        ctx.fillStyle = fill;
+        ctx.fill();
+        ctx.stroke();
+      }
+    }
+
+    function advance(now: number): void {
+      motions = motions.filter((motion) => {
+        if (now < motion.start) return true;
+        const t =
+          motion.ms <= 0 ? 1 : Math.min(1, (now - motion.start) / motion.ms);
+        const e = easeInOut(t);
+        motion.apply(e - motion.done);
+        motion.done = e;
+        dirty = true;
+        return t < 1;
+      });
+    }
+
+    function tick(now: number): void {
+      frame = 0;
+      advance(now);
+      if (dirty) {
+        refine();
+        draw();
+        dirty = false;
+      }
+      if (motions.length > 0) schedule();
+    }
+
+    function schedule(): void {
+      if (frame === 0) frame = requestAnimationFrame(tick);
+    }
+
+    // The opening pattern: a stone ground of 150 drops, combed into
+    // chevrons, then drawn into a serpentine.
+    const t0 = performance.now();
+    const drops = 150;
+    for (let i = 0; i < drops; i++) {
+      const x = -0.05 * W + rand() * W * 1.1;
+      const y = -0.05 * H + rand() * H * 1.1;
+      const r = S * (0.02 + 0.05 * rand() ** 1.6);
+      drop(x, y, r, t0 + (i / drops) * 760, 340);
+    }
+    comb(t0 + 1120, 560);
+    wave(t0 + 1560, 380);
+
+    if (still) {
+      // Reduced motion: lay the whole pattern down at once.
+      for (const motion of motions) {
+        motion.apply(1);
+        refine();
+      }
+      motions = [];
+      draw();
+    } else {
+      schedule();
+    }
+
+    // Pointer: drag to comb, tap to drop.
+    let down: { id: number; x: number; y: number; moved: number } | undefined;
+
+    function toModel(event: PointerEvent): [number, number] {
+      const rect = canvas.getBoundingClientRect();
+      return [
+        (event.clientX - rect.left - offsetX) / scale,
+        (event.clientY - rect.top - offsetY) / scale,
+      ];
+    }
+
+    canvas.addEventListener('pointerdown', (event) => {
+      const [x, y] = toModel(event);
+      down = { id: event.pointerId, x, y, moved: 0 };
+      canvas.setPointerCapture(event.pointerId);
+    });
+
+    canvas.addEventListener('pointermove', (event) => {
+      if (!down || down.id !== event.pointerId) return;
+      const [x, y] = toModel(event);
+      down.moved += Math.hypot(x - down.x, y - down.y) * scale;
+      if (down.moved > 4) {
+        stroke(down.x, down.y, x, y);
+        dirty = true;
+        schedule();
+      }
+      down.x = x;
+      down.y = y;
+    });
+
+    const release = (event: PointerEvent): void => {
+      if (!down || down.id !== event.pointerId) return;
+      if (event.type === 'pointerup' && down.moved <= 4) {
+        const [x, y] = toModel(event);
+        drop(
+          x,
+          y,
+          S * (0.03 + 0.035 * rand()),
+          performance.now(),
+          still ? 0 : 650,
+        );
+        schedule();
+      }
+      down = undefined;
+    };
+    canvas.addEventListener('pointerup', release);
+    canvas.addEventListener('pointercancel', release);
+
+    new ResizeObserver(() => {
+      dirty = true;
+      schedule();
+    }).observe(root);
+  }
+
+  const root = document.querySelector<HTMLElement>('[data-endpaper]');
+  const canvas = root?.querySelector<HTMLCanvasElement>('[data-marble]');
+  const ctx = canvas?.getContext('2d');
+  if (root && canvas && ctx) start(root, canvas, ctx);
+</script>
