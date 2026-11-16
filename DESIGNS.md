@@ -7,8 +7,20 @@
 generated, screenshotted and merged automatically. Every design it has ever
 worn stays online at its own URL. Newest first.
 
-**17 designs** ·
+**18 designs** ·
 [Browse them live](https://tayles.co.uk/designs)
+
+---
+
+## Dessau
+
+16 November 2026 · `dessau`
+
+A 1920s workshop poster on cream stock — the name is constructed letter by letter from ruled lines and compass arcs in red, blue, yellow and black, drawn in like a ruling pen over its own construction lines, while primary planes hang behind it at different depths and drift with the cursor. The links are two coloured blocks of the grid.
+
+[![Dessau](src/designs/dessau/screenshot.webp)](src/designs/dessau/)
+
+[Live](https://tayles.co.uk/designs/dessau) · [Source](src/designs/dessau/index.astro) · `bauhaus` `constructed-type` `geometric` `primary` `svg` `parallax` `light`
 
 ---
 

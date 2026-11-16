@@ -1,0 +1,689 @@
+---
+// Dessau — a 1920s workshop poster. The name is built, not typeset: each
+// lowercase letter is constructed from rules and compass arcs in the manner
+// of a single-case "universal" alphabet, and the strokes are drawn in like a
+// ruling pen on load. Primary planes float behind it at different depths and
+// drift with the cursor; the links are two coloured blocks of the grid.
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;700&display=swap"
+/>
+
+<div class="dessau" data-dessau>
+  <svg class="grain" aria-hidden="true">
+    <filter id="dessau-grain">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="0.9"
+        numOctaves="2"
+        stitchTiles="stitch"></feTurbulence>
+      <feColorMatrix
+        values="0 0 0 0 0.3  0 0 0 0 0.24  0 0 0 0 0.16  0 0 0 0.16 0"
+      ></feColorMatrix>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#dessau-grain)"></rect>
+  </svg>
+
+  <div class="planes" aria-hidden="true">
+    <span class="plane sun" style="--d: 0.9"></span>
+    <span class="plane ring" style="--d: 0.5"></span>
+    <span class="plane bar" style="--d: 1.4"></span>
+    <span class="plane quarter" style="--d: 0.7"></span>
+    <span class="plane tri" style="--d: 1.1"></span>
+    <span class="plane rule rule-a" style="--d: 0.3"></span>
+    <span class="plane rule rule-b" style="--d: 0.2"></span>
+    <span class="plane dot" style="--d: 1.8"></span>
+    <span class="plane square" style="--d: 1.2"></span>
+  </div>
+
+  <header class="top">
+    <p class="kicker">
+      <span class="sq" aria-hidden="true"></span>werkstatt für gestaltung
+    </p>
+    <p class="num" aria-hidden="true">no. 18</p>
+  </header>
+
+  <main class="stage">
+    <p class="side" aria-hidden="true">
+      alle buchstaben aus kreis &amp; linie — 1:1
+    </p>
+
+    <h1 class="mark">
+      <span class="sr">tayles</span>
+      <svg
+        class="word"
+        viewBox="-24 -86 592 280"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <g class="construction">
+          <line x1="-24" y1="0" x2="568" y2="0"></line>
+          <line x1="-24" y1="100" x2="568" y2="100"></line>
+          <line x1="-24" y1="-61" x2="568" y2="-61"></line>
+          <line x1="-24" y1="170" x2="568" y2="170"></line>
+          <circle cx="128" cy="50" r="50"></circle>
+          <circle cx="404" cy="50" r="50"></circle>
+          <circle cx="246" cy="130" r="50"></circle>
+        </g>
+
+        <!-- t -->
+        <g transform="translate(0 0)">
+          <path
+            class="s ink"
+            style="--i: 0; --len: 158"
+            d="M20 -40 V60 A29 29 0 0 0 49 89 H60"></path>
+          <path class="s red" style="--i: 1; --len: 54" d="M0 11 H54"></path>
+        </g>
+
+        <!-- a -->
+        <g transform="translate(78 0)">
+          <path
+            class="s blue"
+            style="--i: 2; --len: 246"
+            d="M89 50 A39 39 0 1 0 89 50.01"></path>
+          <path class="s ink" style="--i: 3; --len: 100" d="M89 0 V100"></path>
+        </g>
+
+        <!-- y -->
+        <g transform="translate(196 0)">
+          <path
+            class="s ink"
+            style="--i: 4; --len: 173"
+            d="M11 0 V50 A39 39 0 0 0 89 50"></path>
+          <path
+            class="s red"
+            style="--i: 5; --len: 243"
+            d="M89 0 V120 A39 39 0 0 1 11 120"></path>
+        </g>
+
+        <!-- l -->
+        <g transform="translate(314 0)">
+          <path class="s ink" style="--i: 6; --len: 161" d="M11 -61 V100"
+          ></path>
+        </g>
+
+        <!-- e -->
+        <g transform="translate(354 0)">
+          <path
+            class="s ink"
+            style="--i: 7; --len: 215"
+            d="M89 50 A39 39 0 1 0 77.6 77.6"></path>
+          <path class="s yellow" style="--i: 8; --len: 78" d="M11 50 H89"
+          ></path>
+        </g>
+
+        <!-- s -->
+        <g transform="translate(472 0)">
+          <path
+            class="s blue"
+            style="--i: 9; --len: 184"
+            d="M54.5 30.5 A19.5 19.5 0 1 0 35 50 A19.5 19.5 0 1 1 15.5 69.5"
+          ></path>
+        </g>
+      </svg>
+    </h1>
+
+    <p class="caption">
+      <span>t</span><span>a</span><span>y</span><span>l</span><span>e</span
+      ><span>s</span>
+      <em>— ein alphabet, kleingeschrieben</em>
+    </p>
+  </main>
+
+  <nav class="links" aria-label="Elsewhere">
+    <a class="block block-gh" href="https://github.com/tayles">
+      <span class="glyph" aria-hidden="true"></span>
+      <span class="label">GitHub</span>
+      <span class="arrow" aria-hidden="true">→</span>
+    </a>
+    <a class="block block-li" href="https://linkedin.com/in/tayles">
+      <span class="glyph" aria-hidden="true"></span>
+      <span class="label">LinkedIn</span>
+      <span class="arrow" aria-hidden="true">→</span>
+    </a>
+  </nav>
+</div>
+
+<script>
+  // Cursor parallax: each plane drifts by its own depth, like card shapes
+  // hung at different distances from the wall.
+  const setup = (): void => {
+    const root = document.querySelector<HTMLElement>('[data-dessau]');
+    if (!root) return;
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let frame = 0;
+    let tx = 0;
+    let ty = 0;
+    let x = 0;
+    let y = 0;
+
+    const tick = (): void => {
+      x += (tx - x) * 0.08;
+      y += (ty - y) * 0.08;
+      root.style.setProperty('--px', x.toFixed(4));
+      root.style.setProperty('--py', y.toFixed(4));
+      frame =
+        Math.abs(tx - x) + Math.abs(ty - y) > 0.0005
+          ? requestAnimationFrame(tick)
+          : 0;
+    };
+
+    root.addEventListener('pointermove', (event) => {
+      if (still.matches || event.pointerType !== 'mouse') return;
+      const box = root.getBoundingClientRect();
+      tx = (event.clientX - box.left) / box.width - 0.5;
+      ty = (event.clientY - box.top) / box.height - 0.5;
+      if (!frame) frame = requestAnimationFrame(tick);
+    });
+
+    root.addEventListener('pointerleave', () => {
+      tx = 0;
+      ty = 0;
+      if (!frame) frame = requestAnimationFrame(tick);
+    });
+  };
+
+  setup();
+</script>
+
+<style>
+  .dessau {
+    --paper: #efe7d4;
+    --ink: #171513;
+    --red: #d23a26;
+    --yellow: #f2b419;
+    --blue: #1d4c9c;
+    --px: 0;
+    --py: 0;
+
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100dvh;
+    padding: clamp(1rem, 3vw, 2.5rem) clamp(1rem, 4vw, 3.5rem)
+      calc(3.5rem + clamp(1rem, 3vw, 2rem));
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Josefin Sans', 'Futura', 'Century Gothic', sans-serif;
+    box-sizing: border-box;
+  }
+
+  .dessau *,
+  .dessau *::before,
+  .dessau *::after {
+    box-sizing: border-box;
+  }
+
+  .grain {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+
+  /* ── Floating planes ─────────────────────────────────────────── */
+
+  .planes {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .plane {
+    --dx: calc(var(--px) * var(--d) * -46px);
+    --dy: calc(var(--py) * var(--d) * -46px);
+
+    position: absolute;
+    display: block;
+    translate: var(--dx) var(--dy);
+    animation: dessau-arrive 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  .sun {
+    top: -14vmax;
+    right: -10vmax;
+    width: 48vmax;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--red);
+    --from: translate(14vmax, -10vmax) scale(0.7);
+    animation-delay: 0.05s;
+  }
+
+  .ring {
+    top: 3vmax;
+    left: 40%;
+    width: 11vmax;
+    aspect-ratio: 1;
+    border: max(6px, 0.9vmax) solid var(--ink);
+    border-radius: 50%;
+    --from: scale(0.2);
+    animation-delay: 0.35s;
+  }
+
+  .bar {
+    bottom: 9%;
+    left: -10%;
+    width: 120%;
+    height: max(14px, 2.2vmax);
+    background: var(--ink);
+    transform: rotate(-10deg);
+    --from: rotate(-10deg) translateX(-110%);
+    --to: rotate(-10deg);
+    animation-delay: 0.2s;
+  }
+
+  .quarter {
+    bottom: -12vmax;
+    left: -12vmax;
+    width: 36vmax;
+    aspect-ratio: 1;
+    border-radius: 0 100% 0 0;
+    background: var(--blue);
+    transform-origin: 0 100%;
+    --from: rotate(-90deg);
+    animation-delay: 0.15s;
+  }
+
+  .tri {
+    top: 54%;
+    right: 6vmax;
+    width: 13vmax;
+    aspect-ratio: 1 / 0.87;
+    background: var(--yellow);
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    transform: rotate(12deg);
+    --from: rotate(-60deg) scale(0.3);
+    --to: rotate(12deg);
+    animation-delay: 0.45s;
+  }
+
+  .rule {
+    background: var(--ink);
+    animation-name: dessau-wipe;
+  }
+
+  .rule-a {
+    top: 0;
+    bottom: 0;
+    left: 18%;
+    width: 2px;
+    transform-origin: top;
+    --from: scaleY(0);
+    animation-delay: 0.1s;
+  }
+
+  .rule-b {
+    top: 30%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    transform-origin: left;
+    --from: scaleX(0);
+    animation-delay: 0.25s;
+  }
+
+  .dot {
+    top: 24%;
+    left: calc(18% - 1.6vmax);
+    width: 3.2vmax;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--ink);
+    --from: scale(0);
+    animation-delay: 0.6s;
+  }
+
+  .square {
+    bottom: 31%;
+    left: 30%;
+    width: 4vmax;
+    aspect-ratio: 1;
+    background: var(--yellow);
+    transform: rotate(-14deg);
+    --from: rotate(-104deg) scale(0);
+    --to: rotate(-14deg);
+    animation-delay: 0.55s;
+  }
+
+  @keyframes dessau-arrive {
+    from {
+      opacity: 0;
+      transform: var(--from);
+    }
+    to {
+      opacity: 1;
+      transform: var(--to, none);
+    }
+  }
+
+  @keyframes dessau-wipe {
+    from {
+      transform: var(--from);
+    }
+    to {
+      transform: none;
+    }
+  }
+
+  /* ── Top strip ───────────────────────────────────────────────── */
+
+  .top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-left: max(0px, calc(18% - clamp(1rem, 4vw, 3.5rem) + 0.9rem));
+  }
+
+  .kicker,
+  .num,
+  .side,
+  .caption {
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: lowercase;
+  }
+
+  .kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    font-size: clamp(0.7rem, 1.2vw, 0.95rem);
+  }
+
+  .kicker .sq {
+    width: 0.9em;
+    height: 0.9em;
+    background: var(--red);
+  }
+
+  .num {
+    font-size: clamp(2.2rem, 7vw, 6.5rem);
+    line-height: 0.8;
+    letter-spacing: -0.02em;
+    color: var(--paper);
+    animation: dessau-fade 0.8s 0.5s both;
+  }
+
+  /* ── Wordmark ────────────────────────────────────────────────── */
+
+  .stage {
+    position: relative;
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: clamp(0.6rem, 1.6vw, 1.2rem);
+    padding: clamp(1.5rem, 4vw, 3rem) 0;
+    padding-left: max(0px, calc(18% - clamp(1rem, 4vw, 3.5rem) + 0.9rem));
+  }
+
+  .side {
+    position: absolute;
+    top: 50%;
+    left: max(0px, calc(18% - clamp(1rem, 4vw, 3.5rem) - 1.7rem));
+    font-size: 0.68rem;
+    writing-mode: vertical-rl;
+    transform: translateY(-50%) rotate(180deg);
+    white-space: nowrap;
+    opacity: 0.75;
+  }
+
+  .mark {
+    margin: 0;
+    width: min(100%, 64rem);
+    line-height: 0;
+  }
+
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .word {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    filter: drop-shadow(0.02em 0.02em 0 rgb(23 21 19 / 0.08));
+  }
+
+  .construction {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 0.6;
+    stroke-dasharray: 2 4;
+    opacity: 0.35;
+    animation: dessau-fade 1s both;
+  }
+
+  .s {
+    fill: none;
+    stroke-width: 22;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-dasharray: var(--len) calc(var(--len) + 10);
+    stroke-dashoffset: var(--len);
+    animation: dessau-draw 0.55s cubic-bezier(0.6, 0, 0.3, 1) forwards;
+    animation-delay: calc(0.35s + var(--i) * 0.11s);
+  }
+
+  .ink {
+    stroke: var(--ink);
+  }
+  .red {
+    stroke: var(--red);
+  }
+  .blue {
+    stroke: var(--blue);
+  }
+  .yellow {
+    stroke: var(--yellow);
+  }
+
+  @keyframes dessau-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes dessau-fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .caption {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35em;
+    font-size: clamp(0.72rem, 1.3vw, 1rem);
+    animation: dessau-fade 0.8s 1.3s both;
+  }
+
+  .caption span {
+    display: inline-grid;
+    place-items: center;
+    width: 1.7em;
+    height: 1.7em;
+    border: 2px solid var(--ink);
+    letter-spacing: 0;
+  }
+
+  .caption span:nth-child(2) {
+    border-radius: 50%;
+  }
+  .caption span:nth-child(5) {
+    border-color: var(--red);
+    background: var(--red);
+    color: var(--paper);
+  }
+
+  .caption em {
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    margin-left: 0.5em;
+  }
+
+  /* ── Link blocks ─────────────────────────────────────────────── */
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0;
+    animation: dessau-fade 0.8s 1.2s both;
+  }
+
+  .block {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.9rem;
+    min-width: min(100%, 15rem);
+    padding: 1rem 1.25rem;
+    color: var(--paper);
+    font-size: clamp(1rem, 1.6vw, 1.25rem);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-decoration: none;
+    text-transform: lowercase;
+    transition:
+      transform 0.25s cubic-bezier(0.3, 0.7, 0.2, 1),
+      box-shadow 0.25s;
+  }
+
+  .block-gh {
+    background: var(--ink);
+  }
+
+  .block-li {
+    background: var(--blue);
+  }
+
+  .glyph {
+    width: 1.1em;
+    height: 1.1em;
+    transition:
+      transform 0.4s cubic-bezier(0.3, 0.7, 0.2, 1),
+      border-radius 0.4s;
+  }
+
+  .block-gh .glyph {
+    border-radius: 50%;
+    background: var(--red);
+  }
+
+  .block-li .glyph {
+    background: var(--yellow);
+  }
+
+  .arrow {
+    font-weight: 400;
+    transition: transform 0.25s;
+  }
+
+  .block:hover,
+  .block:focus-visible {
+    transform: translate(-0.35rem, -0.35rem);
+    box-shadow: 0.35rem 0.35rem 0 var(--yellow);
+    outline: none;
+  }
+
+  .block-li:hover,
+  .block-li:focus-visible {
+    box-shadow: 0.35rem 0.35rem 0 var(--red);
+  }
+
+  .block:focus-visible .label {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+  }
+
+  .block:hover .glyph,
+  .block:focus-visible .glyph {
+    transform: rotate(90deg);
+    border-radius: 0 100% 0 0;
+  }
+
+  .block:hover .arrow,
+  .block:focus-visible .arrow {
+    transform: translateX(0.3rem);
+  }
+
+  /* ── Small screens ───────────────────────────────────────────── */
+
+  @media (max-width: 40rem) {
+    .side {
+      display: none;
+    }
+
+    .top,
+    .stage {
+      padding-left: 0;
+    }
+
+    .rule-a,
+    .dot {
+      left: 1.5rem;
+    }
+
+    .dot {
+      left: calc(1.5rem - 1.6vmax);
+    }
+
+    .ring {
+      left: auto;
+      right: 6vmax;
+      top: auto;
+      bottom: 30%;
+    }
+
+    .links {
+      flex-direction: column;
+    }
+
+    .block {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dessau *,
+    .dessau *::before,
+    .dessau *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+
+    .plane {
+      translate: none;
+    }
+
+    .s {
+      stroke-dashoffset: 0;
+    }
+
+    .block:hover,
+    .block:focus-visible {
+      transform: none;
+    }
+  }
+</style>
