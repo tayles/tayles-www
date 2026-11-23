@@ -1,0 +1,935 @@
+---
+// Phosphor — the front panel of a 1970s analogue oscilloscope switched to X-Y
+// mode. A canvas steers the electron beam around a single-stroke vector
+// alphabet, so the name is written by the spot itself and left glowing in
+// long-persistence P7 phosphor. Hold the cursor over the tube and it acts like
+// a magnet against the glass, twisting the trace.
+---
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Michroma&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap"
+/>
+
+<div class="phosphor">
+  <div class="chassis">
+    <section class="display" aria-label="Display">
+      <div class="bezel">
+        <span class="screw tl" aria-hidden="true"></span>
+        <span class="screw tr" aria-hidden="true"></span>
+        <span class="screw bl" aria-hidden="true"></span>
+        <span class="screw br" aria-hidden="true"></span>
+        <div class="crt" data-crt>
+          <canvas
+            class="tube"
+            data-tube
+            role="img"
+            aria-label="An oscilloscope screen: a glowing beam writes the word tayles in thin vector strokes, its blue-white spot leaving a fading yellow-green trail."
+          ></canvas>
+          <div class="glass" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="crt-row" aria-hidden="true">
+        <div class="ctl">
+          <span class="knob small" style="--turn: 62deg"></span>
+          <span class="lbl">Intensity</span>
+        </div>
+        <div class="ctl">
+          <span class="knob small" style="--turn: -18deg"></span>
+          <span class="lbl">Focus</span>
+        </div>
+        <div class="ctl">
+          <span class="knob small" style="--turn: 120deg"></span>
+          <span class="lbl">Scale illum</span>
+        </div>
+        <div class="ctl">
+          <span class="push"></span>
+          <span class="lbl">Beam finder</span>
+        </div>
+        <div class="ctl power">
+          <span class="led"></span>
+          <span class="lbl">Power</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls">
+      <div class="badge">
+        <span class="maker">Dual-trace oscilloscope</span>
+        <h1>tayles</h1>
+        <span class="model">Model 26 · 100 MHz · X-Y</span>
+      </div>
+
+      <div class="group">
+        <span class="group-title">Vertical</span>
+        <nav class="channels" aria-label="Elsewhere">
+          <a class="ch" href="https://github.com/tayles">
+            <span class="lamp" aria-hidden="true"></span>
+            <span class="chn" aria-hidden="true">CH 1</span>
+            <span class="name">GitHub</span>
+          </a>
+          <a class="ch" href="https://linkedin.com/in/tayles">
+            <span class="lamp" aria-hidden="true"></span>
+            <span class="chn" aria-hidden="true">CH 2</span>
+            <span class="name">LinkedIn</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="group dials" aria-hidden="true">
+        <div class="ctl">
+          <span class="dial"><span class="knob" style="--turn: -40deg"></span></span>
+          <span class="lbl">Volts/div</span>
+        </div>
+        <div class="ctl">
+          <span class="dial"><span class="knob" style="--turn: 75deg"></span></span>
+          <span class="lbl">Sec/div</span>
+        </div>
+      </div>
+
+      <div class="group inputs" aria-hidden="true">
+        <div class="ctl">
+          <span class="bnc"></span>
+          <span class="lbl">CH 1 · X</span>
+        </div>
+        <div class="ctl">
+          <span class="bnc"></span>
+          <span class="lbl">CH 2 · Y</span>
+        </div>
+        <span class="warn">1 MΩ · 20 pF<br />400 V max</span>
+      </div>
+    </section>
+  </div>
+</div>
+
+<style>
+  .phosphor {
+    --panel: #d9d5ca;
+    --panel-lo: #c3beb1;
+    --ink: #23272a;
+    --label: #3d4246;
+    --cap: #36607f;
+    --cap-hi: #5b88a8;
+    --red: #c2412d;
+    --bezel: #191b1c;
+
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
+    min-height: 100dvh;
+    padding: clamp(0.9rem, 3vw, 2.5rem) clamp(0.75rem, 3vw, 2.5rem) 4.25rem;
+    overflow: hidden;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        rgb(255 255 255 / 0%) 0 2px,
+        rgb(255 255 255 / 9%) 2px 3px,
+        rgb(0 0 0 / 0%) 3px 5px
+      ),
+      radial-gradient(
+        ellipse at 30% 10%,
+        rgb(255 253 246 / 70%),
+        rgb(255 253 246 / 0%) 60%
+      ),
+      linear-gradient(180deg, #e2ded4, var(--panel) 45%, var(--panel-lo));
+    color: var(--ink);
+    font-family: 'Barlow Semi Condensed', ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .phosphor *,
+  .phosphor *::before,
+  .phosphor *::after {
+    box-sizing: border-box;
+  }
+
+  .chassis {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1.25rem, 3vw, 2.5rem);
+    width: 100%;
+    max-width: 82rem;
+    min-width: 0;
+  }
+
+  @media (min-width: 880px) {
+    .chassis {
+      grid-template-columns: minmax(0, 1fr) clamp(15rem, 24vw, 21rem);
+      align-items: center;
+    }
+
+    /* Size the tube from the viewport height so the knob row clears the nav. */
+    .display {
+      justify-self: center;
+      width: 100%;
+      max-width: max(24rem, calc((100dvh - 17rem) * 1.25 + 3.8rem));
+    }
+  }
+
+  .display {
+    min-width: 0;
+  }
+
+  /* The moulded black surround the tube sits in. */
+  .bezel {
+    position: relative;
+    padding: clamp(0.9rem, 2.4vw, 1.9rem);
+    border-radius: clamp(0.8rem, 2vw, 1.4rem);
+    background: linear-gradient(160deg, #2b2e30, var(--bezel) 55%, #0f1011);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 12%),
+      inset 0 -2px 6px rgb(0 0 0 / 60%),
+      0 1px 0 rgb(255 255 255 / 70%),
+      0 18px 40px -18px rgb(30 28 22 / 55%);
+  }
+
+  .screw {
+    position: absolute;
+    width: clamp(0.45rem, 1vw, 0.7rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      linear-gradient(35deg, transparent 44%, #2a2c2d 44% 56%, transparent 56%),
+      radial-gradient(circle at 35% 30%, #9da2a4, #4b5053 70%);
+  }
+
+  .screw.tl {
+    top: 0.4rem;
+    left: 0.4rem;
+  }
+
+  .screw.tr {
+    top: 0.4rem;
+    right: 0.4rem;
+  }
+
+  .screw.bl {
+    bottom: 0.4rem;
+    left: 0.4rem;
+  }
+
+  .screw.br {
+    right: 0.4rem;
+    bottom: 0.4rem;
+  }
+
+  /* The tube face: very slightly pillowed, as the glass of a real CRT is. */
+  .crt {
+    position: relative;
+    aspect-ratio: 10 / 8;
+    overflow: hidden;
+    border-radius: 4.5% / 5.5%;
+    background: #070b0a;
+    box-shadow:
+      inset 0 0 0 1px rgb(0 0 0 / 80%),
+      0 0 0 3px #0b0c0c;
+    cursor: crosshair;
+  }
+
+  .tube {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .glass {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        ellipse 70% 45% at 28% 12%,
+        rgb(255 255 255 / 9%),
+        rgb(255 255 255 / 0%) 70%
+      ),
+      radial-gradient(
+        ellipse at center,
+        rgb(0 0 0 / 0%) 55%,
+        rgb(0 0 0 / 55%) 100%
+      );
+  }
+
+  .crt-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 0.75rem 1rem;
+    margin-top: clamp(0.9rem, 2vw, 1.4rem);
+  }
+
+  .ctl {
+    display: grid;
+    justify-items: center;
+    gap: 0.45rem;
+  }
+
+  .lbl,
+  .group-title,
+  .maker,
+  .model,
+  .warn {
+    font-size: clamp(0.62rem, 0.9vw, 0.74rem);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--label);
+  }
+
+  /* Knurled skirt, blue-grey cap, white index line. */
+  .knob {
+    position: relative;
+    display: block;
+    width: clamp(2.7rem, 5vw, 3.6rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, transparent 60%, rgb(0 0 0 / 35%) 72%),
+      repeating-conic-gradient(#3a3d40 0 5deg, #1c1e20 5deg 10deg);
+    box-shadow:
+      0 3px 0 #15171a,
+      0 8px 14px -4px rgb(20 18 14 / 55%);
+    transform: rotate(var(--turn, 0deg));
+  }
+
+  .knob.small {
+    width: clamp(1.9rem, 3.4vw, 2.5rem);
+  }
+
+  .knob::before {
+    position: absolute;
+    inset: 16%;
+    content: '';
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 38% 30%,
+      var(--cap-hi),
+      var(--cap) 55%,
+      #213e54
+    );
+    box-shadow: inset 0 -2px 3px rgb(0 0 0 / 35%);
+  }
+
+  .knob::after {
+    position: absolute;
+    top: 9%;
+    left: calc(50% - 1.5px);
+    width: 3px;
+    height: 32%;
+    content: '';
+    border-radius: 2px;
+    background: #f3efe4;
+  }
+
+  .push {
+    display: block;
+    width: clamp(1.9rem, 3.4vw, 2.5rem);
+    height: clamp(1.2rem, 2.1vw, 1.55rem);
+    border-radius: 0.3rem;
+    background: linear-gradient(180deg, #f1ede3, #cfc9bb);
+    box-shadow:
+      0 3px 0 #9d978a,
+      0 6px 10px -4px rgb(20 18 14 / 50%);
+  }
+
+  .led {
+    display: block;
+    width: 0.8rem;
+    aspect-ratio: 1;
+    margin: 0.55rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ffb59f, var(--red) 60%);
+    box-shadow:
+      0 0 0 3px #a7a193,
+      0 0 12px 2px rgb(255 90 50 / 55%);
+  }
+
+  .controls {
+    display: grid;
+    gap: clamp(1rem, 2.4vw, 1.75rem);
+    min-width: 0;
+  }
+
+  .badge {
+    display: grid;
+    gap: 0.35rem;
+    padding-bottom: clamp(0.8rem, 2vw, 1.25rem);
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .phosphor h1 {
+    margin: 0;
+    font-family: Michroma, ui-sans-serif, sans-serif;
+    font-size: clamp(2.3rem, 5.4vw, 3.6rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .model {
+    color: var(--red);
+  }
+
+  .group {
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .group-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .group-title::after {
+    flex: 1;
+    height: 1px;
+    content: '';
+    background: var(--label);
+  }
+
+  .channels {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
+
+  /* Latching push-buttons: the lamp lights when a channel is selected. */
+  .ch {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.15rem 0.6rem;
+    padding: 0.75rem 0.85rem 0.7rem;
+    border-radius: 0.4rem;
+    background: linear-gradient(180deg, #f4f1e8, #d6d0c2);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 80%),
+      0 4px 0 #9d978a,
+      0 9px 14px -6px rgb(20 18 14 / 50%);
+    color: var(--ink);
+    text-decoration: none;
+    transition:
+      transform 120ms ease,
+      box-shadow 120ms ease;
+  }
+
+  .lamp {
+    grid-row: span 2;
+    width: 0.7rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #6d6a60;
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 50%);
+    transition:
+      background 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .chn {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: var(--label);
+  }
+
+  .name {
+    font-family: Michroma, ui-sans-serif, sans-serif;
+    font-size: clamp(0.72rem, 1.1vw, 0.88rem);
+    letter-spacing: 0.02em;
+  }
+
+  .ch:hover,
+  .ch:focus-visible {
+    transform: translateY(3px);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 80%),
+      0 1px 0 #9d978a,
+      0 4px 8px -4px rgb(20 18 14 / 50%);
+  }
+
+  .ch:hover .lamp,
+  .ch:focus-visible .lamp {
+    background: #c8f37a;
+    box-shadow: 0 0 10px 2px rgb(190 240 110 / 75%);
+  }
+
+  .ch:focus-visible {
+    outline: 2px solid var(--cap);
+    outline-offset: 4px;
+  }
+
+  .dials {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-items: center;
+  }
+
+  /* A printed scale of ticks around each big knob. */
+  .dial {
+    display: grid;
+    place-items: center;
+    padding: 0.55rem;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, var(--panel) 64%, transparent 65%),
+      conic-gradient(from -135deg, transparent 0 270deg, var(--panel) 270deg),
+      repeating-conic-gradient(
+        from -135deg,
+        var(--label) 0 1.4deg,
+        transparent 1.4deg 27deg
+      );
+  }
+
+  .inputs {
+    grid-template-columns: auto auto 1fr;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .bnc {
+    display: block;
+    width: 2.3rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, #e9d27c 0 12%, #1b1c1d 13% 34%, transparent 35%),
+      radial-gradient(circle at 35% 30%, #f1f2f0, #9ea3a6 55%, #6d7275);
+    box-shadow:
+      0 0 0 3px #b3ad9f,
+      0 4px 8px -2px rgb(20 18 14 / 50%);
+  }
+
+  .warn {
+    justify-self: end;
+    padding: 0.35rem 0.5rem;
+    border: 1.5px solid var(--red);
+    border-radius: 0.2rem;
+    font-size: 0.6rem;
+    line-height: 1.4;
+    color: var(--red);
+    text-align: right;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ch,
+    .lamp {
+      transition: none;
+    }
+
+    .ch:hover,
+    .ch:focus-visible {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  type Point = [number, number];
+
+  interface Sample {
+    x: number;
+    y: number;
+    /** False while the beam is blanked, travelling between strokes. */
+    lit: boolean;
+  }
+
+  interface Glyph {
+    advance: number;
+    strokes: Point[][];
+  }
+
+  /** Seconds for the spot to write the whole word once. */
+  const SWEEP = 2.6;
+  /** Phosphor decay constant, in seconds. */
+  const DECAY = 1.15;
+  const BUCKETS = 28;
+  /** Glyph-space spacing between beam samples. */
+  const STEP = 0.018;
+
+  function line(a: Point, b: Point): Point[] {
+    const n = Math.max(2, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / STEP));
+    const out: Point[] = [];
+    for (let i = 0; i <= n; i++) {
+      const t = i / n;
+      out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
+    }
+    return out;
+  }
+
+  /** An elliptical arc; angles in degrees, counter-clockwise from +x. */
+  function arc(
+    cx: number,
+    cy: number,
+    rx: number,
+    ry: number,
+    from: number,
+    to: number,
+  ): Point[] {
+    const r = (Math.abs(to - from) * Math.PI) / 180;
+    const n = Math.max(4, Math.ceil((r * Math.max(rx, ry)) / STEP));
+    const out: Point[] = [];
+    for (let i = 0; i <= n; i++) {
+      const a = ((from + ((to - from) * i) / n) * Math.PI) / 180;
+      out.push([cx + Math.cos(a) * rx, cy + Math.sin(a) * ry]);
+    }
+    return out;
+  }
+
+  function join(...parts: Point[][]): Point[] {
+    return parts.flatMap((part, i) => (i === 0 ? part : part.slice(1)));
+  }
+
+  /**
+   * A single-stroke vector alphabet, just the six letters it needs. Baseline
+   * at y = 0, x-height at y = 1, ascenders to 1.55, descenders to -0.6.
+   */
+  const GLYPHS: Record<string, Glyph> = {
+    t: {
+      advance: 0.78,
+      strokes: [
+        join(line([0.28, 1.5], [0.28, 0.24]), arc(0.52, 0.24, 0.24, 0.24, 180, 270), line([0.52, 0], [0.7, 0.02])),
+        line([0, 1], [0.68, 1]),
+      ],
+    },
+    a: {
+      advance: 1.08,
+      strokes: [
+        arc(0.46, 0.5, 0.46, 0.5, 20, 380),
+        line([0.94, 1], [0.94, 0]),
+      ],
+    },
+    y: {
+      advance: 1.02,
+      strokes: [
+        line([0, 1], [0.48, 0.02]),
+        join(line([0.98, 1], [0.38, -0.42]), arc(0.2, -0.42, 0.18, 0.18, 0, -100), ),
+      ],
+    },
+    l: {
+      advance: 0.5,
+      strokes: [
+        join(line([0.12, 1.55], [0.12, 0.2]), arc(0.32, 0.2, 0.2, 0.2, 180, 270)),
+      ],
+    },
+    e: {
+      advance: 1.06,
+      strokes: [
+        join(line([0.02, 0.5], [0.96, 0.5]), arc(0.49, 0.5, 0.47, 0.5, 0, 318)),
+      ],
+    },
+    s: {
+      advance: 0.84,
+      strokes: [
+        join(
+          arc(0.39, 0.75, 0.3, 0.25, 15, 270),
+          arc(0.39, 0.25, 0.3, 0.25, 90, -165),
+        ),
+      ],
+    },
+  };
+
+  const WORD = 'tayles';
+  const TRACKING = 0.2;
+
+  /** Lays the word out in glyph space and returns one continuous beam path. */
+  function buildPath(): { samples: Sample[]; width: number } {
+    const samples: Sample[] = [];
+    let pen = 0;
+    let last: Point | undefined;
+
+    for (const char of WORD) {
+      const glyph = GLYPHS[char];
+      if (!glyph) continue;
+      for (const stroke of glyph.strokes) {
+        const placed = stroke.map(([x, y]): Point => [x + pen, y]);
+        const first = placed[0];
+        if (last && first) {
+          // The blanked jump: fast, so only a few samples.
+          const d = Math.hypot(first[0] - last[0], first[1] - last[1]);
+          const n = Math.max(2, Math.ceil(d / (STEP * 6)));
+          for (let i = 1; i < n; i++) {
+            const t = i / n;
+            samples.push({
+              x: last[0] + (first[0] - last[0]) * t,
+              y: last[1] + (first[1] - last[1]) * t,
+              lit: false,
+            });
+          }
+        }
+        for (const [x, y] of placed) samples.push({ x, y, lit: true });
+        last = placed.at(-1);
+      }
+      pen += glyph.advance + TRACKING;
+    }
+
+    // Fly back to the start, ready for the next sweep.
+    const first = samples[0];
+    if (last && first) {
+      const n = 24;
+      for (let i = 1; i < n; i++) {
+        const t = i / n;
+        samples.push({
+          x: last[0] + (first.x - last[0]) * t,
+          y: last[1] + (first.y - last[1]) * t,
+          lit: false,
+        });
+      }
+    }
+
+    return { samples, width: pen - TRACKING };
+  }
+
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-tube]');
+  const crt = document.querySelector<HTMLElement>('[data-crt]');
+  const ctx = canvas?.getContext('2d');
+
+  if (canvas && crt && ctx) {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const { samples, width: wordWidth } = buildPath();
+    const count = samples.length;
+
+    let w = 0;
+    let h = 0;
+    let dpr = 1;
+    let scale = 1;
+    let ox = 0;
+    let oy = 0;
+    let screen: Float32Array = new Float32Array(count * 2);
+
+    /** The magnet: where it is and how strongly it is pressed to the glass. */
+    const magnet = { x: 0, y: 0, pull: 0, target: 0 };
+
+    function resize(): void {
+      if (!canvas || !ctx) return;
+      const rect = canvas.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = Math.max(1, Math.round(rect.width * dpr));
+      h = Math.max(1, Math.round(rect.height * dpr));
+      canvas.width = w;
+      canvas.height = h;
+
+      // Eight of the ten divisions across, never taller than the tube allows.
+      scale = Math.min((w * 0.8) / wordWidth, (h * 0.62) / 2.15);
+      ox = (w - wordWidth * scale) / 2;
+      oy = h / 2 + scale * 0.48;
+
+      screen = new Float32Array(count * 2);
+      for (let i = 0; i < count; i++) {
+        const s = samples[i];
+        if (!s) continue;
+        screen[i * 2] = ox + s.x * scale;
+        screen[i * 2 + 1] = oy - s.y * scale;
+      }
+    }
+
+    /** The etched internal graticule: 10 × 8 divisions with minor ticks. */
+    function graticule(c: CanvasRenderingContext2D): void {
+      const dx = w / 10;
+      const dy = h / 8;
+      c.save();
+      c.strokeStyle = 'rgb(230 160 90 / 16%)';
+      c.lineWidth = Math.max(1, dpr * 0.8);
+      c.beginPath();
+      for (let i = 1; i < 10; i++) {
+        c.moveTo(Math.round(i * dx) + 0.5, 0);
+        c.lineTo(Math.round(i * dx) + 0.5, h);
+      }
+      for (let j = 1; j < 8; j++) {
+        c.moveTo(0, Math.round(j * dy) + 0.5);
+        c.lineTo(w, Math.round(j * dy) + 0.5);
+      }
+      c.stroke();
+
+      c.strokeStyle = 'rgb(230 160 90 / 26%)';
+      c.beginPath();
+      const tick = 3 * dpr;
+      for (let i = 0; i < 50; i++) {
+        const x = Math.round((i * w) / 50) + 0.5;
+        c.moveTo(x, h / 2 - tick);
+        c.lineTo(x, h / 2 + tick);
+      }
+      for (let j = 0; j < 40; j++) {
+        const y = Math.round((j * h) / 40) + 0.5;
+        c.moveTo(w / 2 - tick, y);
+        c.lineTo(w / 2 + tick, y);
+      }
+      c.stroke();
+      c.restore();
+    }
+
+    /** Deflection, including whatever the magnet is doing to it. */
+    function deflect(i: number, jitter: number, out: Float32Array): void {
+      let x = screen[i * 2] ?? 0;
+      let y = screen[i * 2 + 1] ?? 0;
+      if (magnet.pull > 0.001) {
+        const dx = x - magnet.x;
+        const dy = y - magnet.y;
+        const radius = Math.min(w, h) * 0.32;
+        const f = magnet.pull * Math.exp(-(dx * dx + dy * dy) / (radius * radius));
+        const twist = f * 1.1;
+        const push = 1 + f * 0.35;
+        const cos = Math.cos(twist);
+        const sin = Math.sin(twist);
+        x = magnet.x + (dx * cos - dy * sin) * push;
+        y = magnet.y + (dx * sin + dy * cos) * push;
+      }
+      out[0] = x + jitter * (Math.random() - 0.5);
+      out[1] = y + jitter * (Math.random() - 0.5);
+    }
+
+    /**
+     * Brightness of each sample follows from how long ago the spot passed it,
+     * so the whole trace is redrawn every frame in age-ordered buckets rather
+     * than accumulated — no 8-bit ghosting from repeated fades.
+     */
+    function render(head: number, still: boolean): void {
+      if (!ctx) return;
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = '#070b0a';
+      ctx.fillRect(0, 0, w, h);
+      graticule(ctx);
+
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      const paths: Path2D[] = [];
+      for (let b = 0; b < BUCKETS; b++) paths.push(new Path2D());
+      const retrace = new Path2D();
+      const p = new Float32Array(2);
+      const jitter = still ? 0 : 0.6 * dpr;
+      let prevBucket = -1;
+      let prevLit = false;
+      let px = 0;
+      let py = 0;
+
+      for (let i = 0; i < count; i++) {
+        const s = samples[i];
+        if (!s) continue;
+        deflect(i, jitter, p);
+        const x = p[0] ?? 0;
+        const y = p[1] ?? 0;
+        const age = still ? 0.35 : ((head - i + count) % count) / count;
+        const bucket = Math.min(BUCKETS - 1, Math.floor(age * BUCKETS));
+
+        if (i > 0) {
+          if (s.lit && prevLit) {
+            const path = paths[bucket];
+            if (path) {
+              if (bucket !== prevBucket) path.moveTo(px, py);
+              path.lineTo(x, y);
+            }
+          } else {
+            retrace.moveTo(px, py);
+            retrace.lineTo(x, y);
+          }
+        }
+        prevBucket = s.lit && prevLit ? bucket : -1;
+        prevLit = s.lit;
+        px = x;
+        py = y;
+      }
+
+      const flicker = still ? 1 : 0.94 + Math.random() * 0.06;
+      const core = Math.max(1.1, 1.5 * dpr * Math.min(1.6, scale / 120));
+
+      for (let b = BUCKETS - 1; b >= 0; b--) {
+        const path = paths[b];
+        if (!path) continue;
+        const age = ((b + 0.5) / BUCKETS) * SWEEP;
+        const glow = Math.exp(-age / DECAY) * flicker;
+        // Fresh phosphor is blue-white; the afterglow is a yellow-green.
+        const t = Math.min(1, age / 0.35);
+        const r = Math.round(215 + (196 - 215) * t);
+        const g = Math.round(240 + (246 - 240) * t);
+        const bl = Math.round(255 + (102 - 255) * t);
+        const lift = 0.3 + glow * 0.7;
+
+        ctx.strokeStyle = `rgb(${r} ${g} ${bl} / ${(0.07 * lift).toFixed(3)})`;
+        ctx.lineWidth = core * 7;
+        ctx.stroke(path);
+        ctx.strokeStyle = `rgb(${r} ${g} ${bl} / ${(0.22 * lift).toFixed(3)})`;
+        ctx.lineWidth = core * 2.8;
+        ctx.stroke(path);
+        ctx.strokeStyle = `rgb(${r} ${g} ${bl} / ${(0.9 * lift).toFixed(3)})`;
+        ctx.lineWidth = core;
+        ctx.stroke(path);
+      }
+
+      // Imperfect blanking leaves the jumps just visible.
+      ctx.strokeStyle = 'rgb(196 246 102 / 5%)';
+      ctx.lineWidth = core;
+      ctx.stroke(retrace);
+
+      if (!still) {
+        const i = Math.floor(head) % count;
+        deflect(i, 0, p);
+        const x = p[0] ?? 0;
+        const y = p[1] ?? 0;
+        const lit = samples[i]?.lit ?? false;
+        const radius = core * (lit ? 9 : 4);
+        const spot = ctx.createRadialGradient(x, y, 0, x, y, radius);
+        spot.addColorStop(0, `rgb(240 250 255 / ${lit ? 0.95 : 0.12})`);
+        spot.addColorStop(0.25, `rgb(180 225 255 / ${lit ? 0.4 : 0.05})`);
+        spot.addColorStop(1, 'rgb(150 210 255 / 0)');
+        ctx.fillStyle = spot;
+        ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+      }
+    }
+
+    let raf = 0;
+    let start = performance.now();
+    let last = start;
+
+    function frame(now: number): void {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      magnet.pull += (magnet.target - magnet.pull) * Math.min(1, dt * 4);
+      const head = (((now - start) / 1000 / SWEEP) * count) % count;
+      render(head, false);
+      raf = requestAnimationFrame(frame);
+    }
+
+    function run(): void {
+      cancelAnimationFrame(raf);
+      if (reduced.matches) {
+        magnet.pull = 0;
+        render(0, true);
+        return;
+      }
+      start = performance.now();
+      last = start;
+      raf = requestAnimationFrame(frame);
+    }
+
+    function locate(event: PointerEvent): void {
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      magnet.x = (event.clientX - rect.left) * dpr;
+      magnet.y = (event.clientY - rect.top) * dpr;
+    }
+
+    crt.addEventListener('pointerenter', (event) => {
+      locate(event);
+      magnet.target = 1;
+    });
+    crt.addEventListener('pointermove', (event) => {
+      locate(event);
+      magnet.target = 1;
+    });
+    crt.addEventListener('pointerleave', () => {
+      magnet.target = 0;
+    });
+
+    new ResizeObserver(() => {
+      resize();
+      if (reduced.matches) render(0, true);
+    }).observe(canvas);
+    reduced.addEventListener('change', run);
+
+    resize();
+    run();
+  }
+</script>

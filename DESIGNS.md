@@ -7,8 +7,20 @@
 generated, screenshotted and merged automatically. Every design it has ever
 worn stays online at its own URL. Newest first.
 
-**18 designs** ·
+**19 designs** ·
 [Browse them live](https://tayles.co.uk/designs)
+
+---
+
+## Phosphor
+
+23 November 2026 · `phosphor`
+
+The front panel of a 1970s analogue oscilloscope in X-Y mode — the electron beam writes the name in single vector strokes, a blue-white spot trailing yellow-green afterglow across an etched graticule. Hold the cursor over the tube and it bends the trace like a magnet on the glass.
+
+[![Phosphor](src/designs/phosphor/screenshot.webp)](src/designs/phosphor/)
+
+[Live](https://tayles.co.uk/designs/phosphor) · [Source](src/designs/phosphor/index.astro) · `oscilloscope` `vector` `phosphor` `instrument` `x-y` `canvas` `cursor`
 
 ---
 
